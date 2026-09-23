@@ -6,6 +6,19 @@ own product versioning independently from the underlying SnappyMail engine.
 The historical SnappyMail changelog is retained below for upstream provenance
 and technical context.
 
+## petuja.email 1.0.1 — 2026-09-23
+
+Based on SnappyMail 2.38.2
+(`e345550c7fddfffdda9095deba64e98dc1c59815`).
+
+### Security
+
+- Restricted the local external-image proxy to authenticated user sessions,
+  backporting SnappyMail upstream commit
+  `8b5547104d949a6f1d9a214a5b2fef301570de05` ("Only allow Proxy for logged
+  in users"). This prevents unauthenticated requests from using that
+  server-side external-image fetch path.
+
 ## petuja.email 1.0.0 — 2026-09-23
 
 Based on SnappyMail 2.38.2

@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 "$ROOT/scripts/validate-product-metadata.sh"
+"$ROOT/scripts/validate-security-backports.sh"
 
 python3 - "$ROOT" <<'PY'
 import datetime

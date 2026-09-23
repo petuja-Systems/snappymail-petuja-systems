@@ -170,30 +170,47 @@ the domain root to `/current`. The first switch therefore still serves the
 legacy application and can be rolled back simply by restoring the previous Root
 Directory.
 
-### Deployment workflow
+### Production deployment direction
 
-`.github/workflows/deploy-production.yml` deploys a reviewed release only after
-the exact public tag `petuja-email-v<version>` exists and its public snapshot
-commit records the same private source commit.
+Production is intentionally **not** exposed to GitHub-hosted runners over
+inbound SSH. The previously prepared push-deploy workflow was removed before
+use.
 
-The workflow rebuilds the release from that private commit, verifies the
-artifact, uploads it over a dedicated SSH key, installs it into a new immutable
-release directory, writes the production-only `include.php`, atomically
-switches the `current` symlink, and performs HTTP health checks. A failed health
-check automatically restores the previous symlink target.
+The production server will instead use a repository-scoped **read-only GitHub
+deploy key** and perform a deliberate pull-based deployment from the private
+`petuja-Systems/petuja.email` repository. The deployment must still preserve
+the release invariant:
 
-Required private-repository Actions secrets:
+- deploy an explicitly selected reviewed private commit;
+- verify that the immutable public `petuja-email-v<version>` tag identifies
+  that same private source commit;
+- build and validate the release before switching it live;
+- keep `data/` persistent and outside immutable release directories;
+- install into a new versioned release directory;
+- switch `current` atomically;
+- retain the previous release for rollback;
+- perform HTTP health checks and restore the previous target if activation
+  fails.
 
-- `PRODUCTION_HOST`
-- `PRODUCTION_SSH_PRIVATE_KEY`
-- `PRODUCTION_KNOWN_HOSTS`
+The production command is implemented by
+`scripts/pull-deploy-production.sh`. It accepts a product version and resolves
+the exact private source commit from the immutable public
+`petuja-email-v<version>` tag before it fetches or builds anything. A
+production deployment therefore uses:
 
-The production SSH key must be dedicated to this deployment path and must not be
-reused for public-source publication. The server only receives the public half
-through `~/.ssh/authorized_keys`.
+```bash
+pull-deploy-production.sh <product-version> DEPLOY
+```
 
-The production workflow assumes SSH port 22. Change the workflow deliberately if
-the server uses a different port.
+The script uses the dedicated private source checkout below
+`/home/petujaemail/petuja-email/source`, validates the public/private release
+mapping, resets that checkout to the exact release commit, installs frozen build
+dependencies, runs release validation and PHP syntax checks, builds the release
+locally, and delegates atomic activation/rollback to
+`scripts/deploy-production-release.sh`.
+
+The source checkout is operational state only and is never the live document
+root. Do not use a plain `git pull` against the live document root.
 
 ## Release finalization and completion
 
