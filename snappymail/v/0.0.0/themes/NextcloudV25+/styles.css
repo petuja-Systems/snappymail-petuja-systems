@@ -61,7 +61,7 @@
 	--nc-list-min-width: var(--list-min-width, 200px);
 	--nc-list-max-width: var(--list-max-width, 300px);
 	--nc-breakpoint-mobile: var(--breakpoint-mobile, 1024px);
-	--nc-color-primary: var(--color-primary, #00639a);
+	--nc-color-primary: var(--color-primary, #11c6db);
 	--nc-color-primary-default: var(--color-primary-default, #0082c9);
 	--nc-color-primary-text: var(--color-primary-text, #ffffff);
 	--nc-color-primary-hover: var(--color-primary-hover, #3282ae);
@@ -69,7 +69,7 @@
 	--nc-color-primary-light-text: var(--color-primary-light-text, #00273d);
 	--nc-color-primary-light-hover: var(--color-primary-light-hover, #dbe4e9);
 	--nc-color-primary-text-dark: var(--color-primary-text-dark, #ededed);
-	--nc-color-primary-element: var(--color-primary-element, #00639a);
+	--nc-color-primary-element: var(--color-primary-element, #11c6db);
 	--nc-color-primary-element-text: var(--color-primary-element-text, #ffffff);
 	--nc-color-primary-element-hover: var(--color-primary-element-hover, #3282ae);
 	--nc-color-primary-element-light: var(--color-primary-element-light, #e5eff4);
@@ -125,17 +125,17 @@
 		--nc-list-min-width: var(--list-min-width, 200px);
 		--nc-list-max-width: var(--list-max-width, 300px);
 		--nc-breakpoint-mobile: var(--breakpoint-mobile, 1024px);
-		--nc-color-primary: var(--color-primary, #00639a);
+		--nc-color-primary: var(--color-primary, #11c6db);
 		--nc-color-primary-default: var(--color-primary-default, #0082c9);
 		--nc-color-primary-text: var(--color-primary-text, #ffffff);
-		--nc-color-primary-hover: var(--color-primary-hover, #04537f);
+		--nc-color-primary-hover: var(--color-primary-hover, #1d6d8b);
 		--nc-color-primary-light: var(--color-primary-light, #141e24);
 		--nc-color-primary-light-text: var(--color-primary-light-text, #99c0d6);
 		--nc-color-primary-light-hover: var(--color-primary-light-hover, #1d272d);
 		--nc-color-primary-text-dark: var(--color-primary-text-dark, #ededed);
-		--nc-color-primary-element: var(--color-primary-element, #00639a);
+		--nc-color-primary-element: var(--color-primary-element, #11c6db);
 		--nc-color-primary-element-text: var(--color-primary-element-text, #ffffff);
-		--nc-color-primary-element-hover: var(--color-primary-element-hover, #04537f);
+		--nc-color-primary-element-hover: var(--color-primary-element-hover, #1d6d8b);
 		--nc-color-primary-element-light: var(--color-primary-element-light, #141e24);
 		--nc-color-primary-element-light-text: var(--color-primary-element-light-text, #99c0d6);
 		--nc-color-primary-element-light-hover: var(--color-primary-element-light-hover, #1d272d);
@@ -844,38 +844,40 @@ input[type="checkbox"] {
 #rl-app .squire-toolbar {
 	height: 50px;
 	padding: 5px;
-	box-sizing: content-box;
+	box-sizing: border-box;
 	border: none;
 }
 
-#rl-app textarea,
-#rl-app div[contenteditable],
-#rl-app .squire-wysiwyg,
-#rl-app .squire-plain {
+
+/* Compose-Editor (Squire): bewusst wie Mail-"Papier" */
+#rl-app #V-PopupsCompose .squire-wysiwyg,
+#rl-app #V-PopupsCompose .squire-plain {
 	padding: 8px 12px;
-	margin: unset;
+	margin: 0;
 	font-size: var(--nc-default-font-size);
-	color: var(--nc-color-main-text);
-	background-color: unset;
+	background-color: #ffffff !important;
+	color: #000000 !important;
 	outline: none;
 	border: 2px solid var(--nc-color-border-dark);
 	border-radius: var(--nc-border-radius-large);
+	box-sizing: border-box;
 }
 
-#rl-app textarea:hover,
-#rl-app textarea:active,
-#rl-app textarea:focus,
-#rl-app div[contenteditable=true]:hover,
-#rl-app div[contenteditable=true]:active,
-#rl-app div[contenteditable=true]:focus,
-#rl-app .squire-wysiwyg:hover,
-#rl-app .squire-wysiwyg:active,
-#rl-app .squire-wysiwyg:focus,
-#rl-app .squire-plain:hover,
-#rl-app .squire-plain:active,
-#rl-app .squire-plain:focus {
+
+#rl-app #V-PopupsCompose .squire-wysiwyg:hover,
+#rl-app #V-PopupsCompose .squire-wysiwyg:active,
+#rl-app #V-PopupsCompose .squire-wysiwyg:focus,
+#rl-app #V-PopupsCompose .squire-plain:hover,
+#rl-app #V-PopupsCompose .squire-plain:active,
+#rl-app #V-PopupsCompose .squire-plain:focus {
 	border-color: var(--nc-color-primary-element);
 }
+
+#rl-app #V-PopupsCompose .squire-toolbar {
+	box-sizing: border-box;
+}
+
+
 
 /* #endregion */
 
@@ -1153,7 +1155,7 @@ html.rl-mobile.rl-left-panel-disabled #rl-app #rl-left {
 	background-color: var(--nc-color-main-background);
 }
 
-#rl-app::selection {
+#rl-app ::selection {
 	background-color: var(--nc-color-primary);
 	color: var(--nc-color-primary-text);
 }
@@ -1199,14 +1201,11 @@ html.rl-mobile.rl-left-panel-disabled #rl-app #rl-left {
 	text-shadow: none;
 	transition: none;
 
-	background-color: var(--nc-color-main-background-blur, var(--nc-color-main-background));
-	-webkit-backdrop-filter: var(--nc-filter-background-blur, none);
-	backdrop-filter: var(--nc-filter-background-blur, none);
-
 	color: var(--nc-color-main-text);
 	width: 100%;
 	height: 100%;
 }
+
 
 #rl-app .LoginView .descWrapper {
 	color: var(--nc-color-main-text);

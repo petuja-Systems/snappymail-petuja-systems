@@ -47,7 +47,11 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
 		"LABEL_SIGN_ME": "Remember Me",
-		"BUTTON_SIGN_IN": "Sign In"
+		"BUTTON_SIGN_IN": "Sign In",
+		"LEGAL_NAVIGATION": "Legal information",
+		"LEGAL_IMPRINT": "Imprint",
+		"LEGAL_PRIVACY": "Privacy",
+		"LEGAL_SOURCE": "Source Code"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Add Account"

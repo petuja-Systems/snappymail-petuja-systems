@@ -1,47 +1,89 @@
-**Thanks for contributing to SnappyMail Webmail!**
+# Contributing to petuja.email
 
-1. Fork the repo, do work in a feature branch.
-2. Issue a pull request.
+petuja.email is a maintained customization of SnappyMail 2.38.2. Changes should
+preserve upstream attribution, remain reviewable against the fixed SnappyMail
+baseline, and avoid mixing unrelated refactors into product work.
 
----
+## Before starting
 
-**Getting started**
+Read:
 
-1. Install PHP
-2. Install node.js - `https://nodejs.org/download/`
-3. Install yarn - `https://yarnpkg.com/en/docs/install`
-4. Install gulp - `npm install gulp -g`
-5. Fork snappymail from https://github.com/the-djmaze/snappymail
-6. Clone snappymail - `git clone git@github.com:USERNAME/snappymail.git snappymail`
-7. `cd snappymail`
-8. Install all dependencies - `yarn install`
-9. Run gulp - `gulp`
+- [Development](docs/DEVELOPMENT.md)
+- [Upstream and release strategy](docs/UPSTREAM.md)
+- [Product identity](docs/BRANDING.md)
+- [Change workflow](docs/CHANGE_WORKFLOW.md)
 
----
+The public petuja Systems source repository may contain release-specific source
+branches as well as upstream-tracking branches. Verify that you are working from
+the intended petuja.email source ref before preparing a change.
 
-**Debugging JavaScript**
+For substantial external changes, discuss the intended scope with the
+maintainers before investing in a large implementation.
 
-1. Edit data/\_data_/\_default_/configs/application.ini
-2. Set 'use_app_debug_js' (and optionally 'use_app_debug_css') to 'On'
+Security vulnerabilities must **not** be reported through a public issue or pull
+request. Follow [SECURITY.md](SECURITY.md).
 
----
+## Development setup
 
-**Editing HTML Template Files**
+Install the pinned JavaScript dependencies:
 
-1. Edit data/\_data_/\_default_/configs/application.ini
-2. Set `[cache] system_data` to Off
+```bash
+corepack yarn install --frozen-lockfile
+```
 
-**Release**
+Build and lint the normal development output:
 
-1. Install gzip
-2. Install brotli
-3. php release.php
+```bash
+corepack yarn gulp
+```
 
-Options:
-* `php release.php --aur` = Build Arch Linux package
-* `php release.php --docker` = Build Docker instance
-* `php release.php --plugins` = Build plugins
+The repository uses the existing SnappyMail source/build layout. Edit source
+files rather than generated CSS or JavaScript.
 
----
+For a safe local runtime, follow
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Never copy production credentials,
+mail, contacts, private keys, certificates, logs, or runtime data into a
+development checkout.
 
-If you have any questions, open an issue or email support@snappymail.eu.
+## Change guidelines
+
+Keep changes focused and minimal.
+
+- Preserve SnappyMail, RainLoop, and third-party copyright and license notices.
+- Keep the approved product name exactly `petuja.email`; `petuja` is lowercase.
+- Do not globally replace upstream `SnappyMail` or `RainLoop` identifiers.
+- Do not commit secrets, production configuration, user data, caches, logs, or
+  generated release archives.
+- Do not add analytics, telemetry, remote fonts, third-party scripts, or other
+  runtime dependencies without explicit review.
+- Preserve authentication, session, cookie, mail-rendering, attachment,
+  encryption, and plugin behavior unless the change explicitly requires
+  modifying it.
+- Keep source changes compatible with the existing build and release tooling
+  unless a separately reviewed toolchain change is intended.
+
+Application changes use the staged analysis, implementation, security-audit, and
+regression-audit process documented in
+[docs/CHANGE_WORKFLOW.md](docs/CHANGE_WORKFLOW.md).
+
+## Validation
+
+Run the checks relevant to the files you changed. For normal application work,
+the baseline checks include:
+
+```bash
+corepack yarn gulp
+git diff --check
+```
+
+PHP changes should also pass `php -l` for the affected files. Changes that
+affect release packaging should be checked with the release workflow documented
+in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+Never use real production credentials or customer accounts for validation.
+
+## License
+
+By contributing to this repository, you are contributing to software distributed
+under the [GNU Affero General Public License v3.0](LICENSE), subject to the
+existing upstream and third-party license notices in the repository.

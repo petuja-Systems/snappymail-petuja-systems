@@ -28,7 +28,15 @@
 	<div class="b-message-view-desc error" data-bind="visible: !message() && '' !== messageError() && !hasCheckedMessages(), text: messageError()">
 	</div>
 
-	<div class="b-message-view-desc" data-i18n="MESSAGE/MESSAGE_VIEW_DESC" data-bind="visible: !message() && '' === messageError() && !hasCheckedMessages()">
+	<!-- Logo + Text im selben Container, damit der vertikale Offset für beides gilt -->
+	<div class="b-message-view-desc"
+	     data-bind="visible: !message() && '' === messageError() && !hasCheckedMessages()">
+		<div class="hide-mobile" style="margin-bottom:16px;">
+			<img src="https://cdn1.petuja.network/int/services/webmail/web_mail_message_logo.png"
+			     alt="Petuja Webmail"
+			     style="max-width:220px;width:100%;height:auto;display:inline-block;">
+		</div>
+		<div data-i18n="MESSAGE/MESSAGE_VIEW_DESC"></div>
 	</div>
 
 	<div class="b-message" data-bind="visible: message, i18nUpdate: message, css: message()?.lineAsCss(0)">

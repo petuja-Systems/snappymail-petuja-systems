@@ -1,40 +1,64 @@
 # Security Policy
 
-## Supported Versions
+Security issues in petuja.email should be reported privately so they can be
+investigated and fixed before public disclosure.
 
-Currently due to the fast development only the latest version receives security updates.
+## Supported versions
 
-| Version  | Supported |
-| -------- | --------- |
-| 2.34.x   | ✔         |
-| < 2.34.0 | ❌         |
+Only the latest maintained petuja.email release line is intended to receive
+security fixes.
 
-## Reporting a Vulnerability
+| Version | Status |
+| --- | --- |
+| 1.0.x | Current development / release line |
+| Earlier versions | Not maintained as petuja.email releases |
 
-Please report security issues or vulnerabilities as an encrypted email to [security@snappymail.eu](mailto:security@snappymail.eu).
-Your report should be detailed enough with clear steps to reproduce and classify the found vulnerability.
+petuja.email 1.0.x is the current maintained product release line.
 
-You can find the PGP public key below and on the major public keyservers like [keys.openpgp.org](https://keys.openpgp.org).
-```
------BEGIN PGP PUBLIC KEY BLOCK-----
-Comment: Type: 255-bit EdDSA
-Comment: Fingerprint: 445D265124E6072671E64D0733F868A7E35E8277
+## Reporting a vulnerability
 
-mDMEYiE2QRYJKwYBBAHaRw8BAQdAqMrQUm6DddWcQNo0VEjNIu3Q6CfP3nokVv2Y
-rNQ1avq0LFNuYXBweU1haWwgU2VjdXJpdHkgPHNlY3VyaXR5QHNuYXBweW1haWwu
-ZXU+iJQEExYKADwWIQREXSZRJOYHJnHmTQcz+Gin416CdwUCYiE2QQIbAwULCQgH
-AgMiAgEGFQoJCAsCBBYCAwECHgcCF4AACgkQM/hop+NegnfSGgD9GEHpOrvWpBGY
-dYfvVd/+Lv5d+dFBcPyki9zu9zHfhwkBAL343EF6ZR0XwMlOQu9wu0hT9KBz4g55
-6D41i0PrEaoBuDgEYiE2QRIKKwYBBAGXVQEFAQEHQMMr9gcVcJ3aiup/tpl8ZXxy
-aJiJRGkPyNwGI5vxHMpZAwEIB4h4BBgWCgAgFiEERF0mUSTmByZx5k0HM/hop+Ne
-gncFAmIhNkECGwwACgkQM/hop+NegndVhgD/SVGSKbF4G2W024VpW2tm3zCT+ue+
-YMXQVq4SJt7UpWABAORudfJxsBqCRKtPlZMgGTJLjcOkyFJ9C2Fx7DeN0J4I
-=nSOi
------END PGP PUBLIC KEY BLOCK-----
-```
+Do **not** open a public issue, discussion, or pull request containing
+vulnerability details.
 
-## Publishing and Credits
+Report vulnerabilities privately to:
 
-I will analyze and fix the reported issue as fast as possible.
-Together with the reporter I plan the disclosure of the found and fixed vulnerability.
-Credits to the reporter are granted and can be included in all public communication if desired.
+**contact@petuja.net**
+
+Use a clear subject such as:
+
+`[Security] petuja.email vulnerability`
+
+A useful report should include, where possible:
+
+- the affected petuja.email version, tag, or commit;
+- the affected component or file;
+- clear steps to reproduce the issue;
+- the expected and observed behavior;
+- the security impact and realistic attack scenario;
+- a minimal proof of concept, if one is needed to demonstrate the issue.
+
+Do not include real customer credentials, mailbox contents, private keys, or
+other production data. Redact sensitive values from logs and screenshots.
+
+If you need an encrypted or otherwise dedicated channel before sharing details,
+contact petuja Systems first and request one.
+
+## Coordinated disclosure
+
+petuja Systems will review reported vulnerabilities and coordinate disclosure
+with the reporter when appropriate. Please allow time for investigation and a
+fix before publishing vulnerability details.
+
+Reporter credit can be included in public disclosure when requested.
+
+Do not perform testing against accounts, infrastructure, or data that you do not
+own or have explicit authorization to test.
+
+## Upstream relationship
+
+petuja.email is based on SnappyMail 2.38.2. A vulnerability may therefore affect
+petuja.email-specific code, upstream SnappyMail code, or both.
+
+Please report issues that affect petuja.email to petuja Systems even when the
+root cause appears to be upstream. Relevant upstream coordination can then be
+handled without losing track of the impact on the petuja.email release line.

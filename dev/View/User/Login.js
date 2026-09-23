@@ -1,6 +1,6 @@
 import { Notifications } from 'Common/Enums';
 import { ClientSideKeyNameLastSignMe } from 'Common/EnumsUser';
-import { SettingsGet, fireEvent } from 'Common/Globals';
+import { Settings, SettingsGet, fireEvent } from 'Common/Globals';
 import { getNotification, translatorReload, convertLangName } from 'Common/Translator';
 import { addObservablesTo, addComputablesTo, addSubscribablesTo } from 'External/ko';
 
@@ -10,12 +10,14 @@ import * as Local from 'Storage/Client';
 
 import Remote from 'Remote/User/Fetch';
 
+import { staticLink } from 'Common/Links';
 import { decorateKoCommands, showScreenPopup } from 'Knoin/Knoin';
 import { AbstractViewLogin } from 'Knoin/AbstractViews';
 
 import { LanguagesPopupView } from 'View/Popup/Languages';
 
 const
+	PetujaEmailPublicSourceBaseUrl = 'https://github.com/petuja-Systems/snappymail-petuja-systems/tree/petuja-email-v',
 	SignMeOff = 0,
 	SignMeOn = 1,
 	SignMeUnused = 2;
@@ -23,6 +25,14 @@ const
 export class LoginUserView extends AbstractViewLogin {
 	constructor() {
 		super();
+
+		// Keep the branding asset version-aware without changing login submission behavior.
+		this.loginLogoUrl = staticLink('images/petuja-systems-logo.svg');
+		this.petujaEmailVersion = Settings.app('petujaEmailVersion') || '';
+		this.petujaEmailSnappyMailVersion = Settings.app('petujaEmailSnappyMailVersion') || '';
+		this.petujaEmailSourceUrl = this.petujaEmailVersion
+			? PetujaEmailPublicSourceBaseUrl + encodeURIComponent(this.petujaEmailVersion)
+			: '';
 
 		addObservablesTo(this, {
 			loadingDesc: SettingsGet('loadingDescription'),

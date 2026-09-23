@@ -572,6 +572,26 @@ class Actions
 			'allowLanguagesOnLogin' => (bool) $oConfig->Get('login', 'allow_languages_on_login', true)
 		);
 
+		if (!$bAdmin) {
+			$sProductMetadataPath = APP_VERSION_ROOT_PATH . 'app/petuja-product.json';
+			$sProductMetadataJson = \is_readable($sProductMetadataPath)
+				? @\file_get_contents($sProductMetadataPath)
+				: false;
+			$aProductMetadata = \is_string($sProductMetadataJson)
+				? \json_decode($sProductMetadataJson, true)
+				: null;
+
+			if (\is_array($aProductMetadata)
+				&& 'petuja.email' === ($aProductMetadata['product'] ?? null)
+				&& \is_string($aProductMetadata['version'] ?? null)
+				&& '' !== \trim($aProductMetadata['version'])
+				&& \is_string($aProductMetadata['snappymailVersion'] ?? null)
+				&& '' !== \trim($aProductMetadata['snappymailVersion'])) {
+				$aResult['System']['petujaEmailVersion'] = $aProductMetadata['version'];
+				$aResult['System']['petujaEmailSnappyMailVersion'] = $aProductMetadata['snappymailVersion'];
+			}
+		}
+
 		if ($bAdmin) {
 			ActionsAdmin::AdminAppData($this, $aResult);
 		} else {

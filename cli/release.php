@@ -157,6 +157,10 @@ $tar->addFromString('index.php', $index);
 $zip->addFile('README.md');
 $tar->addFile('README.md');
 
+// Keep the application license with distributable release archives.
+$zip->addFile('LICENSE');
+$tar->addFile('LICENSE');
+
 $zip->close();
 
 $tar->compress(Phar::GZ);

@@ -1,45 +1,73 @@
+<div class="login-brand">
+	<img class="login-brand-logo"
+		data-bind="attr: { src: loginLogoUrl }"
+		alt="petuja Systems"
+		width="80"
+		height="80"
+	/>
+	<h1>petuja.email</h1>
+</div>
+
 <div class="descWrapper" data-bind="visible: '' !== loadingDesc, text: loadingDesc"></div>
-<div class="alert" data-bind="hidden: !submitError()" hidden="">
-	<a href="#" class="close" data-bind="click: hideError">×</a>
+<div class="alert" role="alert" aria-live="assertive" data-bind="hidden: !submitError()" hidden="">
+	<a href="#" class="close" data-bind="click: hideError" data-i18n="[title]GLOBAL/CLOSE">×</a>
 	<span data-bind="text: submitError"></span>
 	<p data-bind="visible: '' !== submitErrorAdditional()">
 		<span data-i18n="GLOBAL/SERVER_MESSAGE"></span>:
-		<!-- ko text: submitErrorAdditional --><!-- /ko -->
+	<!-- ko text: submitErrorAdditional --><!-- /ko -->
 	</p>
 </div>
 <form action="#/"  spellcheck="false" method="POST"
 	data-bind="submit: submitForm, css: {'errorAnimated': formError, 'submitting': submitRequest()}">
 	<div class="controls" data-bind="css: {'error': emailError}">
-		<span class="fontastic">✉</span>
-		<input name="Email" required="" type="text" class="input-block-level" pattern="[^@\s]+(@[^\s]+)?" inputmode="email"
+		<label for="login-email" data-i18n="GLOBAL/EMAIL"></label>
+		<input id="login-email" name="Email" required="" type="text" class="input-block-level" pattern="[^@\s]+(@[^\s]+)?" inputmode="email"
 			autofocus="" autocomplete="email" autocorrect="off" autocapitalize="off"
 			data-bind="textInput: email, disable: submitRequest"
 			data-i18n="[placeholder]GLOBAL/EMAIL">
 	</div>
 	<div class="controls" data-bind="css: {'error': passwordError}">
-		<span class="fontastic">🔑</span>
-		<input name="Password" required="" type="password" class="input-block-level"
+		<label for="login-password" data-i18n="GLOBAL/PASSWORD"></label>
+		<input id="login-password" name="Password" required="" type="password" class="input-block-level"
 			autocomplete="current-password" autocorrect="off" autocapitalize="off"
 			data-bind="textInput: password, disable: submitRequest"
 			data-i18n="[placeholder]GLOBAL/PASSWORD">
 	</div>
 	<div id="plugin-Login-BottomControlGroup"></div>
-	<div class="controls" style="display: flex">
-		<div class="e-checkbox" tabindex="0" data-bind="toggle: signMe">
-			<i role="checkbox" class="fontastic" data-bind="text: signMe() ? '☑' : '☐'"></i>
-			<span data-i18n="LOGIN/LABEL_SIGN_ME"></span>
+	<div class="controls login-options">
+		<div class="e-checkbox" role="checkbox" tabindex="0"
+			data-bind="visible: signMeVisibility, toggle: signMe, attr: {'aria-checked': signMe}"
+			aria-labelledby="login-sign-me-label">
+			<i aria-hidden="true" class="fontastic" data-bind="text: signMe() ? '☑' : '☐'"></i>
+			<span id="login-sign-me-label" data-i18n="LOGIN/LABEL_SIGN_ME"></span>
 		</div>
 		<div class="language-buttons">
 			<a href="#" class="language-button fontastic"
 				data-bind="visible: allowLanguagesOnLogin, click: selectLanguage, css: { 'icon-spinner' : langRequest }"
 				data-i18n="[title]POPUPS_LANGUAGES/TITLE_LANGUAGES">
-				🌍
+				<span class="login-visually-hidden" data-i18n="POPUPS_LANGUAGES/TITLE_LANGUAGES"></span>
+				<span aria-hidden="true">🌍</span>
 			</a>
 		</div>
 	</div>
-	<div>
+	<div class="login-submit">
 		<button class="btn btn-large buttonLogin"
 			data-bind="command: submitCommand"
 			data-i18n="LOGIN/BUTTON_SIGN_IN"></button>
 	</div>
 </form>
+
+<footer class="login-footer">
+	<nav aria-labelledby="login-legal-navigation-label">
+		<span id="login-legal-navigation-label" class="login-visually-hidden" data-i18n="LOGIN/LEGAL_NAVIGATION">Legal information</span>
+		<a href="https://petuja.net/impressum/" data-i18n="LOGIN/LEGAL_IMPRINT">Imprint</a>
+		<a href="https://petuja.net/datenschutz" data-i18n="LOGIN/LEGAL_PRIVACY">Privacy</a>
+		<a data-bind="visible: petujaEmailSourceUrl, attr: { href: petujaEmailSourceUrl }"
+			data-i18n="LOGIN/LEGAL_SOURCE">Source Code</a>
+	</nav>
+</footer>
+
+<p class="login-product-version" data-bind="visible: petujaEmailVersion && petujaEmailSnappyMailVersion">
+	<span>petuja.email </span><span data-bind="text: petujaEmailVersion"></span>
+	<span> · based on SnappyMail </span><span data-bind="text: petujaEmailSnappyMailVersion"></span>
+</p>

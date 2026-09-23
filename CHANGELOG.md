@@ -1,3 +1,46 @@
+# Changelog
+
+This file tracks **petuja.email** product changes first. petuja.email uses its
+own product versioning independently from the underlying SnappyMail engine.
+
+The historical SnappyMail changelog is retained below for upstream provenance
+and technical context.
+
+## petuja.email 1.0.0 — 2026-09-23
+
+Based on SnappyMail 2.38.2
+(`e345550c7fddfffdda9095deba64e98dc1c59815`).
+
+### Added
+
+- Established the `petuja.email` product identity and independent
+  machine-readable product-version metadata.
+- Added a redesigned, responsive public login using local petuja Systems
+  branding.
+- Added locally bundled Rubik typography with its license information.
+- Added login legal navigation and visible product/upstream version
+  attribution.
+- Added repository safeguards and documented reproducible development and
+  review workflows.
+
+### Changed
+
+- Rebased the maintained petuja.email source on the clean official SnappyMail
+  2.38.2 release baseline while preserving upstream history.
+- Carried forward reviewed petuja-specific localization, domain-definition,
+  message-view, theme, and branding customizations.
+- Reworked the repository README to describe petuja.email rather than presenting
+  the project as an unmodified SnappyMail checkout.
+
+### Fixed
+
+- Corrected the Rubik font asset path produced by the Gulp build and added a
+  robust sans-serif fallback for the public login.
+
+---
+
+## SnappyMail upstream history
+
 ## 2.38.2 – 2024-10-09
 ### Fixed
 - error '$index is not defined' in Settings > Accounts

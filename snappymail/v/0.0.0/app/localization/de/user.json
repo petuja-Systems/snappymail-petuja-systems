@@ -47,7 +47,11 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Anmeldung",
 		"LABEL_SIGN_ME": "Anmeldung merken",
-		"BUTTON_SIGN_IN": "Anmelden"
+		"BUTTON_SIGN_IN": "Anmelden",
+		"LEGAL_NAVIGATION": "Rechtliche Hinweise",
+		"LEGAL_IMPRINT": "Impressum",
+		"LEGAL_PRIVACY": "Datenschutz",
+		"LEGAL_SOURCE": "Quellcode"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Konto hinzufügen"

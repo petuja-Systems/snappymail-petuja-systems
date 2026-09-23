@@ -173,3 +173,464 @@
 html.rl-started-trigger .LoginView {
 	opacity: 0.5;
 }
+
+// Product-specific public login surface. Keep the shared rules above intact for
+// the admin login and scope every redesign rule to the user login view.
+#rl-app #V-Login.LoginView {
+	--petuja-login-bg: #0d141b;
+	--petuja-login-surface: rgba(19, 29, 38, 0.92);
+	--petuja-login-surface-border: rgba(255, 255, 255, 0.12);
+	--petuja-login-text: #f4f8fa;
+	--petuja-login-muted: #aebbc2;
+	--petuja-login-input: rgba(5, 12, 18, 0.58);
+	--petuja-login-accent: #11c6db;
+	--petuja-login-accent-deep: #1d6d8b;
+	--petuja-login-accent-soft: rgba(17, 198, 219, 0.14);
+	--petuja-login-warm-soft: rgba(240, 119, 16, 0.08);
+	--petuja-login-danger: #ff9c9c;
+	--petuja-login-danger-soft: rgba(255, 156, 156, 0.12);
+
+	align-items: center;
+	background-color: var(--petuja-login-bg);
+	background-image:
+		radial-gradient(circle at 50% -12%, var(--petuja-login-accent-soft), transparent 42%),
+		radial-gradient(circle at 100% 110%, var(--petuja-login-warm-soft), transparent 34%),
+		linear-gradient(145deg, #0b1117 0%, #111c25 52%, #0b1218 100%);
+	box-sizing: border-box;
+	color: var(--petuja-login-text);
+	display: flex;
+	flex-direction: column;
+	font-family:
+		"Rubik",
+		var(
+			--fontSans,
+			ui-sans-serif,
+			system-ui,
+			-apple-system,
+			BlinkMacSystemFont,
+			"Segoe UI",
+			Roboto,
+			"Helvetica Neue",
+			Arial,
+			sans-serif
+		);
+	gap: 0;
+	height: auto;
+	inset: 0;
+	justify-content: center;
+	justify-content: safe center;
+	max-width: none;
+	min-height: 100dvh;
+	min-width: 0;
+	overflow: auto;
+	padding: clamp(24px, 5vh, 64px) 20px;
+	position: fixed;
+	text-shadow: none;
+	transform: none;
+	transition: opacity 0.3s ease-out;
+	width: 100%;
+
+	&, & * {
+		box-sizing: border-box;
+	}
+
+	input, button, select, textarea {
+		font-family: inherit;
+	}
+
+	.login-brand {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		margin: 0 auto 22px;
+		text-align: center;
+
+		.login-brand-logo {
+			display: block;
+			height: 80px;
+			object-fit: contain;
+			width: 80px;
+		}
+
+		h1 {
+			color: var(--petuja-login-text);
+			font-size: clamp(1.8rem, 4vw, 2.25rem);
+			font-weight: 600;
+			letter-spacing: -0.035em;
+			line-height: 1.1;
+			margin: 0;
+		}
+	}
+
+	.descWrapper {
+		color: var(--petuja-login-muted);
+		font-size: 0.95rem;
+		line-height: 1.45;
+		margin: 0 auto 16px;
+		max-width: 440px;
+		min-height: 0;
+		text-shadow: none;
+		text-align: center;
+	}
+
+	.alert {
+		background: rgba(117, 37, 51, 0.34);
+		border: 1px solid rgba(255, 156, 156, 0.42);
+		border-radius: 12px;
+		color: var(--petuja-login-danger);
+		display: block;
+		font-size: 0.92rem;
+		line-height: 1.45;
+		margin: 0 auto 16px;
+		max-width: 440px;
+		min-width: 0;
+		padding: 13px 44px 13px 15px;
+		position: relative;
+		text-align: left;
+		transition: opacity 0.2s linear;
+		width: 100%;
+
+		&, & * {
+			color: inherit;
+		}
+
+		.close {
+			align-items: center;
+			border-radius: 7px;
+			display: inline-flex;
+			height: 30px;
+			justify-content: center;
+			padding: 0;
+			position: absolute;
+			right: 8px;
+			text-decoration: none;
+			top: 8px;
+			width: 30px;
+
+			&:hover, &:focus-visible {
+				background: rgba(255, 255, 255, 0.1);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--petuja-login-accent);
+				outline-offset: 2px;
+			}
+		}
+
+		p {
+			font-family: var(--fontMono);
+			font-size: 90%;
+			margin: 8px 0 0;
+		}
+	}
+
+	.alert[hidden] {
+		display: none;
+		opacity: 0;
+	}
+
+	form {
+		background: var(--petuja-login-surface);
+		border: 1px solid var(--petuja-login-surface-border);
+		border-radius: 22px;
+		box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(17, 198, 219, 0.03);
+		color: var(--petuja-login-text);
+		margin: 0 auto;
+		max-width: 440px;
+		padding: 30px;
+		position: relative;
+		width: 100%;
+
+		&, & * {
+			color: var(--petuja-login-text);
+		}
+
+		.controls, .control-group {
+			margin-bottom: 19px;
+		}
+
+		label {
+			color: var(--petuja-login-muted);
+			display: block;
+			font-size: 0.88rem;
+			font-weight: 600;
+			letter-spacing: 0.01em;
+			line-height: 1.35;
+			margin-bottom: 7px;
+		}
+
+		input {
+			background: var(--petuja-login-input);
+			border: 1px solid rgba(255, 255, 255, 0.18);
+			border-radius: 12px;
+			box-shadow: none;
+			color: var(--petuja-login-text);
+			font-size: 1rem;
+			height: 52px;
+			padding: 0 15px;
+			transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+			width: 100%;
+
+			&::placeholder {
+				color: rgba(174, 187, 194, 0.72);
+			}
+
+			&:hover {
+				border-color: rgba(255, 255, 255, 0.34);
+			}
+
+			&:focus, &:focus-visible {
+				background: rgba(5, 12, 18, 0.76);
+				border-color: var(--petuja-login-accent);
+				box-shadow: 0 0 0 3px rgba(17, 198, 219, 0.2);
+				outline: none;
+			}
+		}
+
+		.fontastic + input {
+			padding-left: 42px;
+		}
+
+		.controls.error {
+			label {
+				color: var(--petuja-login-danger);
+			}
+
+			input {
+				border-color: var(--petuja-login-danger);
+				box-shadow: 0 0 0 3px var(--petuja-login-danger-soft);
+			}
+		}
+
+		.login-options {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			justify-content: space-between;
+			margin-bottom: 22px;
+			min-height: 44px;
+		}
+
+		.e-checkbox {
+			align-items: center;
+			border-radius: 8px;
+			cursor: pointer;
+			display: inline-flex;
+			gap: 8px;
+			line-height: 1.35;
+			min-height: 44px;
+			padding: 4px 6px;
+
+			.fontastic {
+				color: var(--petuja-login-accent);
+				font-size: 1.1rem;
+				line-height: 1;
+			}
+
+			&:hover {
+				background: rgba(255, 255, 255, 0.06);
+			}
+
+			&:focus-visible {
+				box-shadow: 0 0 0 3px rgba(17, 198, 219, 0.22);
+				outline: 2px solid var(--petuja-login-accent);
+				outline-offset: 1px;
+			}
+		}
+
+		.language-buttons {
+			flex: 0 0 auto;
+			margin-left: auto;
+			text-align: right;
+		}
+
+		.language-button {
+			align-items: center;
+			border-radius: 8px;
+			display: inline-flex;
+			font-size: 1.05rem;
+			justify-content: center;
+			min-height: 44px;
+			min-width: 44px;
+			padding: 8px;
+			text-decoration: none;
+
+			&:hover {
+				background: rgba(255, 255, 255, 0.06);
+			}
+
+			&:focus-visible {
+				box-shadow: 0 0 0 3px rgba(17, 198, 219, 0.22);
+				outline: 2px solid var(--petuja-login-accent);
+				outline-offset: 1px;
+			}
+		}
+
+		.login-submit {
+			margin-top: 2px;
+		}
+
+		.buttonLogin {
+			background: var(--petuja-login-accent);
+			border: 1px solid var(--petuja-login-accent);
+			border-radius: 12px;
+			box-shadow: 0 8px 20px rgba(17, 198, 219, 0.18);
+			color: #061217;
+			font-size: 1rem;
+			font-weight: 700;
+			letter-spacing: 0.01em;
+			min-height: 52px;
+			text-transform: none;
+			transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+			width: 100%;
+
+			&, &:active, &:focus, &:focus-visible {
+				color: #061217;
+			}
+
+			&:hover {
+				background: var(--petuja-login-accent-deep);
+				border-color: var(--petuja-login-accent-deep);
+				box-shadow: 0 10px 24px rgba(17, 198, 219, 0.28);
+				color: var(--petuja-login-text);
+			}
+
+			&:focus-visible {
+				box-shadow: 0 0 0 3px rgba(17, 198, 219, 0.26), 0 8px 20px rgba(17, 198, 219, 0.18);
+				outline: 2px solid var(--petuja-login-text);
+				outline-offset: 2px;
+			}
+
+			&:disabled {
+				cursor: wait;
+				opacity: 0.65;
+			}
+		}
+
+		&.submitting::after {
+			border-top-color: var(--petuja-login-accent);
+		}
+	}
+
+	.login-footer {
+		color: var(--petuja-login-muted);
+		margin: 16px auto 0;
+		max-width: 440px;
+		text-align: center;
+		width: 100%;
+
+		nav {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 4px 12px;
+			justify-content: center;
+		}
+
+		a {
+			align-items: center;
+			border-radius: 8px;
+			color: var(--petuja-login-muted);
+			display: inline-flex;
+			font-size: 0.88rem;
+			line-height: 1.35;
+			min-height: 44px;
+			padding: 8px 6px;
+			text-decoration: none;
+			transition: background-color 0.2s ease, color 0.2s ease;
+
+			&:hover, &:focus-visible {
+				background: rgba(255, 255, 255, 0.06);
+				color: var(--petuja-login-text);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--petuja-login-accent);
+				outline-offset: 2px;
+			}
+		}
+	}
+
+	.login-product-version {
+		color: var(--petuja-login-muted);
+		font-size: 0.75rem;
+		line-height: 1.4;
+		margin: 12px auto 0;
+		max-width: 440px;
+		opacity: 0.78;
+		overflow-wrap: anywhere;
+		text-align: center;
+		width: 100%;
+	}
+
+	.login-visually-hidden {
+		border: 0;
+		clip: rect(0 0 0 0);
+		height: 1px;
+		margin: -1px;
+		overflow: hidden;
+		padding: 0;
+		position: absolute;
+		white-space: nowrap;
+		width: 1px;
+	}
+}
+
+// Keep the legacy theme background off the public login without changing
+// mailbox or admin surfaces that still use the theme background.
+@media screen and (min-width: @maxMobileWidth + 1px) {
+	#rl-app:has(#V-Login.LoginView) {
+		background-image: none;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	#rl-app #V-Login.LoginView {
+		padding: 24px 16px;
+
+		.login-brand {
+			margin-bottom: 18px;
+
+			.login-brand-logo {
+				height: 68px;
+				width: 68px;
+			}
+		}
+
+		form {
+			border-radius: 18px;
+			padding: 24px 20px;
+		}
+	}
+}
+
+@media screen and (min-width: 900px) and (min-height: 700px) {
+	#rl-app #V-Login.LoginView {
+		.login-product-version {
+			bottom: 18px;
+			margin: 0;
+			max-width: 440px;
+			position: absolute;
+			right: 20px;
+			text-align: right;
+			width: calc(100% - 40px);
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#rl-app #V-Login.LoginView,
+	#rl-app #V-Login.LoginView *,
+	#rl-app #V-Login.LoginView form.errorAnimated {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+	}
+
+	#rl-app #V-Login.LoginView form.submitting::after {
+		animation: none;
+	}
+}

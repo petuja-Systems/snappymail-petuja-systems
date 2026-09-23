@@ -1,0 +1,5 @@
+# Files omitted from the public corresponding-source snapshot.
+# Keep this list intentionally small: source, build/install inputs, licenses,
+# public documentation, and petuja.email product files should export by default.
+AGENTS.md export-ignore
+.github/ export-ignore
