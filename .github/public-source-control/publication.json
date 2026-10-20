@@ -1,0 +1,14 @@
+{
+  "public_repository": "petuja-Systems/snappymail-petuja-systems",
+  "public_branch": "petuja-email",
+  "public_tag": "petuja-email-v1.1.0",
+  "public_parent": "78de51a284bca55e3d6f7b52a9f49f14778093e9",
+  "public_https_url": "https://github.com/petuja-Systems/snappymail-petuja-systems.git",
+  "public_ssh_url": "git@github.com:petuja-Systems/snappymail-petuja-systems.git",
+  "public_control_branch": "petuja-email-release-control",
+  "control_sha": "c774a8dc9abb4657c3d3da87ef53ef3e7c6fe643",
+  "release_sha": "6f9a5c82a1873bf3c9e2b301115220e8a21247b1",
+  "product_version": "1.1.0",
+  "source_tree": "ae951e3b98a367b9b15111e3bbf5cc3677807389",
+  "archive_sha256": "236dfecfda9b681b33d51e1aeec96f41440370a7a1d5c7b41157250c1cf5b2e6"
+}

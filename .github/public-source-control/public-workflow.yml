@@ -1,0 +1,48 @@
+name: Publish petuja.email corresponding source
+run-name: Publish petuja.email 1.1.0 from control commit ${{ github.sha }}
+
+on:
+  push:
+    branches:
+      - petuja-email-release-control
+    paths:
+      - .github/public-source-control/publication-request.json
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/petuja-email-release-control' && github.ref_protected }}
+    runs-on: ubuntu-24.04
+    environment: public-source
+    env:
+      GIT_CONFIG_NOSYSTEM: '1'
+      GIT_CONFIG_GLOBAL: /dev/null
+      GIT_TERMINAL_PROMPT: '0'
+    steps:
+      - name: Checkout protected public controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          persist-credentials: false
+          submodules: false
+          lfs: false
+          fetch-depth: 1
+
+      - name: Validate and prepare exact source without publication credentials
+        env:
+          PRIVATE_SOURCE_READ_KEY: ${{ secrets.PRIVATE_SOURCE_READ_KEY }}
+          TRUSTED_PUBLIC_CONTROL_SHA: ${{ github.sha }}
+          TRUSTED_CONTROL_REF: ${{ github.ref }}
+          TRUSTED_CONTROL_REF_PROTECTED: ${{ github.ref_protected }}
+        run: bash "$GITHUB_WORKSPACE/controller/.github/public-source-control/publish-public-source.sh" prepare
+
+      - name: Recheck remote state and atomically publish branch and immutable tag
+        env:
+          PUBLIC_SOURCE_PUBLISH_KEY: ${{ secrets.PUBLIC_SOURCE_PUBLISH_KEY }}
+          TRUSTED_PUBLIC_CONTROL_SHA: ${{ github.sha }}
+          TRUSTED_CONTROL_REF: ${{ github.ref }}
+          TRUSTED_CONTROL_REF_PROTECTED: ${{ github.ref_protected }}
+        run: bash "$GITHUB_WORKSPACE/controller/.github/public-source-control/publish-public-source.sh" publish
