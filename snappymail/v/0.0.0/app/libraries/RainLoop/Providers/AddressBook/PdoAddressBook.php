@@ -37,7 +37,8 @@ class PdoAddressBook
 				if ($oAccount) {
 					$homedir = \RainLoop\Api::Actions()->StorageProvider()->GenerateFilePath(
 						$oAccount,
-						\RainLoop\Providers\Storage\Enumerations\StorageType::ROOT
+						\RainLoop\Providers\Storage\Enumerations\StorageType::ROOT,
+						true
 					);
 					// TODO: sync data on switch?
 //					if (!\is_file($homedir . 'AddressBook.sqlite') && \is_file(APP_PRIVATE_DATA . '/AddressBook.sqlite')) {
@@ -129,7 +130,12 @@ class PdoAddressBook
 			return false;
 		}
 
-		$oClient = $this->getDavClient();
+		try {
+			$oClient = $this->getDavClient();
+		} catch (\SnappyMail\DAV\UriException $e) {
+			$this->logException($e);
+			return false;
+		}
 		if (!$oClient) {
 			\SnappyMail\Log::warning('PdoAddressBook', 'Sync() invalid DavClient');
 			return false;

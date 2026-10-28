@@ -169,10 +169,6 @@ abstract class Account implements \JsonSerializable
 				$oAccount->sImapUser = $aAccountHash['login'];
 				$oAccount->setImapPass(new SensitiveString($aAccountHash['pass']));
 				$oAccount->oDomain = $oDomain;
-				$oActions->Plugins()->RunHook('filter.account', array($oAccount));
-				if (!$oAccount) {
-					throw new ClientException(Notifications::AccountFilterError);
-				}
 				if (isset($aAccountHash['name'])) {
 					$oAccount->sName = $aAccountHash['name'];
 				}
@@ -193,7 +189,7 @@ abstract class Account implements \JsonSerializable
 		return $oAccount;
 	}
 
-	public function ImapConnectAndLogin(\RainLoop\Plugins\Manager $oPlugins, \MailSo\Imap\ImapClient $oImapClient, \RainLoop\Config\Application $oConfig) : bool
+	public function ImapConnectAndLogin(\MailSo\Imap\ImapClient $oImapClient, \RainLoop\Config\Application $oConfig) : bool
 	{
 		$oSettings = $this->Domain()->ImapSettings();
 		$oSettings->timeout = \max($oSettings->timeout, (int) $oConfig->Get('imap', 'timeout', $oSettings->timeout));
@@ -210,15 +206,13 @@ abstract class Account implements \JsonSerializable
 
 		$oImapClient->Settings = $oSettings;
 
-		$oPlugins->RunHook('imap.before-connect', array($this, $oImapClient, $oSettings));
 		$oImapClient->Connect($oSettings);
-		$oPlugins->RunHook('imap.after-connect', array($this, $oImapClient, $oSettings));
 
 		$oSettings->passphrase = $this->oImapPass;
-		return $this->netClientLogin($oImapClient, $oPlugins);
+		return $this->netClientLogin($oImapClient);
 	}
 
-	public function SmtpConnectAndLogin(\RainLoop\Plugins\Manager $oPlugins, \MailSo\Smtp\SmtpClient $oSmtpClient) : bool
+	public function SmtpConnectAndLogin(\MailSo\Smtp\SmtpClient $oSmtpClient) : bool
 	{
 		$oSettings = $this->Domain()->SmtpSettings();
 		$oSettings->username = $this->SmtpUser();
@@ -226,38 +220,34 @@ abstract class Account implements \JsonSerializable
 
 		$oSmtpClient->Settings = $oSettings;
 
-		$oPlugins->RunHook('smtp.before-connect', array($this, $oSmtpClient, $oSettings));
 		if ($oSettings->usePhpMail) {
 			$oSettings->useAuth = false;
 			return true;
 		}
 		$oSmtpClient->Connect($oSettings);
-		$oPlugins->RunHook('smtp.after-connect', array($this, $oSmtpClient, $oSettings));
 /*
 		if ($this->oDomain->OutAskCredentials() && !($this->oSmtpPass && $this->sSmtpUser)) {
 			throw new RequireCredentialsException
 		}
 */
 		$oSettings->passphrase = $this->oSmtpPass ?: $this->oImapPass;
-		return $this->netClientLogin($oSmtpClient, $oPlugins);
+		return $this->netClientLogin($oSmtpClient);
 	}
 
-	public function SieveConnectAndLogin(\RainLoop\Plugins\Manager $oPlugins, \MailSo\Sieve\SieveClient $oSieveClient, \RainLoop\Config\Application $oConfig)
+	public function SieveConnectAndLogin(\MailSo\Sieve\SieveClient $oSieveClient)
 	{
 		$oSettings = $this->Domain()->SieveSettings();
 		$oSettings->username = $this->ImapUser();
 
 		$oSieveClient->Settings = $oSettings;
 
-		$oPlugins->RunHook('sieve.before-connect', array($this, $oSieveClient, $oSettings));
 		$oSieveClient->Connect($oSettings);
-		$oPlugins->RunHook('sieve.after-connect', array($this, $oSieveClient, $oSettings));
 
 		$oSettings->passphrase = $this->oImapPass;
-		return $this->netClientLogin($oSieveClient, $oPlugins);
+		return $this->netClientLogin($oSieveClient);
 	}
 
-	private function netClientLogin(\MailSo\Net\NetClient $oClient, \RainLoop\Plugins\Manager $oPlugins) : bool
+	private function netClientLogin(\MailSo\Net\NetClient $oClient) : bool
 	{
 /*
 		$encrypted = !empty(\stream_get_meta_data($oClient->ConnectionResource())['crypto']);
@@ -270,12 +260,7 @@ abstract class Account implements \JsonSerializable
 */
 		$oSettings = $oClient->Settings;
 
-		$client_name = \strtolower($oClient->getLogName());
-
-		$oPlugins->RunHook("{$client_name}.before-login", array($this, $oClient, $oSettings));
-		$bResult = !$oSettings->useAuth || $oClient->Login($oSettings);
-		$oPlugins->RunHook("{$client_name}.after-login", array($this, $oClient, $bResult, $oSettings));
-		return $bResult;
+		return !$oSettings->useAuth || $oClient->Login($oSettings);
 	}
 
 /*

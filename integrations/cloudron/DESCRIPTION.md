@@ -16,7 +16,6 @@ SnappyMail is a simple, modern, lightweight & fast web-based email client.
  * Really simple installation and update (the product is updated from admin panel).
  * Managing folders list.
  * Simple look'n'feel customization.
- * Extending functionality with plugins installed through admin panel.
  * Perfect rendering of complex HTML mails.
  * Drag'n'drop for mails and attachments.
  * Keyboard shortcuts support.

@@ -12,7 +12,7 @@ class Response
 		$headers = array(), # The headers returned from the final_uri
 		$body;              # The body returned from the final_uri
 
-	function __construct(string $request_uri, int $status = 0, ?array $headers = null, $body = null)
+	function __construct(string $request_uri, int $status = 0, ?array $headers = null, $body = null, int $max_body_bytes = 0)
 	{
 		if ($headers) {
 			$name = null;
@@ -39,12 +39,14 @@ class Response
 		$this->request_uri = $request_uri;
 		$this->final_uri   = $request_uri;
 		$this->status      = (int) $status;
-		if (\function_exists('gzinflate') && isset($this->headers['content-encoding'])
-		 && (false !== \stripos($this->headers['content-encoding'], 'gzip'))) {
-			$this->body = \gzinflate(\substr($body, 10, -4));
-			if (false === $this->body) {
-				$err = \error_get_last() ?: ['message' => 'gzinflate failed'];
-				throw new \RuntimeException("{$err['message']} for {$request_uri}");
+		if (isset($this->headers['content-encoding'])
+		 && (!\is_string($this->headers['content-encoding'])
+		 || false !== \stripos($this->headers['content-encoding'], 'gzip'))) {
+			$this->body = \is_string($this->headers['content-encoding']) && \function_exists('gzdecode')
+				? @\gzdecode($body, $max_body_bytes) : false;
+			// zlib may finish within its initial allocation before checking max_length.
+			if (false === $this->body || ($max_body_bytes && \strlen($this->body) > $max_body_bytes)) {
+				throw new \RuntimeException('Invalid or oversized gzip HTTP response');
 			}
 		} else {
 			$this->body = $body;

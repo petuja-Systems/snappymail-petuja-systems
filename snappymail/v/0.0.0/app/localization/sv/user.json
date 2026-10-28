@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Användarnamn",
 		"LABEL_SIGN_ME": "Kom ihåg mig",
-		"BUTTON_SIGN_IN": "Logga in"
+		"BUTTON_SIGN_IN": "Logga in",
+		"TAGLINE": "Din inkorg, var du än är.",
+		"LEGAL_NAVIGATION": "Juridisk information",
+		"LEGAL_IMPRINT": "Utgivaruppgifter",
+		"LEGAL_PRIVACY": "Integritet",
+		"LEGAL_SOURCE": "Källkod",
+		"TWO_FACTOR_TITLE": "Tvåstegsverifiering",
+		"TWO_FACTOR_INSTRUCTION": "Ange en kod från din autentiseringsapp eller en återställningskod.",
+		"TWO_FACTOR_CODE": "Verifieringskod",
+		"BUTTON_VERIFY": "Verifiera och logga in"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Lägg till konto"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Mappar",
 		"ACCOUNTS": "Konton",
 		"FILTERS": "Filter",
-		"SECURITY": "Säkerhet",
-		"THEMES": "Teman"
+		"SECURITY": "Säkerhet"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Utseende",
+		"LIGHT": "Ljust",
+		"DARK": "Mörkt",
+		"SYSTEM": "System"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Simple",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Säkerhet",
 		"LABEL_AUTOLOGOUT": "Automatisk utloggning",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Tvåstegsverifiering (TOTP)",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Inte konfigurarad",
+		"TFA_STATUS_DISABLED": "Inte konfigurarad",
+		"TFA_STATUS_ENABLED": "Konfigurerad",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Skapa ny hemlig kod",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Hemlig kod",
+		"TFA_QR_INSTRUCTIONS": "Importera denna information till din Google Authenticator klient (eller annan TOTP klient) med denna QR kod eller manuellt med koden här nedan.",
+		"TFA_RECOVERY_CODES": "Backupkoder",
+		"TFA_RECOVERY_CODES_WARNING": "Om du inte kan ta emot koderna med Google Authenticator, så använd backupkoderna för att logga in. När du använt backupkoderna för att logga in så blir dom inaktiva.",
+		"TFA_CODE_LABEL": "Kod",
+		"TFA_ENABLE": "Aktivera",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Aldrig"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Adressboks-URL",
 		"LABEL_CONTACTS_SYNC_USER": "Användare",
 		"SYNC_READ": "Read only"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Teman",
-		"LABEL_BACKGROUND": "Bakgrund",
-		"LABEL_FONTS": "Fonts",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Ladda upp bakgrundsbild (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Filen är för stor",
-		"ERROR_FILE_TYPE_ERROR": "Ogiltig fil typ (endast JPG och PNG)",
-		"ERROR_UNKNOWN": "Okänt uppladdingsfel"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Mapplista",

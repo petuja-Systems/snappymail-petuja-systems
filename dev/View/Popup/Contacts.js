@@ -284,7 +284,7 @@ export class ContactsPopupView extends AbstractViewPopup {
 		const self = this;
 
 		dom.addEventListener('click', event => {
-			let el = event.target.closestWithin('.e-paginator a', dom);
+			let el = event.target.closestWithin('.e-paginator button', dom);
 			if (el && (el = pInt(ko.dataFor(el)?.value))) {
 				self.contactsPage(el);
 				self.reloadContactList();
@@ -296,6 +296,7 @@ export class ContactsPopupView extends AbstractViewPopup {
 		if (this.importButton()) {
 			const j = new Jua({
 				action: serverRequest('UploadContacts'),
+				headers: () => ({ 'X-SM-Token': rl.settings.app('token') }),
 				limit: 1,
 				clickElement: this.importButton()
 			});

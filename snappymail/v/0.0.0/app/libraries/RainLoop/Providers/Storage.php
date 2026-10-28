@@ -59,6 +59,78 @@ class Storage extends \RainLoop\Providers\AbstractProvider
 	}
 
 	/**
+	 * Read an exact record for security-sensitive revocation decisions.
+	 * Legacy drivers can establish presence through Get(), but cannot establish
+	 * absence because IStorage::Get() also returns false for some I/O failures.
+	 *
+	 * @param \RainLoop\Model\Account|string|null $mAccount
+	 * @param mixed $mValue
+	 */
+	public function Inspect($mAccount, int $iStorageType, string $sKey, &$mValue) : ?bool
+	{
+		if (!$this->verifyAccount($mAccount, $iStorageType)) {
+			$mValue = false;
+			return null;
+		}
+
+		if ($this->oDriver instanceof \RainLoop\Providers\Storage\IRevocationStorage) {
+			return $this->oDriver->Inspect($mAccount, $iStorageType, $sKey, $mValue);
+		}
+
+		$mValue = $this->oDriver->Get($mAccount, $iStorageType, $sKey);
+		return \is_string($mValue) ? true : null;
+	}
+
+	/**
+	 * Remove an exact record. A legacy Clear(false) is unresolved, not evidence
+	 * that the record was already absent.
+	 *
+	 * @param \RainLoop\Model\Account|string|null $mAccount
+	 */
+	public function Revoke($mAccount, int $iStorageType, string $sKey) : ?bool
+	{
+		if (!$this->verifyAccount($mAccount, $iStorageType)) {
+			return null;
+		}
+
+		if ($this->oDriver instanceof \RainLoop\Providers\Storage\IRevocationStorage) {
+			return $this->oDriver->Revoke($mAccount, $iStorageType, $sKey);
+		}
+
+		return $this->oDriver->Clear($mAccount, $iStorageType, $sKey) ? true : null;
+	}
+
+	/**
+	 * Locking is an optional storage capability. Callers that require it must
+	 * fail closed when an installed driver does not provide this interface.
+	 *
+	 * @param \RainLoop\Model\Account|string|null $mAccount
+	 * @return mixed
+	 */
+	public function AcquireLock($mAccount, int $iStorageType, string $sKey)
+	{
+		return $this->verifyAccount($mAccount, $iStorageType)
+			&& $this->oDriver instanceof \RainLoop\Providers\Storage\ILockingStorage
+			? $this->oDriver->AcquireLock($mAccount, $iStorageType, $sKey)
+			: false;
+	}
+
+	public function SupportsLocking() : bool
+	{
+		return $this->oDriver instanceof \RainLoop\Providers\Storage\ILockingStorage;
+	}
+
+	/**
+	 * @param mixed $mLock
+	 */
+	public function ReleaseLock($mLock) : void
+	{
+		if ($this->oDriver instanceof \RainLoop\Providers\Storage\ILockingStorage) {
+			$this->oDriver->ReleaseLock($mLock);
+		}
+	}
+
+	/**
 	 * @param \RainLoop\Model\Account|string $mAccount
 	 */
 	public function DeleteStorage($mAccount) : bool

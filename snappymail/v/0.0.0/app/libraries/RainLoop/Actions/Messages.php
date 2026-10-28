@@ -113,8 +113,6 @@ trait Messages
 
 		$oMessage = $this->buildMessage($oAccount, true);
 
-		$this->Plugins()->RunHook('filter.save-message', array($oMessage));
-
 		$mResult = false;
 		if ($oMessage) {
 			$rMessageStream = \MailSo\Base\ResourceRegistry::CreateMemoryResource();
@@ -176,8 +174,6 @@ trait Messages
 
 		$oMessage = $this->buildMessage($oAccount, false);
 
-		$this->Plugins()->RunHook('filter.send-message', array($oMessage));
-
 		$mResult = false;
 		try
 		{
@@ -189,7 +185,7 @@ trait Messages
 				);
 
 				if (false !== $iMessageStreamSize) {
-					$this->smtpSendMessage($oAccount, $oMessage, $rMessageStream, $iMessageStreamSize, true,
+					$this->smtpSendMessage($oAccount, $oMessage, $rMessageStream, $iMessageStreamSize,
 						!empty($this->GetActionParam('dsn', 0)),
 						!empty($this->GetActionParam('requireTLS', 0))
 					);
@@ -238,16 +234,6 @@ trait Messages
 						{
 							$this->logException($oException, \LOG_ERR);
 							throw new ClientException(Notifications::CantSaveMessage, $oException);
-						}
-
-						try
-						{
-							$this->Plugins()->RunHook('filter.send-message-stream',
-								array($oAccount, &$rAppendMessageStream, &$iAppendMessageStreamSize));
-						}
-						catch (\Throwable $oException)
-						{
-							$this->logException($oException, \LOG_ERR);
 						}
 
 						try
@@ -363,8 +349,6 @@ trait Messages
 
 		$oMessage = $this->buildReadReceiptMessage($oAccount);
 
-		$this->Plugins()->RunHook('filter.send-read-receipt-message', array($oMessage, $oAccount));
-
 		$mResult = false;
 		try
 		{
@@ -376,7 +360,7 @@ trait Messages
 				);
 
 				if (false !== $iMessageStreamSize) {
-					$this->smtpSendMessage($oAccount, $oMessage, $rMessageStream, $iMessageStreamSize, false);
+					$this->smtpSendMessage($oAccount, $oMessage, $rMessageStream, $iMessageStreamSize);
 
 					if (\is_resource($rMessageStream)) {
 						\fclose($rMessageStream);
@@ -577,7 +561,6 @@ trait Messages
 
 		$ETag = $oMessage->ETag($this->getAccountFromToken()->ImapUser());
 		$this->verifyCacheByKey($ETag);
-		$this->Plugins()->RunHook('filter.result-message', array($oMessage));
 		$this->cacheByKey($ETag);
 		return $this->DefaultResponse($oMessage);
 	}
@@ -764,18 +747,13 @@ trait Messages
 	 * @throws \MailSo\Net\Exceptions\ConnectionException
 	 */
 	private function smtpSendMessage(Account $oAccount, \MailSo\Mime\Message $oMessage,
-		/*resource*/ &$rMessageStream, int &$iMessageStreamSize, bool $bAddHiddenRcpt = true,
-		bool $bDsn = false, bool $bRequireTLS = false)
+		/*resource*/ &$rMessageStream, int &$iMessageStreamSize, bool $bDsn = false,
+		bool $bRequireTLS = false)
 	{
 		$oRcpt = $oMessage->GetRcpt();
 		if (!$oRcpt || !$oRcpt->count()) {
 			throw new ClientException(Notifications::InvalidRecipients);
 		}
-
-		$this->Plugins()->RunHook('filter.smtp-message-stream',
-			array($oAccount, &$rMessageStream, &$iMessageStreamSize));
-
-		$this->Plugins()->RunHook('filter.message-rcpt', array($oAccount, $oRcpt));
 
 		$oSmtpClient = null;
 		try
@@ -784,17 +762,10 @@ trait Messages
 			$sFrom = $oFrom instanceof \MailSo\Mime\Email ? $oFrom->GetEmail() : '';
 			$sFrom = empty($sFrom) ? $oAccount->Email() : $sFrom;
 
-			$this->Plugins()->RunHook('filter.smtp-from', array($oAccount, $oMessage, &$sFrom));
-
-			$aHiddenRcpt = array();
-			if ($bAddHiddenRcpt) {
-				$this->Plugins()->RunHook('filter.smtp-hidden-rcpt', array($oAccount, $oMessage, &$aHiddenRcpt));
-			}
-
 			$oSmtpClient = new \MailSo\Smtp\SmtpClient();
 			$oSmtpClient->SetLogger($this->Logger());
 
-			$oAccount->SmtpConnectAndLogin($this->Plugins(), $oSmtpClient);
+			$oAccount->SmtpConnectAndLogin($oSmtpClient);
 
 			if ($oSmtpClient->Settings->usePhpMail) {
 				if (!$sFrom || !\MailSo\Base\Utils::FunctionCallable('mail')) {
@@ -844,14 +815,6 @@ trait Messages
 
 				foreach ($oRcpt as /* @var $oEmail \MailSo\Mime\Email */ $oEmail) {
 					$oSmtpClient->Rcpt($oEmail->GetEmail(), $bDsn);
-				}
-
-				if ($bAddHiddenRcpt && \is_array($aHiddenRcpt) && \count($aHiddenRcpt)) {
-					foreach ($aHiddenRcpt as $sEmail) {
-						if (\preg_match('/^[^@\s]+@[^@\s]+$/', $sEmail)) {
-							$oSmtpClient->Rcpt($sEmail);
-						}
-					}
 				}
 
 				$oSmtpClient->DataWithStream($rMessageStream);
@@ -952,8 +915,6 @@ trait Messages
 			$oMessage->SetTo($oToEmails);
 		}
 
-		$this->Plugins()->RunHook('filter.read-receipt-message-plain', array($oAccount, $oMessage, &$sText));
-
 		$oPart = new MimePart;
 		$oPart->Headers->AddByName(MimeEnumHeader::CONTENT_TYPE, 'text/plain; charset="utf-8"');
 		$oPart->Headers->AddByName(MimeEnumHeader::CONTENT_TRANSFER_ENCODING, 'quoted-printable');
@@ -962,8 +923,6 @@ trait Messages
 			'convert.quoted-printable-encode'
 		);
 		$oMessage->SubParts->append($oPart);
-
-		$this->Plugins()->RunHook('filter.build-read-receipt-message', array($oMessage, $oAccount));
 
 		return $oMessage;
 	}
@@ -1075,11 +1034,8 @@ trait Messages
 				$sHtml = \str_replace('</head>', '<script type="application/ld+json">'.\json_encode($aLinkedData).'</script></head>', $sHtml);
 			}
 
-			$this->Plugins()->RunHook('filter.message-html', array($oAccount, $oMessage, &$sHtml));
-
 			// First add plain
 			$sPlain = $this->GetActionParam('plain', '') ?: \MailSo\Base\HtmlUtils::ConvertHtmlToPlain($sHtml);
-			$this->Plugins()->RunHook('filter.message-plain', array($oAccount, $oMessage, &$sPlain));
 			$oPart->addPlain($sPlain);
 			unset($sPlain);
 
@@ -1122,7 +1078,6 @@ trait Messages
 				unset($sSignature);
 			} else {
 */
-			$this->Plugins()->RunHook('filter.message-plain', array($oAccount, $oMessage, &$sPlain));
 			$oMessage->addPlain($sPlain);
 			unset($sPlain);
 		}
@@ -1357,6 +1312,9 @@ trait Messages
 		} else {
 			$aCertificates = $this->GetActionParam('encryptCertificates', []);
 			if ($aCertificates) {
+				if (!\is_array($aCertificates)) {
+					throw new \RuntimeException('S/MIME recipient certificate unavailable');
+				}
 				$oBody = $oMessage->GetRootPart();
 
 				$resource = $oBody->ToStream();
@@ -1370,17 +1328,20 @@ trait Messages
 				$oMessage->Attachments()->Clear();
 
 				$SMIME = $this->SMIME();
-				$certificates = $SMIME->certificates();
+				$certificates = \array_column($SMIME->certificates(), 'file', 'id');
 				// Load certificates by id
 				foreach ($aCertificates as &$sCertificate) {
+					if (!\is_string($sCertificate)) {
+						throw new \RuntimeException('S/MIME recipient certificate unavailable');
+					}
 					if (!\str_contains($sCertificate, '-----BEGIN CERTIFICATE-----')) {
-						foreach ($certificates as $certificate) {
-							if ($certificate['id'] === $sCertificate) {
-								$sCertificate = $SMIME->getCertificate($certificate['file']);
-							}
+						if (!isset($certificates[$sCertificate])) {
+							throw new \RuntimeException('S/MIME recipient certificate unavailable');
 						}
+						$sCertificate = $SMIME->getCertificate($certificates[$sCertificate]);
 					}
 				}
+				unset($sCertificate);
 				$sEncrypted = $SMIME->encrypt($tmp, $aCertificates);
 
 				$oPart = new MimePart;
@@ -1393,9 +1354,6 @@ trait Messages
 				$oPart->Body = $sEncrypted;
 			}
 		}
-
-		$this->Plugins()->RunHook('filter.build-message', array($oMessage));
-
 		return $oMessage;
 	}
 }

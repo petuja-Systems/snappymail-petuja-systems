@@ -6,6 +6,8 @@ class Application extends \RainLoop\Config\AbstractConfig
 {
 	private ?array $aReplaceEnv = null;
 
+	private const TWO_FACTOR_POLICY_MIGRATION_VERSION = 1;
+
 	public function __construct()
 	{
 		parent::__construct('application.ini',
@@ -16,7 +18,15 @@ class Application extends \RainLoop\Config\AbstractConfig
 
 	public function Load() : bool
 	{
+		$aPersistedConfig = $this->readPersistedConfig();
 		$bResult = parent::Load();
+		$aLegacyPlugins = \is_array($aPersistedConfig['plugins'] ?? null) ? $aPersistedConfig['plugins'] : [];
+		foreach (array('enable', 'enabled_list') as $sKey) {
+			if (\array_key_exists($sKey, $aLegacyPlugins)) {
+				$this->PreserveForSave('plugins', $sKey, $aLegacyPlugins[$sKey]);
+			}
+		}
+		$this->migrateTwoFactorPolicy($aPersistedConfig);
 
 		$max = \floatval($this->Get('security', 'max_sys_getloadavg', 0));
 		if ($max && \is_callable('sys_getloadavg')) {
@@ -62,6 +72,168 @@ class Application extends \RainLoop\Config\AbstractConfig
 		}
 
 		return $bResult;
+	}
+
+	/**
+	 * Return the pre-load application values so a first-run Save() cannot make
+	 * default values look like an operator's explicit configuration.
+	 */
+	private function readPersistedConfig() : ?array
+	{
+		$aResult = [];
+		$aFiles = [APP_PRIVATE_DATA.'configs/application.ini'];
+		if (defined('APP_CONFIGURATION_NAME') && APP_CONFIGURATION_NAME) {
+			$aFiles[] = APP_PRIVATE_DATA.'configs/'.APP_CONFIGURATION_NAME;
+		}
+
+		foreach (\array_unique($aFiles) as $sFile) {
+			if (!\file_exists($sFile)) {
+				continue;
+			}
+			if (!\is_readable($sFile)) {
+				return null;
+			}
+
+			$sContents = @\file_get_contents($sFile);
+			if (!\is_string($sContents)) {
+				return null;
+			}
+			$aData = \str_ends_with($sFile, '.json')
+				? \json_decode($sContents, true)
+				: @\parse_ini_file($sFile, true, INI_SCANNER_TYPED);
+			if (!\is_array($aData)) {
+				return null;
+			}
+			$aResult = \array_replace_recursive($aResult, $aData);
+		}
+
+		return $aResult;
+	}
+
+	private function migrateTwoFactorPolicy(?array $aPersistedConfig) : void
+	{
+		$aVersion = \is_array($aPersistedConfig['version'] ?? null) ? $aPersistedConfig['version'] : [];
+		$aSecurity = \is_array($aPersistedConfig['security'] ?? null) ? $aPersistedConfig['security'] : [];
+		$bMalformedConfigSection = \is_array($aPersistedConfig)
+			&& ((\array_key_exists('version', $aPersistedConfig) && !\is_array($aPersistedConfig['version']))
+				|| (\array_key_exists('security', $aPersistedConfig) && !\is_array($aPersistedConfig['security'])));
+		$bHasMarker = \is_array($aPersistedConfig)
+			&& \array_key_exists('two_factor_policy_migration', $aVersion);
+		$mMarker = $bHasMarker ? $aVersion['two_factor_policy_migration'] : null;
+		$iMarker = $bHasMarker
+			? \filter_var($mMarker, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]])
+			: null;
+		$iMarkerToWrite = self::TWO_FACTOR_POLICY_MIGRATION_VERSION;
+		$bMalformedMarkedNativeValue = false;
+
+		// Once a valid migration marker and native value exist, normal requests
+		// must not rewrite application.ini. Preserve a newer marker if this code
+		// is ever run against a configuration written by a later release.
+		if (false !== $iMarker && null !== $iMarker && self::TWO_FACTOR_POLICY_MIGRATION_VERSION <= $iMarker) {
+			$mNativeValue = $aSecurity['require_two_factor_auth'] ?? null;
+			$bRequired = self::parseBoolean($mNativeValue);
+			if (null !== $bRequired) {
+				$this->Set('security', 'require_two_factor_auth', $bRequired);
+				return;
+			}
+			$iMarkerToWrite = $iMarker;
+			$bMalformedMarkedNativeValue = true;
+		}
+
+		if (null === $aPersistedConfig) {
+			$bRequired = true;
+		} else if ($bMalformedConfigSection) {
+			$bRequired = true;
+		} else if ($bMalformedMarkedNativeValue) {
+			$bRequired = true;
+		} else if ($bHasMarker && (false === $iMarker || null === $iMarker)) {
+			$bRequired = true;
+		} else if ($bHasMarker) {
+			$bRequired = $this->legacyTwoFactorPolicy();
+		} else if (\array_key_exists('require_two_factor_auth', $aSecurity)) {
+			$bRequired = self::parseBoolean($aSecurity['require_two_factor_auth']) ?? true;
+		} else {
+			$bRequired = $this->legacyTwoFactorPolicy();
+		}
+
+		$this->Set('security', 'require_two_factor_auth', $bRequired);
+		$this->Set('version', 'two_factor_policy_migration', $iMarkerToWrite);
+		if (!$this->Save()) {
+			\SnappyMail\Log::warning('CONFIG', 'Unable to persist native two-factor policy migration');
+		}
+	}
+
+	private function legacyTwoFactorPolicy() : bool
+	{
+		$sJsonFile = APP_PRIVATE_DATA.'configs/plugin-two-factor-auth.json';
+		$sFile = \file_exists($sJsonFile)
+			? $sJsonFile
+			: APP_PRIVATE_DATA.'configs/plugin-two-factor-auth.ini';
+		if (!\file_exists($sFile)) {
+			return false;
+		}
+		if (!\is_readable($sFile)) {
+			\SnappyMail\Log::warning('CONFIG', 'Unreadable legacy two-factor policy; forcing policy on');
+			return true;
+		}
+
+		$sContents = @\file_get_contents($sFile);
+		$aData = \is_string($sContents)
+			? (\str_ends_with($sFile, '.json')
+				? \json_decode($sContents, true)
+				: @\parse_ini_file($sFile, true, INI_SCANNER_TYPED))
+			: null;
+		if (!\is_array($aData)) {
+			\SnappyMail\Log::warning('CONFIG', 'Malformed legacy two-factor policy; forcing policy on');
+			return true;
+		}
+		if (!\array_key_exists('plugin', $aData)) {
+			return false;
+		}
+		if (!\is_array($aData['plugin'])) {
+			\SnappyMail\Log::warning('CONFIG', 'Malformed legacy two-factor policy; forcing policy on');
+			return true;
+		}
+		if (!\array_key_exists('force_two_factor_auth', $aData['plugin'])) {
+			return false;
+		}
+
+		$bRequired = self::parseBoolean($aData['plugin']['force_two_factor_auth']);
+		if (null === $bRequired) {
+			\SnappyMail\Log::warning('CONFIG', 'Malformed legacy two-factor policy; forcing policy on');
+			return true;
+		}
+
+		return $bRequired;
+	}
+
+	public static function parseBoolean($mValue) : ?bool
+	{
+		if (\is_bool($mValue)) {
+			return $mValue;
+		}
+		if (\is_int($mValue) && (0 === $mValue || 1 === $mValue)) {
+			return 1 === $mValue;
+		}
+		if (\is_string($mValue)) {
+			switch (\strtolower(\trim($mValue))) {
+				case '1':
+				case 'true':
+				case 'on':
+					return true;
+				case '0':
+				case 'false':
+				case 'off':
+					return false;
+			}
+		}
+		return null;
+	}
+
+	public function SetTwoFactorRequired(bool $bRequired) : void
+	{
+		$this->Set('security', 'require_two_factor_auth', $bRequired);
+		$this->Set('version', 'two_factor_policy_migration', self::TWO_FACTOR_POLICY_MIGRATION_VERSION);
 	}
 
 	/**
@@ -176,14 +348,11 @@ class Application extends \RainLoop\Config\AbstractConfig
 
 			'webmail' => array(
 
-				'title'                       => array('SnappyMail Webmail', 'Text displayed as page title'),
-				'loading_description'         => array('SnappyMail', 'Text displayed on startup'),
+				'title'                       => array('petuja.email', 'Text displayed as page title'),
+				'loading_description'         => array('petuja.email', 'Text displayed on startup'),
 				'favicon_url'                 => array(''),
 				'app_path'                    => array(''),
-
-				'theme'                       => array('Default', 'Theme used by default'),
-				'allow_themes'                => array(true, 'Allow theme selection on settings screen'),
-				'allow_user_background'       => array(false),
+				'theme'                       => array('Default', 'Legacy default used only to seed native Appearance'),
 
 				'language'                    => array('en', 'Language used by default'),
 				'allow_languages_on_settings' => array(true, 'Allow language selection on settings screen'),
@@ -193,7 +362,7 @@ class Application extends \RainLoop\Config\AbstractConfig
 				'popup_identity' => array(true, 'When identity is not set yet, open identity popup after login'),
 
 				'messages_per_page'           => array(20, 'Number of messages displayed on page by default'),
-				'message_read_delay'          => array(5, 'Mark message read after N seconds'),
+				'message_read_delay'          => array(2, 'Mark message read after N seconds'),
 
 				'min_refresh_interval'        => array(5, 'Minimal check for new messages interval in minutes'),
 
@@ -211,6 +380,7 @@ Warning: only enable when server does not do this, else double compression error
 			'contacts' => array(
 				'enable'            => array(false, 'Enable contacts'),
 				'allow_sync'        => array(false),
+				'dav_allowed_origins' => array('', 'Comma-separated exact HTTP(S) CardDAV origins approved by the operator; empty disables sync destinations'),
 				'sync_interval'     => array(20),
 				'type'              => array('sqlite'),
 				'pdo_dsn'           => array('host=127.0.0.1;port=3306;dbname=snappymail'),
@@ -226,6 +396,7 @@ Warning: only enable when server does not do this, else double compression error
 			'security' => array(
 				'custom_server_signature' => array('SnappyMail'),
 				'x_xss_protection_header' => array('1; mode=block'),
+				'require_two_factor_auth' => array(false, 'Require users to enroll in and verify two-step authentication'),
 
 				'gnupg'                   => array(true),
 				'openpgp'                 => array(true),
@@ -268,8 +439,6 @@ Default is "site=same-origin;site=none"')
 			),
 
 			'ssl' => array(
-				'verify_certificate'  => array(true, 'Require verification of SSL certificate used.'),
-				'allow_self_signed'   => array(false, 'Allow self-signed certificates. Requires verify_certificate.'),
 				'security_level'      => array(1, 'https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_security_level.html'),
 				'cafile'              => array('', 'Location of Certificate Authority file on local filesystem (/etc/ssl/certs/ca-certificates.crt)'),
 				'capath'              => array('', 'capath must be a correctly hashed certificate directory. (/etc/ssl/certs/)'),
@@ -307,11 +476,6 @@ Values:
   "Unused"     - cannot be used'),
 
 				'fault_delay' => array(5, 'When login fails, wait N seconds before responding'),
-			),
-
-			'plugins' => array(
-				'enable'       => array(false, 'Enable plugin support'),
-				'enabled_list' => array('', 'Comma-separated list of enabled plugins'),
 			),
 
 			'defaults' => array(
@@ -443,7 +607,6 @@ Enables caching in the system'),
 				'curl_proxy_auth' => array(''),
 				'custom_login_link' => array(''),
 				'custom_logout_link' => array(''),
-				'http_client_ip_check_proxy' => array(false),
 				'use_local_proxy_for_external_images' => array(true),
 				'image_exif_auto_rotate' => array(false),
 				'cookie_default_path' => array(''),
@@ -456,7 +619,8 @@ Enables caching in the system'),
 
 			'version' => array(
 				'current' => array(''),
-				'saved' => array('')
+				'saved' => array(''),
+				'two_factor_policy_migration' => array(0)
 			)
 		);
 	}

@@ -18,11 +18,14 @@ trait Contacts
 			try {
 //				if ($this->oConfig->Get('contacts', 'enable', false)) {
 				if ($this->GetCapa(Capa::CONTACTS)) {
-					$oDriver = $this->fabrica('address-book', $oAccount);
+					$oDriver = $this->fabrica('address-book');
 				}
 				if ($oAccount && $oDriver) {
 					$oDriver->SetEmail($this->GetMainEmail($oAccount));
-					$oDriver->setDAVClientConfig($this->getContactsSyncData($oAccount));
+					if ($this->contactsSyncAllowed()) {
+						$oDriver->setDAVClientConfig($this->getContactsSyncData($oAccount),
+							$this->Config()->Get('contacts', 'dav_allowed_origins', ''));
+					}
 				}
 			} catch (\Throwable $e) {
 				\SnappyMail\LOG::error('AddressBook', $e->getMessage()."\n".$e->getTraceAsString());
@@ -39,23 +42,31 @@ trait Contacts
 	public function DoSaveContactsSyncData() : array
 	{
 		$oAccount = $this->getAccountFromToken();
+		if (!$this->contactsSyncAllowed()) {
+			return $this->FalseResponse();
+		}
 
+		$iMode = \intval($this->GetActionParam('Mode', '0'));
+		$sUrl = $this->GetActionParam('Url', '');
+		if ($iMode && '' !== $sUrl && !\RainLoop\Providers\AddressBook\DavOriginPolicy::allows(
+			$sUrl, $this->Config()->Get('contacts', 'dav_allowed_origins', ''))) {
+			return $this->FalseResponse();
+		}
 		$oAddressBookProvider = $this->AddressBookProvider($oAccount);
 		if (!$oAddressBookProvider || !$oAddressBookProvider->IsActive()) {
 			return $this->FalseResponse();
 		}
 
 		$sPassword = $this->GetActionParam('Password', '');
-
 		$mData = $this->getContactsSyncData($oAccount);
 
 		$bResult = $this->setContactsSyncData($oAccount, array(
-			'Mode' => \intval($this->GetActionParam('Mode', '0')),
+			'Mode' => $iMode,
 			'User' => $this->GetActionParam('User', ''),
 			'Password' => static::APP_DUMMY === $sPassword
 				? (isset($mData['Password']) ? $mData['Password'] : '')
 				: $sPassword,
-			'Url' => $this->GetActionParam('Url', '')
+			'Url' => $sUrl
 		));
 
 		return $this->DefaultResponse($bResult);
@@ -64,6 +75,13 @@ trait Contacts
 	public function DoContactsSync() : array
 	{
 		$oAccount = $this->getAccountFromToken();
+		if (!$this->contactsSyncAllowed()) {
+			throw new \RainLoop\Exceptions\ClientException(
+				\RainLoop\Notifications::ContactsSyncError,
+				null,
+				'Contacts synchronization is disabled'
+			);
+		}
 		$oAddressBookProvider = $this->AddressBookProvider($oAccount);
 		if (!$oAddressBookProvider) {
 			throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'No AddressBookProvider');
@@ -75,6 +93,11 @@ trait Contacts
 			throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::ContactsSyncError, null, 'AddressBookProvider->Sync() failed');
 		}
 		return $this->TrueResponse();
+	}
+
+	protected function contactsSyncAllowed() : bool
+	{
+		return (bool) $this->Config()->Get('contacts', 'allow_sync', false);
 	}
 
 	public function DoContacts() : array
@@ -200,6 +223,10 @@ trait Contacts
 
 	public function setContactsSyncData(\RainLoop\Model\Account $oAccount, array $aData) : bool
 	{
+		if (!$this->contactsSyncAllowed()) {
+			return false;
+		}
+
 		if (!isset($aData['Mode'])) {
 			$aData['Mode'] = empty($aData['Enable']) ? 0 : 1;
 		}
@@ -219,6 +246,10 @@ trait Contacts
 
 	protected function getContactsSyncData(\RainLoop\Model\Account $oAccount) : ?array
 	{
+		if (!$this->contactsSyncAllowed()) {
+			return null;
+		}
+
 //		$oAccount = $this->getAccountFromToken();
 		$sData = $this->StorageProvider()->Get($oAccount,
 			\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,

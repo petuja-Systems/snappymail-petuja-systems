@@ -148,7 +148,6 @@ if (!navigator.cookieEnabled) {
 			cb = () => rl.app.bootstart();
 		loadScript(url)
 			.then(() => loadScript(url.replace('/libs.', `/${admin?'admin':'app'}.`)))
-			.then(() => appData.PluginsLink ? loadScript(qUri(appData.PluginsLink)) : Promise.resolve())
 			.then(() => rl.app
 				? cb()
 				: doc.addEventListener('readystatechange', () => 'complete' == doc.readyState && cb())

@@ -8,27 +8,11 @@ class SieveStorage implements FiltersInterface
 
 	const SIEVE_FILE_NAME = 'rainloop.user';
 
-	/**
-	 * @var \RainLoop\Plugins\Manager
-	 */
-	private $oPlugins;
-
-	/**
-	 * @var \RainLoop\Config\Application
-	 */
-	private $oConfig;
-
-	public function __construct($oPlugins, $oConfig)
-	{
-		$this->oPlugins = $oPlugins;
-		$this->oConfig = $oConfig;
-	}
-
 	protected function getConnection(\RainLoop\Model\Account $oAccount) : ?\MailSo\Sieve\SieveClient
 	{
 		$oSieveClient = new \MailSo\Sieve\SieveClient();
 		$oSieveClient->SetLogger($this->oLogger);
-		return $oAccount->SieveConnectAndLogin($this->oPlugins, $oSieveClient, $this->oConfig)
+		return $oAccount->SieveConnectAndLogin($oSieveClient)
 			 ? $oSieveClient
 			 : null;
 	}

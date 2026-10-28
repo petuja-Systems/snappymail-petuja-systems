@@ -46,7 +46,11 @@ class AdditionalAccount extends Account
 	{
 		$aAccountHash = static::convertArray($aAccountHash);
 		if (!empty($aAccountHash['email'])) {
-			$sHash = $oActions->getMainAccountFromToken()->CryptKey();
+			$oMainAccount = $oActions->getMainAccountFromToken($bThrowExceptionOnFalse);
+			if (!$oMainAccount) {
+				return null;
+			}
+			$sHash = $oMainAccount->CryptKey();
 			// hmac only set when asTokenArray() was used
 			$sPasswordHMAC = $aAccountHash['hmac'] ?? null;
 			if ($sPasswordHMAC) {
@@ -62,7 +66,14 @@ class AdditionalAccount extends Account
 					}
 				}
 			}
-			return parent::NewInstanceFromTokenArray($oActions, $aAccountHash, $bThrowExceptionOnFalse);
+			$oAccount = parent::NewInstanceFromTokenArray($oActions, $aAccountHash, $bThrowExceptionOnFalse);
+			if ($oAccount && !$oActions->AdditionalAccountFactorAllowed($oAccount->Email())) {
+				if ($bThrowExceptionOnFalse) {
+					throw new ClientException(Notifications::AuthError);
+				}
+				return null;
+			}
+			return $oAccount;
 		}
 		return null;
 	}

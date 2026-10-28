@@ -39,7 +39,10 @@ export const
 		event.stopPropagation();
 	},
 
-	formFieldFocused = () => doc.activeElement?.matches('input,textarea'),
+	formFieldFocused = () => doc.activeElement?.matches(
+		'input,textarea,select,button,a[href],[contenteditable]:not([contenteditable="false"]),'
+		+ '[role="button"],[role="menuitem"],[role="menuitemcheckbox"],[role="checkbox"]'
+	),
 
 	addShortcut = (...args) => shortcuts.add(...args),
 

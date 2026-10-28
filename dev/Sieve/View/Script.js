@@ -2,6 +2,7 @@ import { FilterModel } from 'Sieve/Model/Filter';
 import { SieveScriptModel } from 'Sieve/Model/Script';
 
 import { FilterPopupView } from 'Sieve/View/Filter';
+import { AbstractViewPopup } from 'Knoin/AbstractViews';
 
 import { parseScript } from 'Sieve/Parser';
 
@@ -14,7 +15,7 @@ import {
 	Remote
 } from 'Sieve/Utils';
 
-export class SieveScriptPopupView extends rl.pluginPopupView {
+export class SieveScriptPopupView extends AbstractViewPopup {
 	constructor() {
 		super('SieveScript');
 

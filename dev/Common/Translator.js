@@ -5,6 +5,8 @@ import { doc, createElement } from 'Common/Globals';
 import { getKeyByValue, forEachObjectEntry } from 'Common/Utils';
 import { pInt } from 'Common/Utils';
 import { LanguageStore } from 'Stores/Language';
+import { interpolateHtml } from 'Common/HtmlEncoding';
+import { relativeTimeFallback } from 'Common/RelativeTime';
 
 let I18N_DATA = {};
 
@@ -47,11 +49,8 @@ export const
 		if (Intl.RelativeTimeFormat) {
 			return (new Intl.RelativeTimeFormat(doc.documentElement.lang)).format(seconds, unit);
 		}
-		// Safari < 14
-		abs = Math.abs(seconds);
-		let rtf = rl.relativeTime.long[unit][0 > seconds ? 'past' : 'future'],
-			plural = rl.relativeTime.plural(abs);
-		return (rtf[plural] || rtf).replace('{0}', abs);
+		// Safari < 14; catalogs may use the nested or flat relative-time format.
+		return relativeTimeFallback(rl.relativeTime, seconds, unit);
 	},
 
 	/**
@@ -73,6 +72,16 @@ export const
 	},
 
 	/**
+	 * Interpolates raw text values into trusted HTML translation markup.
+	 * @param {string} key
+	 * @param {Object=} valueList
+	 * @param {string=} defaultValue
+	 * @returns {string}
+	 */
+	i18nHtml = (key, valueList, defaultValue) =>
+		interpolateHtml(i18n(key, null, defaultValue), valueList),
+
+	/**
 	 * @param {Object} elements
 	 * @param {boolean=} animate = false
 	 */
@@ -85,6 +94,12 @@ export const
 						case 'html]':
 							element.innerHTML = i18n(key.slice(6));
 							break;
+						case 'aria-': {
+							const label = i18n(key.slice(12));
+							element.setAttribute('aria-label', label);
+							element.title = label;
+							break;
+						}
 						case 'place':
 							element.placeholder = i18n(key.slice(13));
 							break;

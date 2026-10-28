@@ -17,12 +17,18 @@ class Cookies
 			$oConfig = \RainLoop\Api::Config();
 			static::$DefaultPath = $oConfig->Get('labs', 'cookie_default_path', '');
 			static::$SameSite = $oConfig->Get('security', 'cookie_samesite', 'Strict');
-			static::$Secure = isset($_SERVER['HTTPS'])
-				|| 'None' == static::$SameSite
+			static::$Secure = \MailSo\Base\Http::SingletonInstance()->IsSecure()
+				|| 'none' === \strtolower(static::$SameSite)
 				|| !!$oConfig->Get('labs', 'cookie_default_secure', false);
 			$bOne = true;
 		}
 		return $bOne;
+	}
+
+	public static function isSecure() : bool
+	{
+		static::init();
+		return static::$Secure;
 	}
 
 	public static function get(string $sName) : ?string

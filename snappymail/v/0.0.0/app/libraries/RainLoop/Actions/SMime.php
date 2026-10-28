@@ -19,7 +19,8 @@ trait SMime
 
 			$homedir = \rtrim($this->StorageProvider()->GenerateFilePath(
 				$oAccount,
-				\RainLoop\Providers\Storage\Enumerations\StorageType::ROOT
+				\RainLoop\Providers\Storage\Enumerations\StorageType::ROOT,
+				true
 			), '/') . '/.smime';
 
 			\MailSo\Base\Utils::mkdir($homedir);
@@ -122,8 +123,11 @@ trait SMime
 			  || \preg_match('/smime-type=["\']?signed-data/', $result['data'])
 			) {
 				$signed = $SMIME->verify($result['data'], null, true);
+				if (!\is_array($signed) || true !== ($signed['success'] ?? null)) {
+					return $this->DefaultResponse(false);
+				}
 				$result['signed'] = [
-					'success' => !empty($signed['success'])
+					'success' => true
 				];
 				if (!empty($signed['body'])) {
 					$result['data'] = $signed['body'];
@@ -149,29 +153,11 @@ trait SMime
 		}
 
 		$result = $this->SMIME()->verify($sBody, null, !$bDetached);
-
-		// Import the certificates automatically
-		$sBody = $this->GetActionParam('sigPart', '');
-		$sPartId = $this->GetActionParam('sigPartId', '') ?: $sPartId;
-		if (!$sBody && $sPartId && $oImapClient) {
-			$sBody = $oImapClient->Fetch(
-				[FetchType::BODY_PEEK.'['.$sPartId.']'],
-				$iUid,
-				true
-			)[0]->GetFetchValue(FetchType::BODY.'['.$sPartId.']');
-		}
-		if ($sBody) {
-			$sBody = \trim($sBody);
-			$certificates = [];
-			\openssl_pkcs7_read(
-				"-----BEGIN PKCS7-----\n\n{$sBody}\n-----END PKCS7-----",
-				$certificates
-			) || $this->logWrite("openssl_pkcs7_read: " . \openssl_error_string(), \LOG_ERR, 'OpenSSL');
-			foreach ($certificates as $certificate) {
-				$this->SMIME()->storeCertificate($certificate);
-			}
+		if (!\is_array($result) || true !== ($result['success'] ?? null)) {
+			return $this->DefaultResponse(false);
 		}
 
+		// Signature integrity is not authority to trust a claimed email identity.
 		return $this->DefaultResponse($result);
 	}
 

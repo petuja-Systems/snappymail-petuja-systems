@@ -211,17 +211,26 @@ export class MailMessageList extends AbstractViewRight {
 				return list;
 			},
 
-			sortText: () => {
+			sortFieldIcon: () => {
 				let mode = FolderUserStore.sortMode(),
-					desc = '' === mode || mode.includes('REVERSE');
+					field;
 				mode = mode.split(/\s+/);
 				if (mode.includes('FROM')) {
-					 return '@' + (desc ? '⬆' : '⬇');
+					field = 'at-sign';
+				} else if (mode.includes('SUBJECT')) {
+					field = 'file-text';
+				} else if (mode.includes('SIZE')) {
+					field = 'mail';
+				} else {
+					field = 'calendar-days';
 				}
-				if (mode.includes('SUBJECT')) {
-					 return '𝐒' + (desc ? '⬆' : '⬇');
-				}
-				return (mode.includes('SIZE') ? '✉' : '📅') + (desc ? '⬇' : '⬆');
+				return field;
+			},
+
+			sortDirectionIcon: () => {
+				const mode = FolderUserStore.sortMode(),
+					desc = '' === mode || mode.includes('REVERSE');
+				return desc ? 'arrow-down' : 'arrow-up';
 			},
 
 			downloadAsZipAllowed: () => this.attachmentsActions.includes('zip')
@@ -451,6 +460,10 @@ export class MailMessageList extends AbstractViewRight {
 			let i = moveAction();
 			AppUserStore.focusedState(i ? ScopeMessageList : ScopeFolderList);
 			moveAction(i ? 0 : mode);
+			if (!i) {
+				const folderList = doc.getElementById('V-MailFolderList');
+				(folderList?.querySelector('li a.focused') || folderList?.querySelector('li a.selectable'))?.focus();
+			}
 		}
 	}
 
@@ -610,6 +623,7 @@ export class MailMessageList extends AbstractViewRight {
 		}, 1);
 
 		this.selector.init(b_content, ScopeMessageList);
+		dom.addEventListener('focusin', () => AppUserStore.focusedState(ScopeMessageList));
 
 		addEventsListeners(dom, {
 			click: event => {
@@ -620,9 +634,10 @@ export class MailMessageList extends AbstractViewRight {
 
 					if (eqs(event, '.messageList') && ScopeMessageView === AppUserStore.focusedState()) {
 						AppUserStore.focusedState(ScopeMessageList);
+						b_content.focus();
 					}
 
-					let el = eqs(event, '.e-paginator a');
+					let el = eqs(event, '.e-paginator button');
 					el && this.gotoPage(ko.dataFor(el)?.value);
 
 					eqs(event, '.checkboxCheckAll') && this.checkAll(!this.checkAll());
@@ -691,9 +706,12 @@ export class MailMessageList extends AbstractViewRight {
 		// initShortcuts
 
 		addShortcut('enter,open', '', ScopeMessageList, () => {
-			if (formFieldFocused()) {
+			if (doc.activeElement?.matches('.inputSearch')) {
 				MessagelistUserStore.mainSearch(sLastSearchValue);
 				return false;
+			}
+			if (formFieldFocused()) {
+				return;
 			}
 			if (MessageUserStore.message() && MessagelistUserStore.canSelect()) {
 				isFullscreen() || toggleFullscreen();
@@ -719,7 +737,7 @@ export class MailMessageList extends AbstractViewRight {
 		});
 
 		// check mail
-		addShortcut('r', 'meta', [ScopeFolderList, ScopeMessageList, ScopeMessageView], () => {
+		registerShortcut('r', 'meta', [ScopeFolderList, ScopeMessageList, ScopeMessageView], () => {
 			this.reload();
 			return false;
 		});
@@ -782,7 +800,7 @@ export class MailMessageList extends AbstractViewRight {
 
 		if (SettingsCapa('Search')) {
 			// search input focus
-			addShortcut('/', '', [ScopeMessageList, ScopeMessageView], () => {
+			registerShortcut('/', '', [ScopeMessageList, ScopeMessageView], () => {
 				this.focusSearch(true);
 				return false;
 			});
@@ -799,26 +817,28 @@ export class MailMessageList extends AbstractViewRight {
 			}
 		});
 
-		// change focused state
-		addShortcut('tab', 'shift', ScopeMessageList, () => {
+		// Arrow shortcuts deliberately move DOM focus with the mailbox shortcut scope.
+		const focusFolderList = () => {
 			AppUserStore.focusedState(ScopeFolderList);
+			const folderList = doc.getElementById('V-MailFolderList');
+			(folderList?.querySelector('li a.focused') || folderList?.querySelector('li a.selectable'))?.focus();
 			return false;
-		});
+		};
+
 		addShortcut('arrowleft', '', ScopeMessageList, () => {
-			AppUserStore.focusedState(ScopeFolderList);
-			return false;
+			return doc.activeElement?.matches('#V-MailMessageList .b-content') ? focusFolderList() : undefined;
 		});
-		addShortcut('tab,arrowright', '', ScopeMessageList, () => {
-			if (MessageUserStore.message()) {
+		addShortcut('arrowright', '', ScopeMessageList, () => {
+			if (doc.activeElement?.matches('#V-MailMessageList .b-content') && MessageUserStore.message()) {
 				AppUserStore.focusedState(ScopeMessageView);
 				return false;
 			}
 		});
 
-		addShortcut('arrowleft', 'meta', ScopeMessageView, ()=>false);
-		addShortcut('arrowright', 'meta', ScopeMessageView, ()=>false);
+		registerShortcut('arrowleft', 'meta', ScopeMessageView, ()=>false);
+		registerShortcut('arrowright', 'meta', ScopeMessageView, ()=>false);
 
-		addShortcut('f', 'meta', ScopeMessageList, this.advancedSearchClick);
+		registerShortcut('f', 'meta', ScopeMessageList, this.advancedSearchClick);
 	}
 
 	advancedSearchClick() {

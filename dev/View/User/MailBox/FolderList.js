@@ -1,7 +1,7 @@
 import ko from 'ko';
 
 import { ScopeFolderList, ScopeMessageList } from 'Common/Enums';
-import { addShortcut, leftPanelDisabled, stopEvent } from 'Common/Globals';
+import { addShortcut, doc, formFieldFocused, leftPanelDisabled, stopEvent } from 'Common/Globals';
 import { mailBox, settings } from 'Common/Links';
 //import { setFolderETag } from 'Common/Cache';
 import { addComputablesTo } from 'External/ko';
@@ -17,7 +17,6 @@ import { AbstractViewLeft } from 'Knoin/AbstractViews';
 
 import { showMessageComposer, moveAction } from 'Common/UtilsUser';
 import { FolderCreatePopupView } from 'View/Popup/FolderCreate';
-import { ContactsPopupView } from 'View/Popup/Contacts';
 import { ComposePopupView } from 'View/Popup/Compose';
 
 import { setExpandedFolder, foldersFilter } from 'Model/FolderCollection';
@@ -35,8 +34,6 @@ export class MailFolderList extends AbstractViewLeft {
 
 		this.moveAction = moveAction;
 
-		this.allowContacts = AppUserStore.allowContacts();
-
 		this.foldersFilter = foldersFilter;
 
 		this.filterUnseen = ko.observable(false);
@@ -53,9 +50,18 @@ export class MailFolderList extends AbstractViewLeft {
 
 	onBuild(dom) {
 		const qs = s => dom.querySelector(s),
-			eqs = (ev, s) => ev.target.closestWithin(s, dom);
+			eqs = (ev, s) => ev.target.closestWithin(s, dom),
+			folderItemFocused = () => doc.activeElement?.matches('#V-MailFolderList .b-content li a.selectable');
 
 		this.oContentScrollable = qs('.b-content');
+
+		dom.addEventListener('focusin', event => {
+			const item = event.target.closestWithin('li a.selectable', dom);
+			if (item) {
+				dom.querySelectorAll('li a.focused').forEach(node => node.classList.toggle('focused', node === item));
+			}
+			AppUserStore.focusedState(ScopeFolderList);
+		});
 
 		dom.addEventListener('click', event => {
 			let el = eqs(event, '.e-collapsed-sign');
@@ -108,13 +114,18 @@ export class MailFolderList extends AbstractViewLeft {
 					}
 
 					AppUserStore.focusedState(ScopeMessageList);
+					doc.querySelector('#V-MailMessageList .b-content')?.focus();
 				}
 			}
 		});
 
 		addShortcut('arrowup,arrowdown', '', ScopeFolderList, event => {
+			if (!folderItemFocused()) {
+				return;
+			}
+
 			let items = [], index = 0;
-			dom.querySelectorAll('li a').forEach(node => {
+			dom.querySelectorAll('li a.selectable').forEach(node => {
 				if (node.offsetHeight || node.getClientRects().length) {
 					items.push(node);
 					if (node.matches('.focused')) {
@@ -137,16 +148,20 @@ export class MailFolderList extends AbstractViewLeft {
 		});
 
 		addShortcut('enter,open', '', ScopeFolderList, () => {
-			const item = qs('li a.focused');
-			if (item) {
-				AppUserStore.focusedState(ScopeMessageList);
-				item.click();
+			if (!folderItemFocused()) {
+				return;
 			}
-
-			return false;
+			const item = qs('li a.focused') || (folderItemFocused() ? doc.activeElement : null);
+			if (item) {
+				item.click();
+				return false;
+			}
 		});
 
 		addShortcut('space', '', ScopeFolderList, () => {
+			if (!folderItemFocused()) {
+				return;
+			}
 			const item = qs('li a.focused'),
 				folder = item && ko.dataFor(item);
 			if (folder) {
@@ -158,12 +173,19 @@ export class MailFolderList extends AbstractViewLeft {
 			return false;
 		});
 
-//		addShortcut('tab', 'shift', ScopeFolderList, () => {
-		addShortcut('escape,tab,arrowright', '', ScopeFolderList, () => {
+		const focusMessageList = () => {
 			AppUserStore.focusedState(ScopeMessageList);
 			moveAction(0);
+			doc.querySelector('#V-MailMessageList .b-content')?.focus();
 			return false;
-		});
+		};
+
+		addShortcut('escape', '', ScopeFolderList, () =>
+			(!formFieldFocused() || folderItemFocused()) ? focusMessageList() : undefined
+		);
+		addShortcut('arrowright', '', ScopeFolderList, () =>
+			folderItemFocused() ? focusMessageList() : undefined
+		);
 	}
 
 	scrollToFocused() {
@@ -197,11 +219,5 @@ export class MailFolderList extends AbstractViewLeft {
 
 	configureFolders() {
 		hasher.setHash(settings('folders'));
-	}
-
-	contactsClick() {
-		if (this.allowContacts) {
-			showScreenPopup(ContactsPopupView);
-		}
 	}
 }

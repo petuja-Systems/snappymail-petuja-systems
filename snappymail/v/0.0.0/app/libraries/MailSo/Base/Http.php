@@ -101,12 +101,11 @@ class Http
 
 	public function IsSecure(bool $bCheckProxy = true) : bool
 	{
-		$sHttps = \strtolower(static::GetServer('HTTPS', ''));
-		return ('on' === $sHttps || ('' === $sHttps && '443' === (string) static::GetServer('SERVER_PORT', '')))
-		 || ($bCheckProxy && (
-			('https' === \strtolower(static::GetServer('HTTP_X_FORWARDED_PROTO', ''))) ||
-			('on' === \strtolower(static::GetServer('HTTP_X_FORWARDED_SSL', '')))
-		   ));
+		// Retain the proxy argument for API compatibility; trusted server metadata determines TLS.
+		$sHttps = static::GetServer('HTTPS');
+		$sRequestScheme = static::GetServer('REQUEST_SCHEME');
+		return (\is_string($sHttps) && \in_array(\strtolower($sHttps), ['on', '1'], true))
+			|| (\is_string($sRequestScheme) && 'https' === \strtolower($sRequestScheme));
 	}
 
 	public function GetHost(bool $bWithoutWWW = true, bool $bWithoutPort = false) : string

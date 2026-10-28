@@ -4,6 +4,10 @@
 /api.php
 /*.log
 /snappymail/v/0.0.0/static/*
+!/snappymail/v/0.0.0/static/sounds/
+snappymail/v/0.0.0/static/sounds/*
+!/snappymail/v/0.0.0/static/sounds/chime.mp3
+!/snappymail/v/0.0.0/static/sounds/chime.ogg
 !/snappymail/v/0.0.0/static/logo-text.png
 !/snappymail/v/0.0.0/static/fonts/
 !/snappymail/v/0.0.0/static/fonts/Rubik/
@@ -11,7 +15,10 @@
 !/snappymail/v/0.0.0/static/fonts/Rubik/OFL.txt
 !/snappymail/v/0.0.0/static/images/
 /snappymail/v/0.0.0/static/images/*
+!/snappymail/v/0.0.0/static/images/background.jpg
 !/snappymail/v/0.0.0/static/images/petuja-systems-logo.svg
+!/snappymail/v/0.0.0/static/images/ui-icons/
+!/snappymail/v/0.0.0/static/images/ui-icons/*.svg
 /node_modules
 /build/local
 /build/dist
@@ -75,16 +82,9 @@ coverage/
 /snappymail/v/*/app/libraries/snappymail/smime/*.crt
 /snappymail/v/*/app/libraries/snappymail/smime/*.cer
 
-# Public SnappyMail demo fixtures already tracked in the v2.38.2 baseline are
-# intentionally retained; the rules above still protect newly copied files in
-# other versioned/runtime locations.
-!examples/crypto/smime.key
-!examples/crypto/smime.crt
-!examples/crypto/3140898548F06E97-private.asc
-!examples/crypto/5F3A5CDC09AD8AE3-private.asc
-!examples/crypto/A0B428E12402D875-private.asc
-!/snappymail/v/0.0.0/app/libraries/snappymail/smime/snappymail.key
-!/snappymail/v/0.0.0/app/libraries/snappymail/smime/snappymail.crt
+# Private OpenPGP demo fixtures are not part of the source release.
+examples/crypto/*-private.asc
+examples/crypto/smime.crt
 
 # SnappyMail runtime/application data
 /snappymail-data/

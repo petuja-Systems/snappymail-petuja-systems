@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Dodaj",
 		"CLOSE": "Zapri",
+		"DELETE": "Izbriši",
+		"LOGOUT": "Odjavi",
 		"SAVE": "Shrani",
 		"TEST": "Preizkus",
 		"UPDATE": "Posodobi",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Stiki",
 		"DOMAINS": "Domene",
 		"SECURITY": "Varnost",
-		"PACKAGES": "Paketi",
 		"CONFIG": "Config",
 		"ABOUT": "Več o"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Vmesnik",
 		"LABEL_LANGUAGE": "Jezik",
 		"LABEL_LANGUAGE_ADMIN": "Jezik (administrator)",
-		"LABEL_THEME": "Tema",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Dovoli izbor jezika v nastavitvah",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Dovoli izbor teme v nastavitvah",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Dovoli izbor ozadja v nastavitvah",
 		"LABEL_SHOW_THUMBNAILS": "Pokaži predoglede (priloge)",
 		"LEGEND_MAIN": "Glavno",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Omejitev velikosti prilog",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domene",
 		"BUTTON_ADD_DOMAIN": "Dodaj domeno",
 		"BUTTON_ADD_ALIAS": "Dodaj vzdevek",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Ste prepričani?",
 		"HTML_DOMAINS_HELPER": "Seznam domen, do katerih je omogočen dostop.\n<br>\nKliknite ime za konfiguracijo domene.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Varnost",
 		"LABEL_USE_IMAGE_PROXY": "Uporabni lokalni posredniški strežnik za zunanje slike",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Zahtevaj preverjanje v dveh korakih",
 		"LABEL_SHOW_PHP_INFO": "Prikaz PHP informacij",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Prijavni podatki za administracijsko ploščo",
 		"LABEL_CURRENT_PASSWORD": "Trenutno geslo",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Obvezno overjanje uporabljenega SSL certifikata",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Dovoli samopodpisane certifikate"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Enable extensions",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Na voljo za posodobitev",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Na voljo za namestitev",
-		"LEGEND_INSTALLED_PACKAGES": "Nameščeni paketi",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Trenutno ni možen dostop do repozitorija"
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Več o",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Vtičnik",
-		"DESC_NOTHING_TO_CONFIGURE": "Ni nastavitev za spreminjati"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Želite zapreti to okno?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Neveljaven žeton",
 		"AuthError": "Spodletelo overjanje",
 		"DomainAlreadyExists": "Domena že obstaja",
-		"CantSavePluginSettings": "Ni mogoče shraniti nastavitev",
-		"CantInstallPackage": "Neuspešna namestitev paketa",
-		"CantDeletePackage": "Neuspešno odstranjevanje paketa",
-		"InvalidPluginPackage": "Neveljaven paket vtičnika",
-		"UnsupportedPluginPackage": "Nepodprt paket vtičnika",
 		"UnknownError": "Neznana napaka"
 	}
 }

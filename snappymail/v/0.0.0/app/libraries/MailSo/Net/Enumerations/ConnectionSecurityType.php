@@ -39,10 +39,6 @@ abstract class ConnectionSecurityType
 			}
 		}
 
-		if (self::SSL === $iResult && !\in_array('ssl', \stream_get_transports())) {
-			$iResult = self::NONE;
-		}
-
 		return self::SSL === $iResult;
 	}
 }

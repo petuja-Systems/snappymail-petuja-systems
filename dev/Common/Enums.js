@@ -98,10 +98,4 @@ Notifications = {
 
 	UnknownError: 999,
 
-	// Admin
-	CantInstallPackage: 701,
-	CantDeletePackage: 702,
-	InvalidPluginPackage: 703,
-	UnsupportedPluginPackage: 704,
-	CantSavePluginSettings: 705
 };

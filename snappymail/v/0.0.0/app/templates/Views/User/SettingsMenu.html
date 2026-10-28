@@ -1,7 +1,7 @@
 <div class="b-toolbar btn-toolbar">
-	<a class="btn btn-thin fontastic toggleLeft" data-bind="click: toggleLeftPanel"></a>
-	<a class="btn" data-bind="click: backToInbox" data-icon="⬅" data-i18n="GLOBAL/BACK"></a>
+		<button type="button" class="btn btn-thin ui-icon toggleLeft" data-bind="click: toggleLeftPanel" data-ui-icon="spacer" data-i18n="[aria-label]SETTINGS_LABELS/GENERAL"></button>
+	<button type="button" class="btn" data-bind="click: backToInbox" data-ui-icon="arrow-left" data-i18n="GLOBAL/BACK"></button>
 </div>
 <nav data-bind="foreach: menu">
-	<a data-bind="css: {'selected': selected }, attr: { 'href': $root.link(route), 'data-i18n': label }"></a>
+	<a data-bind="css: {'selected': selected }, attr: { 'href': $root.link(route), 'data-i18n': label, 'data-ui-icon': icon }"></a>
 </nav>

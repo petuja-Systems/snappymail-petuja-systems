@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "rtl",
 	"GLOBAL": {
 		"ADD": "اضافه‌کردن",
 		"CLOSE": "بستن",
+		"DELETE": "حذف",
+		"LOGOUT": "خروج",
 		"SAVE": "ذخیره",
 		"TEST": "تست",
 		"UPDATE": "بروزرسانی",
@@ -27,7 +30,6 @@
 		"CONTACTS": "تماس‌ها",
 		"DOMAINS": "دامنه‌ها",
 		"SECURITY": "امنیت",
-		"PACKAGES": "بسته‌ها",
 		"CONFIG": "Config",
 		"ABOUT": "درباره"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "رابط",
 		"LABEL_LANGUAGE": "زبان",
 		"LABEL_LANGUAGE_ADMIN": "زبان (مدیر)",
-		"LABEL_THEME": "پوسته",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "زبان در صفحه تنظیمات قابل انتخاب باشد",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "پوسته در صفحه تنظیمات قابل انتخاب باشد",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "تصویر پشت زمینه در صفحه تنظیمات قابل انتخاب باشد",
 		"LABEL_SHOW_THUMBNAILS": "اندازه کوچک را نشان بده (پیوست‌ها)",
 		"LEGEND_MAIN": "اصلی",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "محدودیت اندازه پیوست",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "دامنه‌ها",
 		"BUTTON_ADD_DOMAIN": "اضافه‌کردن دامنه",
 		"BUTTON_ADD_ALIAS": "اضافه‌کردن نام مستعار",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "آیا مطمئن هستید؟",
 		"HTML_DOMAINS_HELPER": "لیستی از دامنه‌هایی که وب‌میل اجازه دسترسی به آنها را دارد.\n<br>\nروی دامنه دامنه جهت پیکربندی کلیک کنید.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "امنیت",
 		"LABEL_USE_IMAGE_PROXY": "از پروکسی محلی برای عکسهای خارج از سرور استفاده شود",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "الزام تأیید دومرحله‌ای",
 		"LABEL_SHOW_PHP_INFO": "نمایش اطلاعات PHP",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "اعتبار مجوز دسترسی به صفحه مدیریت",
 		"LABEL_CURRENT_PASSWORD": "گذرواژه فعلی",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "به بررسی گواهینامه SSL نیاز داشته باشد",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "به گواهی‌نامه‌هایی که توسط خودشان امضاء شده‌اند اجازه بده"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Enable extensions",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "برای بروزرسانی در دسترس هست",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "برای نصب در دسترس هست",
-		"LEGEND_INSTALLED_PACKAGES": "بسته‌های نصب شده",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "در این لحظه دسترسی به مخزن امکان‌پذیر نیست"
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "درباره",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "افزونه",
-		"DESC_NOTHING_TO_CONFIGURE": "چیزی برای پیکربندی نیست"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "آیا شما از بستن این پنجره اطمینان دارید؟"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "توکن نامعتبر",
 		"AuthError": "احراز هویت انجام نشد",
 		"DomainAlreadyExists": "دامنه در حال حاضر موجود است",
-		"CantSavePluginSettings": "امکان ذخیره تنظیمات نیست",
-		"CantInstallPackage": "نصب بسته با خطا همراه بود",
-		"CantDeletePackage": "حذف بسته با خطا همراه بو",
-		"InvalidPluginPackage": "بسته افزونه نامعتبر است",
-		"UnsupportedPluginPackage": "بسته افزونه پشتیبانی نمی‌شود",
 		"UnknownError": "خطای نامشخص"
 	}
 }

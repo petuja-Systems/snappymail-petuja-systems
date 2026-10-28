@@ -78,6 +78,49 @@ class DefaultDomain implements DomainInterface
 		return $sResult;
 	}
 
+	private static function validateWildcardValues(string $sString, string $sWildcardValues, ?string &$sFoundValue = null) : bool
+	{
+		$sFoundValue = '';
+
+		$sString = \trim($sString);
+		if ('' === $sString) {
+			return false;
+		}
+
+		$sWildcardValues = \trim($sWildcardValues);
+		if ('' === $sWildcardValues) {
+			return true;
+		}
+
+		if ('*' === $sWildcardValues) {
+			$sFoundValue = '*';
+			return true;
+		}
+
+		$aWildcardValues = \preg_split('/[\\s,;]+/', \preg_replace('/\\*+/', '*', $sWildcardValues));
+
+		foreach ($aWildcardValues as $sItem) {
+			if (false === \strpos($sItem, '*')) {
+				if ($sString === $sItem) {
+					$sFoundValue = $sItem;
+					return true;
+				}
+			} else {
+				$aItem = \explode('*', $sItem);
+				$aItem = \array_map(function ($sItem) {
+					return \preg_quote($sItem, '/');
+				}, $aItem);
+
+				if (\preg_match('/'.\implode('.*', $aItem).'/', $sString)) {
+					$sFoundValue = $sItem;
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public function Load(string $sName, bool $bFindWithWildCard = false, bool $bCheckDisabled = true, bool $bCheckAliases = true) : ?\RainLoop\Model\Domain
 	{
 //		$sName = \SnappyMail\IDN::toAscii($sName);
@@ -111,7 +154,7 @@ class DefaultDomain implements DomainInterface
 			$sNames = $this->getWildcardDomainsLine();
 			$sFoundValue = '';
 			if (\strlen($sNames)
-			 && \RainLoop\Plugins\Helper::ValidateWildcardValues($sName, $sNames, $sFoundValue)
+			 && static::validateWildcardValues($sName, $sNames, $sFoundValue)
 			 && \strlen($sFoundValue)
 			) {
 				return $this->Load($sFoundValue);

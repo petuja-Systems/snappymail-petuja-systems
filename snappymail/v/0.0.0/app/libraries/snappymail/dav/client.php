@@ -17,6 +17,7 @@ class Client
 		NS_CARDDAV = 'urn:ietf:params:xml:ns:carddav';
 
 	protected string $baseUri;
+	private string $origin;
 
 	protected $HTTP;
 
@@ -36,7 +37,9 @@ class Client
 		if (!isset($settings['baseUri'])) {
 			throw new \ValueError('A baseUri must be provided');
 		}
-		$this->baseUri = $settings['baseUri'];
+		$base = Uri::parse($settings['baseUri']);
+		$this->baseUri = $base['uri'];
+		$this->origin = $base['origin'];
 
 		$this->HTTP = \SnappyMail\HTTP\Request::factory(/*'socket'*/);
 		$this->HTTP->proxy = $settings['proxy'] ?? null;
@@ -45,7 +48,6 @@ class Client
 		} else {
 			\SnappyMail\Log::warning('DAV', 'No user credentials set');
 		}
-		$this->HTTP->max_response_kb = 0;
 		$this->HTTP->timeout = 15; // timeout in seconds.
 		$this->HTTP->max_redirects = 0;
 	}
@@ -65,25 +67,16 @@ class Client
 	 */
 	public function request(string $method, string $url = '', ?string $body = null, array $headers = array()) : \SnappyMail\HTTP\Response
 	{
-		if (!\preg_match('@^(https?:)?//@', $url)) {
-			// If the url starts with a slash, we must calculate the url based off
-			// the root of the base url.
-			if (\str_starts_with($url, '/')) {
-				$parts = \parse_url($this->baseUri);
-				$url = $parts['scheme'] . '://' . $parts['host'] . (isset($parts['port'])?':' . $parts['port']:'') . $url;
-			} else {
-				$url = $this->baseUri . $url;
-			}
-		}
+		$url = $this->resolveUri($url);
 		\SnappyMail\Log::debug('DAV', "{$method} {$url}" . ($body ? "\n\t" . \str_replace("\n", "\n\t", $body) : ''));
 		$response = $this->HTTP->doRequest($method, $url, $body, $headers);
 		if (301 == $response->status) {
 			// Like: RewriteRule ^\.well-known/carddav /nextcloud/remote.php/dav [R=301,L]
-			$location = $response->getRedirectLocation();
-			\SnappyMail\Log::info('DAV', "301 Redirect {$url} to {$location}");
-			$url = \preg_replace('@^(https?:)?//[^/]+[/$]@', '/', $location);
-			$parts = \parse_url($this->baseUri);
-			$url = $parts['scheme'] . '://' . $parts['host'] . (isset($parts['port'])?':' . $parts['port']:'') . $url;
+			$location = $response->getHeader('location');
+			if (!\is_string($location) || '' === $location) {
+				throw new UriException('Invalid DAV redirect');
+			}
+			$url = $this->resolveUri($location, $response->final_uri);
 			$response = $this->HTTP->doRequest($method, $url, $body, $headers);
 		}
 		if (300 <= $response->status) {
@@ -92,6 +85,16 @@ class Client
 		\SnappyMail\Log::debug('DAV', "{$response->status}: {$response->body}");
 
 		return $response;
+	}
+
+	/** All credential-bearing requests and discovered references retain the initial origin. */
+	public function resolveUri(string $reference, ?string $base = null) : string
+	{
+		$resolved = Uri::resolve($base ?? $this->baseUri, $reference);
+		if ($this->origin !== $resolved['origin']) {
+			throw new UriException('Cross-origin DAV reference rejected');
+		}
+		return $resolved['uri'];
 	}
 
 	/**
@@ -131,6 +134,7 @@ class Client
 			"Depth: {$depth}",
 			'Content-Type: application/xml'
 		));
+		$responseUri = $response->final_uri;
 
 		/**
 		 * Parse the WebDAV multistatus response body
@@ -175,7 +179,12 @@ class Client
 							}
 						} else {
 							foreach ($element->xpath("*") as $child) {
-								$propList[$propertyName][self::toClarkNotation($child)] = (string) $child;
+								$childName = self::toClarkNotation($child);
+								if ('{DAV:}href' === $childName && '' === (string) $child) {
+									throw new UriException('Missing DAV property href');
+								}
+								$propList[$propertyName][$childName] = '{DAV:}href' === $childName
+									? $this->resolveUri((string) $child, $responseUri) : (string) $child;
 							}
 							if (!$propList[$propertyName]) {
 								$propList[$propertyName] = (string) $element;
@@ -187,7 +196,11 @@ class Client
 				$properties[$statusCode] = $propList;
 			}
 
-			$result[(string) $response->children('urn:DAV')->href] = $properties;
+			$href = (string) $response->children('urn:DAV')->href;
+			if ('' === $href) {
+				throw new UriException('Missing DAV response href');
+			}
+			$result[$this->resolveUri($href, $responseUri)] = $properties;
 		}
 
 		if (0 === $depth) {

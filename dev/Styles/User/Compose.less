@@ -69,15 +69,6 @@
 		background-color: rgba(0,0,0,0.8);
 		color: #fff;
 
-		.close, .minimize-custom {
-			border-color: #eee;
-			float: none;
-			font-size: 171%;
-			opacity: 1;
-			line-height: 28px;
-			margin-left: .7em;
-		}
-
 		.button-save, .button-delete, .saved-text {
 			margin-left: 8px;
 		}
@@ -112,16 +103,20 @@
 		}
 
 		#identity-toggle {
+			background: transparent;
+			border: 0;
 			color: var(--main-color);
+			font: inherit;
 			margin-left: 6px;
+			padding: 0;
 			text-decoration: none;
 		}
-		#identity-toggle::after {
-			content: '▼';
-		}
-
 		input[type="text"] {
 			width: 100%;
+
+			&:has(~ .dropdown) {
+				width: calc(100% - 2em);
+			}
 		}
 
 		.error-desc {
@@ -164,11 +159,27 @@
 	}
 }
 
-.minimize-custom {
-	border: 0 solid #333;
-	border-bottom-width: 3px;
-	display: inline-block;
-	height: 20px;
-	width: 16px;
-	cursor: pointer;
+html[data-appearance-scheme="dark"] #rl-app[data-admin="0"] #V-PopupsCompose > .modal-body > .tabs {
+	--tab-active-bg-clr: var(--appearance-surface-raised, #333);
+	--tab-hover-border-clr: var(--appearance-border, #555);
+
+	> label:focus-visible {
+		opacity: 1;
+		outline: 2px solid var(--appearance-link, #6AE);
+		outline-offset: -2px;
+	}
+}
+
+@media screen and (max-width: 380px) {
+	#V-PopupsCompose header .pull-right > .btn-group.dropdown > .dropdown-menu {
+		left: auto;
+		position: fixed;
+		right: 4px;
+		top: 72px;
+	}
+
+	html[dir="rtl"] #V-PopupsCompose header .pull-right > .btn-group.dropdown > .dropdown-menu {
+		left: 4px;
+		right: auto;
+	}
 }

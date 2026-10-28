@@ -2,13 +2,11 @@
 
 namespace RainLoop;
 
-use RainLoop\Enumerations\PluginPropertyType;
 use RainLoop\Exceptions\ClientException;
 
 class ActionsAdmin extends Actions
 {
 	use Actions\AdminDomains;
-	use Actions\AdminExtensions;
 
 	public function DoAdminClearCache() : array
 	{
@@ -23,6 +21,8 @@ class ActionsAdmin extends Actions
 	{
 		$aConfig = $this->Config()->jsonSerialize();
 		unset($aConfig['version']);
+		unset($aConfig['plugins']);
+		unset($aConfig['webmail']['theme']);
 		$aConfig['logs']['time_zone'][1] = '';
 		$aConfig['logs']['time_zone'][2] = \DateTimeZone::listIdentifiers();
 		$aConfig['login']['sign_me_auto'][2] = ['DefaultOff','DefaultOn','Unused'];
@@ -32,9 +32,46 @@ class ActionsAdmin extends Actions
 
 	public function DoAdminSettingsSet() : array
 	{
+		$this->IsAdminLoggined();
+		$aConfig = $this->GetActionParam('config', []);
+		if (!\is_array($aConfig)) {
+			throw new ClientException(Notifications::InvalidInputArgument);
+		}
+		if (\array_key_exists('plugins', $aConfig)) {
+			throw new ClientException(Notifications::InvalidInputArgument);
+		}
+		if (isset($aConfig['webmail']) && \is_array($aConfig['webmail'])) {
+			unset($aConfig['webmail']['theme']);
+		}
+		$bHasRequireTwoFactor = isset($aConfig['security'])
+			&& \is_array($aConfig['security'])
+			&& \array_key_exists('require_two_factor_auth', $aConfig['security']);
+		if ($bHasRequireTwoFactor) {
+			$this->requirePostForTwoFactorPolicy();
+		}
+		$mRequireTwoFactor = $bHasRequireTwoFactor
+			? $aConfig['security']['require_two_factor_auth']
+			: null;
+		$bRequireTwoFactor = $bHasRequireTwoFactor
+			? Config\Application::parseBoolean($mRequireTwoFactor)
+			: null;
+		if ($bHasRequireTwoFactor && null === $bRequireTwoFactor) {
+			throw new ClientException(Notifications::InvalidInputArgument);
+		}
+
 		$oConfig = $this->Config();
-		foreach ($this->GetActionParam('config', []) as $sSection => $aItems) {
+		foreach ($aConfig as $sSection => $aItems) {
+			if (!\is_array($aItems)) {
+				throw new ClientException(Notifications::InvalidInputArgument);
+			}
 			foreach ($aItems as $sKey => $mValue) {
+				if ('version' === $sSection && 'two_factor_policy_migration' === $sKey) {
+					continue;
+				}
+				if ('security' === $sSection && 'require_two_factor_auth' === $sKey) {
+					$oConfig->SetTwoFactorRequired($bRequireTwoFactor);
+					continue;
+				}
 				$oConfig->Set($sSection, $sKey, $mValue);
 			}
 		}
@@ -49,6 +86,14 @@ class ActionsAdmin extends Actions
 		$this->IsAdminLoggined();
 
 		$oConfig = $this->Config();
+		$mRequireTwoFactor = null;
+		if ($this->HasActionParam('RequireTwoFactor')) {
+			$this->requirePostForTwoFactorPolicy();
+			$mRequireTwoFactor = Config\Application::parseBoolean($this->GetActionParam('RequireTwoFactor'));
+			if (null === $mRequireTwoFactor) {
+				throw new ClientException(Notifications::InvalidInputArgument);
+			}
+		}
 
 		$self = $this;
 
@@ -58,10 +103,6 @@ class ActionsAdmin extends Actions
 
 		$this->setConfigFromParams($oConfig, 'languageAdmin', 'admin_panel', 'language', 'string', function ($sLanguage) use ($self) {
 			return $self->ValidateLanguage($sLanguage, '', true);
-		});
-
-		$this->setConfigFromParams($oConfig, 'Theme', 'webmail', 'theme', 'string', function ($sTheme) use ($self) {
-			return $self->ValidateTheme($sTheme);
 		});
 
 		$this->setConfigFromParams($oConfig, 'proxyExternalImages', 'labs', 'use_local_proxy_for_external_images', 'bool');
@@ -90,8 +131,6 @@ class ActionsAdmin extends Actions
 		$this->setConfigFromParams($oConfig, 'CapaAdditionalAccounts', 'webmail', 'allow_additional_accounts', 'bool');
 		$this->setConfigFromParams($oConfig, 'CapaIdentities', 'webmail', 'allow_additional_identities', 'bool');
 		$this->setConfigFromParams($oConfig, 'CapaAttachmentThumbnails', 'interface', 'show_attachment_thumbnail', 'bool');
-		$this->setConfigFromParams($oConfig, 'CapaThemes', 'webmail', 'allow_themes', 'bool');
-		$this->setConfigFromParams($oConfig, 'CapaUserBackground', 'webmail', 'allow_user_background', 'bool');
 		$this->setConfigFromParams($oConfig, 'capaGnuPG', 'security', 'gnupg', 'bool');
 		$this->setConfigFromParams($oConfig, 'capaOpenPGP', 'security', 'openpgp', 'bool');
 
@@ -102,9 +141,18 @@ class ActionsAdmin extends Actions
 		$this->setConfigFromParams($oConfig, 'loadingDescription', 'webmail', 'loading_description', 'string');
 		$this->setConfigFromParams($oConfig, 'faviconUrl', 'webmail', 'favicon_url', 'string');
 
-		$this->setConfigFromParams($oConfig, 'pluginsEnable', 'plugins', 'enable', 'bool');
+		if (null !== $mRequireTwoFactor) {
+			$oConfig->SetTwoFactorRequired($mRequireTwoFactor);
+		}
 
 		return $this->DefaultResponse($oConfig->Save());
+	}
+
+	private function requirePostForTwoFactorPolicy() : void
+	{
+		if ('POST' !== \strtoupper($_SERVER['REQUEST_METHOD'] ?? '')) {
+			throw new ClientException(Notifications::AuthError);
+		}
 	}
 
 	/**
@@ -116,15 +164,23 @@ class ActionsAdmin extends Actions
 		$oPassword = new \SnappyMail\SensitiveString($this->GetActionParam('Password', ''));
 
 		$totp = $this->Config()->Get('security', 'admin_totp', '');
+		$oLimiter = new \SnappyMail\LoginAbuseLimiter(APP_PRIVATE_DATA . 'login-abuse', APP_SALT);
+		$aTicket = $oLimiter->reserve('admin', $this->Http()->GetClientIp(), [
+			$this->Config()->Get('security', 'admin_login', '')
+		]);
 
 		// \explode(':',`getent shadow root`)[1];
-		if (!\strlen($sLogin) || !\strlen($oPassword) ||
+		if (!$aTicket || !\strlen($sLogin) || !\strlen($oPassword) ||
 			!$this->Config()->Get('security', 'allow_admin_panel', true) ||
 			$sLogin !== $this->Config()->Get('security', 'admin_login', '') ||
 			!$this->Config()->ValidatePassword($oPassword)
 			|| ($totp && !\SnappyMail\TOTP::Verify($totp, $this->GetActionParam('TOTP', ''))))
 		{
 			$this->LoggerAuthHelper(null, $sLogin, true);
+			$this->loginErrorDelay();
+			throw new ClientException(Notifications::AuthError);
+		}
+		if (!$oLimiter->release($aTicket)) {
 			$this->loginErrorDelay();
 			throw new ClientException(Notifications::AuthError);
 		}
@@ -238,7 +294,8 @@ class ActionsAdmin extends Actions
 	{
 		$this->IsAdminLoggined();
 
-		$info = \SnappyMail\Repository::getLatestCoreInfo();
+		$oCoreUpdater = new \SnappyMail\CoreUpdater();
+		$info = $oCoreUpdater->getLatestCoreInfo();
 
 		$sVersion = empty($info->version) ? '' : $info->version;
 
@@ -272,7 +329,7 @@ class ActionsAdmin extends Actions
 				'load' => \is_callable('sys_getloadavg') ? \sys_getloadavg() : null
 			],
 			'core' => [
-				 'updatable' => \SnappyMail\Repository::canUpdateCore(),
+				 'updatable' => $oCoreUpdater->canUpdateCore(),
 				 'warning' => $bShowWarning,
 				 'version' => $sVersion,
 				 'versionCompare' => \version_compare(APP_VERSION, $sVersion),
@@ -351,7 +408,7 @@ class ActionsAdmin extends Actions
 	public function DoAdminUpgradeCore() : array
 	{
 		\header('Connection: close');
-		return $this->DefaultResponse(\SnappyMail\Upgrade::core());
+		return $this->DefaultResponse((new \SnappyMail\CoreUpdater())->update());
 	}
 
 	public function DoAdminQRCode() : array
@@ -426,10 +483,9 @@ class ActionsAdmin extends Actions
 
 		$aResult['Auth'] = $oActions->IsAdminLoggined(false);
 		if ($aResult['Auth']) {
+			$aResult['RequireTwoFactor'] = (bool) $oConfig->Get('security', 'require_two_factor_auth', false);
 			$aResult['adminLogin'] = (string)$oConfig->Get('security', 'admin_login', '');
 			$aResult['adminTOTP'] = (string)$oConfig->Get('security', 'admin_totp', '');
-			$aResult['pluginsEnable'] = (bool)$oConfig->Get('plugins', 'enable', false);
-
 			$aResult['loginDefaultDomain'] = $oConfig->Get('login', 'default_domain', '');
 			$aResult['determineUserLanguage'] = (bool)$oConfig->Get('login', 'determine_user_language', true);
 			$aResult['determineUserDomain'] = (bool)$oConfig->Get('login', 'determine_user_domain', false);

@@ -103,8 +103,6 @@ class MailClient
 			$aHeaders[] = MimeHeader::X_VIRUS_STATUS;
 		}
 
-		\RainLoop\Api::Actions()->Plugins()->RunHook('imap.message-headers', array(&$aHeaders));
-
 		return FetchType::BuildBodyCustomHeaderRequest($aHeaders, true);
 	}
 

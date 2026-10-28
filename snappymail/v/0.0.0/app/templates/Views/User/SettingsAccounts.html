@@ -2,7 +2,7 @@
 	<div class="legend">
 		<span data-i18n="SETTINGS_ACCOUNTS/LEGEND_ACCOUNTS"></span>
 		&nbsp;&nbsp;&nbsp;
-		<i class="icon-spinner" style="margin-top: 5px" data-bind="visible: loading"></i>
+		<i class="ui-spinner" style="margin-top: 5px" data-bind="visible: loading"></i>
 	</div>
 	<div data-bind="component: {
 		name: 'Checkbox',
@@ -11,10 +11,10 @@
 			value: showUnread
 		}
 	}"></div>
-	<a class="btn" data-bind="click: addNewAccount">
-		<i class="icon-user-add"></i>
+	<button type="button" class="btn" data-bind="click: addNewAccount">
+		<i class="" data-ui-icon="user-round-plus"></i>
 		<span data-i18n="SETTINGS_ACCOUNTS/BUTTON_ADD_ACCOUNT"></span>
-	</a>
+	</button>
 	<table class="table table-hover list-table accounts-list" data-bind="i18nUpdate: accounts">
 		<tbody data-bind="foreach: accounts">
 			<tr draggable="true" data-bind="attr: {draggable:isAdditional}, sortableItem: { list: $root.accounts, afterMove: $root.accountsAndIdentitiesAfterMove }">
@@ -24,20 +24,20 @@
 				<!-- /ko -->
 				<!-- ko if:isAdditional -->
 				<td>
-					<i class="fontastic drag-handle">⬍</i>
+					<i class="ui-icon drag-handle" data-ui-icon="grip-vertical"></i>
 				</td>
 				<td class="e-action">
-					<span class="account-name" data-bind="text: displayName"></span>
+					<button type="button" class="account-name ui-text-action" data-bind="text: displayName"></button>
 				</td>
 <!--
-				<td><span class="icon-import" data-bind="click: importAll"></span></td>
+				<td><span data-bind="click: importAll" data-ui-icon="folder-input"></span></td>
 -->
 				<td>
-					<a class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete}, click: function(oAccount) { $root.deleteAccount(oAccount); }"
-						data-i18n="GLOBAL/ARE_YOU_SURE"></a>
+					<button type="button" class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete}, hasfocus: askDelete, click: function(oAccount) { $root.deleteAccount(oAccount); }"
+						data-i18n="GLOBAL/ARE_YOU_SURE"></button>
 				</td>
 				<td>
-					<span class="delete fontastic" data-bind="visible: !askDelete(), click: function (oAccount) { $root.accountForDeletion(oAccount); }">🗑</span>
+					<button type="button" class="delete ui-icon ui-icon-only" data-bind="visible: !askDelete(), click: function (oAccount) { $root.accountForDeletion(oAccount); }" data-ui-icon="trash-2" data-i18n="[aria-label]GLOBAL/DELETE"></button>
 				</td>
 				<!-- /ko -->
 			</tr>
@@ -46,27 +46,29 @@
 </div>
 <div data-bind="visible: allowIdentities">
 	<div class="legend" data-i18n="SETTINGS_ACCOUNTS/LEGEND_IDENTITIES"></div>
-	<a class="btn" data-bind="click: addNewIdentity">
-		<i class="icon-user-add"></i>
+	<button type="button" class="btn" data-bind="click: addNewIdentity">
+		<i class="" data-ui-icon="user-round-plus"></i>
 		<span data-i18n="SETTINGS_ACCOUNTS/BUTTON_ADD_IDENTITY"></span>
-	</a>
+	</button>
 	<table class="table table-hover list-table identities-list" data-bind="i18nUpdate: identities">
 		<tbody data-bind="foreach: identities">
 			<tr draggable="true" data-bind="attr: {'data-identity-id': id}, sortableItem: { list: $root.identities, afterMove: $root.accountsAndIdentitiesAfterMove }">
 				<td>
-					<i class="fontastic drag-handle">⬍</i>
+					<i class="ui-icon drag-handle" data-ui-icon="grip-vertical"></i>
 				</td>
 				<td class="e-action">
-					<span class="identity-name" data-bind="text: formattedName()"></span>
-					&nbsp;&nbsp;
-					<span class="identity-default" data-bind="visible: !$context.$index()" data-i18n="GLOBAL/DEFAULT"></span>
+					<button type="button" class="identity-name ui-text-action">
+						<span data-bind="text: formattedName()"></span>
+						&nbsp;&nbsp;
+						<span class="identity-default" data-bind="visible: !$context.$index()" data-i18n="GLOBAL/DEFAULT"></span>
+					</button>
 				</td>
 				<td>
-					<a class="btn btn-small btn-danger button-confirm-delete" data-bind="visible: id, css: {'delete-access': askDelete}, click: function(oIdentity) { $root.deleteIdentity(oIdentity); }"
-						data-i18n="GLOBAL/ARE_YOU_SURE"></a>
+					<button type="button" class="btn btn-small btn-danger button-confirm-delete" data-bind="visible: id, css: {'delete-access': askDelete}, hasfocus: askDelete, click: function(oIdentity) { $root.deleteIdentity(oIdentity); }"
+						data-i18n="GLOBAL/ARE_YOU_SURE"></button>
 				</td>
 				<td>
-					<span class="delete fontastic" data-bind="visible: !askDelete() && id(), click: function (oIdentity) { $root.identityForDeletion(oIdentity); }">🗑</span>
+					<button type="button" class="delete ui-icon ui-icon-only" data-bind="visible: !askDelete() && id(), click: function (oIdentity) { $root.identityForDeletion(oIdentity); }" data-ui-icon="trash-2" data-i18n="[aria-label]GLOBAL/DELETE"></button>
 				</td>
 			</tr>
 		</tbody>

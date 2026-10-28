@@ -107,21 +107,21 @@ class SquireUI
 				},
 				dir: {
 					dir_ltr: {
-						html: '⁋',
+						icon: 'arrow-right',
 						cmd: () => squire.setTextDirection('ltr')
 					},
 					dir_rtl: {
-						html: '¶',
+						icon: 'arrow-left',
 						cmd: () => squire.setTextDirection('rtl')
 					}
 				},
 				colors: {
 					textColor: {
-						html: 'A<sub>▾</sub>',
+						icon: 'palette',
 						cmd: doClr('color')
 					},
 					backgroundColor: {
-						html: '🎨', /* ▧ */
+						icon: 'palette',
 						cmd: doClr('backgroundColor')
 					},
 				},
@@ -139,13 +139,15 @@ class SquireUI
 						matches: 'I'
 					},
 					underline: {
-						html: '<u>U</u>',
+						text: 'U',
+						textDecoration: 'underline',
 						cmd: () => this.doAction('underline'),
 						key: 'U',
 						matches: 'U'
 					},
 					strike: {
-						html: '<s>S</s>',
+						text: 'S',
+						textDecoration: 'line-through',
 						cmd: () => this.doAction('strikethrough'),
 						key: 'Shift + 7',
 						matches: 'S'
@@ -165,19 +167,19 @@ class SquireUI
 				},
 				block: {
 					ol: {
-						html: '#',
+						icon: 'list-ordered',
 						cmd: () => this.doList('OL'),
 						key: 'Shift + 8',
 						matches: 'OL'
 					},
 					ul: {
-						html: '⋮',
+						icon: 'list',
 						cmd: () => this.doList('UL'),
 						key: 'Shift + 9',
 						matches: 'UL'
 					},
 					quote: {
-						html: '"',
+						icon: 'file-text',
 						cmd: () => {
 							let parent = squire.getSelectionClosest('UL,OL,BLOCKQUOTE')?.nodeName;
 							('BLOCKQUOTE' == parent) ? squire.decreaseQuoteLevel() : squire.increaseQuoteLevel();
@@ -185,19 +187,19 @@ class SquireUI
 						matches: 'BLOCKQUOTE'
 					},
 					indentDecrease: {
-						html: '⇤',
+						icon: 'arrow-left',
 						cmd: () => squire.changeIndentationLevel('decrease'),
 						key: ']'
 					},
 					indentIncrease: {
-						html: '⇥',
+						icon: 'arrow-right',
 						cmd: () => squire.changeIndentationLevel('increase'),
 						key: '['
 					}
 				},
 				targets: {
 					link: {
-						html: '🔗',
+						icon: 'link',
 						cmd: () => {
 							let node = squire.getSelectionClosest('A'),
 								url = prompt("Link", node?.href || "https://");
@@ -208,7 +210,7 @@ class SquireUI
 						matches: 'A'
 					},
 					imageUrl: {
-						html: '🖼️',
+						icon: 'image',
 						cmd: () => {
 							let node = squire.getSelectionClosest('IMG'),
 								src = prompt("Image", node?.src || "https://");
@@ -217,7 +219,7 @@ class SquireUI
 						matches: 'IMG'
 					},
 					imageUpload: {
-						html: '📂️',
+						icon: 'folder-open',
 						cmd: () => browseImage.click(),
 						matches: 'IMG'
 					}
@@ -229,17 +231,17 @@ class SquireUI
 */
 				changes: {
 					undo: {
-						html: '↶',
+						icon: 'undo-2',
 						cmd: () => squire.undo(),
 						key: 'Z'
 					},
 					redo: {
-						html: '↷',
+						icon: 'redo-2',
 						cmd: () => squire.redo(),
 						key: 'Y'
 					},
 					source: {
-						html: '👁',
+						icon: 'eye',
 						cmd: btn => {
 							this.setMode('source' == this.mode ? 'wysiwyg' : 'source');
 							btn.classList.toggle('active', 'source' == this.mode);
@@ -249,7 +251,7 @@ class SquireUI
 
 				clear: {
 					removeStyle: {
-						html: '⎚',
+						icon: 'x',
 						cmd: () => squire.setStyle()
 					}
 				}
@@ -347,7 +349,12 @@ class SquireUI
 					input = createElement('button');
 					input.type = 'button';
 					input.className = 'btn';
-					input.innerHTML = cfg.html;
+					if (cfg.icon) {
+						input.dataset.uiIcon = cfg.icon;
+					} else {
+						input.textContent = cfg.text || cfg.html || '';
+						input.style.textDecoration = cfg.textDecoration || '';
+					}
 					input.action_cmd = cfg.cmd;
 /*
 					input.addEventListener('pointerdown', () => touchTap = input, {passive:true});
@@ -366,6 +373,7 @@ class SquireUI
 				cfg.hint = i18n('EDITOR/' + action.toUpperCase());
 				if (cfg.hint) {
 					input.title = cfg.key ? cfg.hint + ' (' + ctrlKey + cfg.key + ')' : cfg.hint;
+					input.setAttribute('aria-label', cfg.hint);
 				} else if (cfg.key) {
 					input.title = ctrlKey + cfg.key;
 				}

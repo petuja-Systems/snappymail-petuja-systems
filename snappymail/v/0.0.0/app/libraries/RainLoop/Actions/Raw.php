@@ -48,34 +48,6 @@ trait Raw
 		return $this->rawSmart(false, true);
 	}
 
-	public function RawUserBackground() : bool
-	{
-		$sRawKey = (string) $this->GetActionParam('RawKey', '');
-		$this->verifyCacheByKey($sRawKey);
-
-		$oAccount = $this->getAccountFromToken();
-
-		$mData = $this->StorageProvider()->Get($oAccount,
-			\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
-			'background'
-		);
-
-		if (!empty($mData)) {
-			$mData = \json_decode($mData, true);
-			if (!empty($mData['ContentType']) && !empty($mData['Raw'])) {
-				$this->cacheByKey($sRawKey);
-
-				\header('Content-Type: '.$mData['ContentType']);
-				echo \base64_decode($mData['Raw']);
-				unset($mData);
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	private function clearFileName(string $sFileName, string $sContentType, string $sMimeIndex, int $iMaxLength = 250): string
 	{
 		$sFileName = !\strlen($sFileName) ? \preg_replace('/[^a-zA-Z0-9]/', '.', (empty($sMimeIndex) ? '' : $sMimeIndex . '.') . $sContentType) : $sFileName;
@@ -102,18 +74,11 @@ trait Raw
 			return false;
 		}
 
-		$sRange = \MailSo\Base\Http::GetHeader('Range');
-		$aMatch = array();
-		$sRangeStart = $sRangeEnd = '';
-		$bIsRangeRequest = false;
-		if (!empty($sRange) && 'bytes=0-' !== \strtolower($sRange)
-		 && \preg_match('/^bytes=([0-9]+)-([0-9]*)/i', \trim($sRange), $aMatch))
-		{
-			$sRangeStart = $aMatch[1];
-			$sRangeEnd = $aMatch[2];
-			$bIsRangeRequest = true;
-		} else {
-			$this->verifyCacheByKey($sRawKey);
+		$this->verifyCacheByKey($sRawKey);
+		$sRange = 'GET' === ($_SERVER['REQUEST_METHOD'] ?? 'GET') ? \MailSo\Base\Http::GetHeader('Range') : '';
+		$sIfRange = \MailSo\Base\Http::GetHeader('If-Range');
+		if ('' !== $sIfRange && $sIfRange !== '"'.$this->etag($sRawKey).'"') {
+			$sRange = '';
 		}
 
 		$sMimeIndex = isset($aValues['mimeIndex']) ? (string) $aValues['mimeIndex'] : '';
@@ -154,7 +119,7 @@ trait Raw
 		return $this->MailClient()->MessageMimeStream(
 			function($rResource, $sContentType, $sFileName, $sMimeIndex = '') use (
 				$self, $sRawKey, $sContentTypeIn, $sFileNameIn, $bDownload, $bThumbnail,
-				$bIsRangeRequest, $sRangeStart, $sRangeEnd
+				$sRange
 			) {
 				if (\is_resource($rResource)) {
 					\MailSo\Base\Utils::ResetTimeLimit();
@@ -212,64 +177,126 @@ trait Raw
 						}
 					}
 
+					// Only explicitly supported preview formats may be inline.
+					// Transformed images above are bounded raster output; never download
+					// the original document as a fallback for a failed thumbnail.
+					$bInline = \in_array(\strtolower(\trim(\explode(';', $sContentType, 2)[0])), [
+						'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif',
+						'image/bmp', 'image/tiff', 'image/x-icon', 'image/vnd.microsoft.icon',
+						'application/pdf', 'audio/mpeg', 'audio/mp4', 'audio/ogg', 'audio/webm',
+						'audio/wav', 'audio/x-wav', 'audio/flac', 'audio/x-flac', 'audio/aac',
+						'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'
+					], true);
+
 					if (!\headers_sent()) {
 						\header('Content-Type: '.$sContentType);
-						\MailSo\Base\Http::setContentDisposition($bDownload ? 'attachment' : 'inline', ['filename' => $sFileName]);
+						\MailSo\Base\Http::setContentDisposition($bDownload || !$bInline ? 'attachment' : 'inline', ['filename' => $sFileName]);
 						\header('Accept-Ranges: bytes');
 						\header('Content-Transfer-Encoding: binary');
 					}
 
-					$sLoadedData = null;
-					if ($bIsRangeRequest || !$bDownload) {
-						$sLoadedData = \stream_get_contents($rResource);
-					}
-
-					\MailSo\Base\Utils::ResetTimeLimit();
-
-					if ($sLoadedData) {
-						if ($bIsRangeRequest && (\strlen($sRangeStart) || \strlen($sRangeEnd))) {
-							$iFullContentLength = \strlen($sLoadedData);
-
-							\MailSo\Base\Http::StatusHeader(206);
-
-							$iRangeStart = \max(0, \intval($sRangeStart));
-							$iRangeEnd = \max(0, \intval($sRangeEnd));
-
-							if ($iRangeEnd && $iRangeStart < $iRangeEnd) {
-								$sLoadedData = \substr($sLoadedData, $iRangeStart, $iRangeEnd - $iRangeStart);
-							} else if ($iRangeStart) {
-								$sLoadedData = \substr($sLoadedData, $iRangeStart);
-							}
-
-							$iContentLength = \strlen($sLoadedData);
-
-							if (0 < $iContentLength) {
-								\header('Content-Length: '.$iContentLength);
-								\header('Content-Range: bytes '.$sRangeStart.'-'.($iRangeEnd ?: $iFullContentLength - 1).'/'.$iFullContentLength);
-							}
-						} else {
-							\header('Content-Length: '.\strlen($sLoadedData));
-						}
-
-						echo $sLoadedData;
-
-						unset($sLoadedData);
-					} else {
-						\MailSo\Base\Utils::FpassthruWithTimeLimitReset($rResource);
-					}
+					$self->streamRaw($rResource, $sRange);
 				}
 			}, $sFolder, $iUid, $sMimeIndex
 		);
 	}
 
+	private function streamRaw($rResource, string $sRange) : void
+	{
+		$aRange = [];
+		if (!\preg_match('/\Abytes=([0-9]*)-([0-9]*)\z/i', \trim($sRange), $aRange)
+			|| ('' === $aRange[1] && '' === $aRange[2])) {
+			\MailSo\Base\Utils::FpassthruWithTimeLimitReset($rResource);
+			return;
+		}
+		// Ignore unsupported huge numerals rather than risking integer overflow.
+		foreach ([1, 2] as $i) {
+			$sNumber = \ltrim($aRange[$i], '0') ?: '0';
+			$sMax = (string) PHP_INT_MAX;
+			if (\strlen($sNumber) > \strlen($sMax)
+				|| (\strlen($sNumber) === \strlen($sMax) && \strcmp($sNumber, $sMax) > 0)) {
+				\MailSo\Base\Utils::FpassthruWithTimeLimitReset($rResource);
+				return;
+			}
+		}
+		if ('' !== $aRange[1] && '' !== $aRange[2] && (int) $aRange[1] > (int) $aRange[2]) {
+			\MailSo\Base\Utils::FpassthruWithTimeLimitReset($rResource);
+			return;
+		}
+
+		// Decoded IMAP streams are forward-only; their stat size may be encoded.
+		// Bound both RAM and temporary disk, then ignore Range for larger bodies.
+		$iStageLimit = 8 * 1024 * 1024;
+		$rStage = \MailSo\Base\ResourceRegistry::CreateMemoryResource(1);
+		if (!\is_resource($rStage)) {
+			\header('Accept-Ranges: none');
+			\MailSo\Base\Utils::FpassthruWithTimeLimitReset($rResource);
+			return;
+		}
+		try {
+			$iTotal = 0;
+			while (!\feof($rResource) && $iTotal <= $iStageLimit) {
+				$sChunk = \fread($rResource, \min(8192, $iStageLimit + 1 - $iTotal));
+				if (false === $sChunk || ('' === $sChunk && !\feof($rResource))) {
+					throw new \RuntimeException('Raw stream read failed');
+				}
+				if (\fwrite($rStage, $sChunk) !== \strlen($sChunk)) {
+					throw new \RuntimeException('Raw stream staging failed');
+				}
+				$iTotal += \strlen($sChunk);
+				\MailSo\Base\Utils::ResetTimeLimit();
+			}
+			\rewind($rStage);
+			if ($iTotal > $iStageLimit) {
+				\header('Accept-Ranges: none');
+				\MailSo\Base\Utils::FpassthruWithTimeLimitReset($rStage);
+				\MailSo\Base\Utils::FpassthruWithTimeLimitReset($rResource);
+				return;
+			}
+			$iStart = '' === $aRange[1] ? \max(0, $iTotal - (int) $aRange[2]) : (int) $aRange[1];
+			$iEnd = '' === $aRange[1] || '' === $aRange[2] ? $iTotal - 1 : \min($iTotal - 1, (int) $aRange[2]);
+			if (!$iTotal || $iStart >= $iTotal || ('' === $aRange[1] && 0 === (int) $aRange[2])) {
+				\http_response_code(416);
+				\header('Content-Range: bytes */'.$iTotal);
+				\header('Content-Length: 0');
+				return;
+			}
+			if (0 !== \fseek($rStage, $iStart)) {
+				throw new \RuntimeException('Raw stream seek failed');
+			}
+			\MailSo\Base\Http::StatusHeader(206);
+			\header('Content-Range: bytes '.$iStart.'-'.$iEnd.'/'.$iTotal);
+			$iRemaining = $iEnd - $iStart + 1;
+			\header('Content-Length: '.$iRemaining);
+			while ($iRemaining > 0) {
+				$sChunk = \fread($rStage, \min(8192, $iRemaining));
+				if (false === $sChunk || '' === $sChunk) {
+					throw new \RuntimeException('Raw staged stream read failed');
+				}
+				$iRemaining -= \strlen($sChunk);
+				echo $sChunk;
+				\MailSo\Base\Utils::ResetTimeLimit();
+			}
+		} catch (\Throwable $e) {
+			if (!\headers_sent()) {
+				\MailSo\Base\Http::StatusHeader(500);
+				\header_remove('Content-Range');
+				\header('Content-Length: 0');
+			}
+		} finally {
+			\MailSo\Base\ResourceRegistry::CloseMemoryResource($rStage);
+		}
+	}
+
 	private static function loadImage($resource, bool $bDetectImageOrientation = false, int $iThumbnailBoxSize = 0) : \SnappyMail\Image
 	{
-		if (\extension_loaded('gmagick'))      { $handler = 'gmagick'; }
-		else if (\extension_loaded('imagick')) { $handler = 'imagick'; }
-		else if (\extension_loaded('gd'))      { $handler = 'gd2'; }
-		else { return null; }
-		$handler = 'SnappyMail\\Image\\'.$handler.'::createFromStream';
-		$oImage = $handler($resource);
+		// GD produces one raster; optional Magick decoders can load whole sequences/delegates.
+		if (!\extension_loaded('gd')) {
+			throw new \RuntimeException('GD is required for image transformation');
+		}
+		$data = \SnappyMail\Image\Limits::read($resource);
+		\SnappyMail\Image\Limits::inspect($data);
+		$oImage = \SnappyMail\Image\GD2::createFromString($data);
 
 		if (!$oImage->valid()) {
 			throw new \Exception('Loading image failed');

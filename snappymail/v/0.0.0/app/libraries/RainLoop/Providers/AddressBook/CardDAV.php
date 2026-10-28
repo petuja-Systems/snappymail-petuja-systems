@@ -7,9 +7,11 @@ use SnappyMail\DAV\Client as DAVClient;
 trait CardDAV
 {
 	private $aDAVConfig = ['Mode' => 0];
+	private string $davAllowedOrigins = '';
 
-	public function setDAVClientConfig(?array $aConfig)
+	public function setDAVClientConfig(?array $aConfig, string $allowedOrigins = '')
 	{
+		$this->davAllowedOrigins = $allowedOrigins;
 		if (isset($aConfig['User'], $aConfig['Password'], $aConfig['Url']) && !empty($aConfig['Mode'])) {
 			$this->aDAVConfig = $aConfig;
 		} else {
@@ -122,6 +124,10 @@ trait CardDAV
 				'{urn:ietf:params:xml:ns:carddav}addressbook-home-set'
 			), 1);
 		}
+		catch (\SnappyMail\DAV\UriException $oException)
+		{
+			throw $oException;
+		}
 		catch (\Throwable $oException)
 		{
 			$this->logException($oException);
@@ -130,10 +136,7 @@ trait CardDAV
 		return null;
 	}
 
-	private function getContactsPaths(DAVClient $oClient, string $sPath, string $sUser,
-		#[\SensitiveParameter]
-		string $sPassword,
-		string $sProxy = '') : array
+	private function getContactsPaths(DAVClient $oClient, string $sPath) : array
 	{
 		$aContactsPaths = array();
 
@@ -182,15 +185,8 @@ trait CardDAV
 			if (empty($sNextPath)) {
 				return $aContactsPaths;
 			}
-			if (\preg_match('/^http[s]?:\/\//i', $sNextPath)) {
-				$oClient = $this->getDavClientFromUrl($sNextPath, $sUser, $sPassword, $sProxy);
-				if (!$oClient) {
-					return $aContactsPaths;
-				}
-				$sNextPath = $oClient->urlPath;
-			}
 
-			if ($sPath != $sNextPath) {
+			if ($oClient->resolveUri($sPath) !== $sNextPath) {
 				$aResponse = $this->detectionPropFind($oClient, $sNextPath);
 				if (\is_array($aResponse)) {
 					foreach ($aResponse as $aItem) {
@@ -214,13 +210,6 @@ trait CardDAV
 			if (empty($sCurrentUserPrincipal)) {
 				return $aContactsPaths;
 			}
-			if (\preg_match('/^http[s]?:\/\//i', $sCurrentUserPrincipal)) {
-				$oClient = $this->getDavClientFromUrl($sCurrentUserPrincipal, $sUser, $sPassword, $sProxy);
-				if (!$oClient) {
-					return $aContactsPaths;
-				}
-				$sCurrentUserPrincipal = $oClient->urlPath;
-			}
 
 			$aResponse = $this->detectionPropFind($oClient, $sCurrentUserPrincipal);
 			if (\is_array($aResponse)) {
@@ -237,13 +226,6 @@ trait CardDAV
 
 		if (empty($sAddressbookHomeSet)) {
 			return $aContactsPaths;
-		}
-		if (\preg_match('/^http[s]?:\/\//i', $sAddressbookHomeSet)) {
-			$oClient = $this->getDavClientFromUrl($sAddressbookHomeSet, $sUser, $sPassword, $sProxy);
-			if (!$oClient) {
-				return $aContactsPaths;
-			}
-			$sAddressbookHomeSet = $oClient->urlPath;
 		}
 
 		$aResponse = $this->detectionPropFind($oClient, $sAddressbookHomeSet);
@@ -271,6 +253,10 @@ trait CardDAV
 			$aResponse = $oClient->propFind($sPath, array(
 				'{DAV:}resourcetype'
 			), 1);
+		}
+		catch (\SnappyMail\DAV\UriException $oException)
+		{
+			throw $oException;
 		}
 		catch (\Throwable $oException)
 		{
@@ -300,25 +286,10 @@ trait CardDAV
 		string $sProxy = ''
 	) : DAVClient
 	{
-		if (!\preg_match('/^http[s]?:\/\//i', $sUrl)) {
-			$sUrl = \preg_replace('/^fruux\.com/i', 'dav.fruux.com', $sUrl);
-			$sUrl = \preg_replace('/^icloud\.com/i', 'contacts.icloud.com', $sUrl);
-			$sUrl = \preg_replace('/^gmail\.com/i', 'google.com', $sUrl);
-			$sUrl = 'https://'.$sUrl;
-		}
-
-		$aUrl = \parse_url($sUrl);
-		if (!\is_array($aUrl)) {
-			$aUrl = array();
-		}
-
-		$aUrl['scheme'] = $aUrl['scheme'] ?? 'http';
-		$aUrl['host'] = $aUrl['host'] ?? 'localhost';
-		$aUrl['port'] = $aUrl['port'] ?? 0;
-		$aUrl['path'] = isset($aUrl['path']) ? \rtrim($aUrl['path'], '\\/').'/' : '/';
+		$aUrl = DavOriginPolicy::endpoint($sUrl);
 
 		$aSettings = array(
-			'baseUri' => $aUrl['scheme'].'://'.$aUrl['host'].($aUrl['port'] ? ':'.$aUrl['port'] : ''),
+			'baseUri' => $aUrl['origin'] . '/',
 			'userName' => $sUser,
 			'password' => $sPassword
 		);
@@ -330,9 +301,8 @@ trait CardDAV
 		}
 
 		$oClient = new DAVClient($aSettings);
-		$oClient->setVerifyPeer(false);
 
-		$oClient->urlPath = $aUrl['path'];
+		$oClient->urlPath = \rtrim($aUrl['path'], '/') . '/';
 
 		$this->logWrite('DavClient: User: '.$aSettings['userName'].', Url: '.$sUrl, \LOG_INFO, 'DAV');
 
@@ -341,7 +311,8 @@ trait CardDAV
 
 	protected function getDavClient() : ?DAVClient
 	{
-		if (!$this->aDAVConfig['Mode']) {
+		if (!$this->aDAVConfig['Mode'] || !DavOriginPolicy::allows(
+			$this->aDAVConfig['Url'], $this->davAllowedOrigins)) {
 			return null;
 		}
 		$sUrl = $this->aDAVConfig['Url'];
@@ -368,7 +339,7 @@ trait CardDAV
 			/**
 			 * Path is not an addressbook, try to find it
 			 */
-			$aPaths = $this->getContactsPaths($oClient, $sPath, $sUser, $sPassword, $sProxy);
+			$aPaths = $this->getContactsPaths($oClient, $sPath);
 			$this->oLogger->WriteDump($aPaths);
 
 			$sNewPath = '';

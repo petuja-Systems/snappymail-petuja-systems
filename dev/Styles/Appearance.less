@@ -1,0 +1,149 @@
+// Native appearance maps the shipped Light and Dark shell palettes into semantic tokens.
+html[data-appearance-scheme="light"] #rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) {
+	color-scheme: light;
+	--appearance-canvas: #48525C;
+	--appearance-surface: #fff;
+	--appearance-surface-raised: #fff;
+	--appearance-text-primary: #333;
+	--appearance-text-muted: #666;
+	--appearance-border: rgba(0, 0, 0, .3);
+	--appearance-link: #369;
+	--appearance-surface-input: #fff;
+	--appearance-text-input: #555;
+
+	--main-color: var(--appearance-text-primary);
+	--main-bg-color: var(--appearance-canvas);
+	--main-bg-image: none;
+	--border-color: #ddd;
+	--link-color: var(--appearance-link);
+	--loading-color: #ddd;
+	--dropdown-menu-color: #333;
+	--dropdown-menu-bg-color: var(--appearance-surface);
+	--dropdown-menu-hover-bg-color: var(--appearance-canvas);
+	--dropdown-menu-hover-color: #eee;
+	--dropdown-menu-disable-color: #999;
+	--folders-color: #fff;
+	--folders-disabled-color: #aaa;
+	--folders-selected-color: #fff;
+	--folders-selected-bg-color: rgba(0, 0, 0, .5);
+	--folders-focused-color: #fff;
+	--folders-focused-bg-color: rgba(0, 0, 0, .7);
+	--folders-hover-color: #fff;
+	--folders-hover-bg-color: rgba(0, 0, 0, .5);
+	--folders-drop-color: #fff;
+	--folders-drop-bg-color: rgba(0, 0, 0, .5);
+	--settings-menu-color: #fff;
+	--settings-menu-selected-color: #fff;
+	--settings-menu-selected-bg-color: rgba(0, 0, 0, .5);
+	--settings-menu-hover-color: #fff;
+	--settings-menu-hover-bg-color: rgba(0, 0, 0, .5);
+	--panel-bg-clr: var(--appearance-surface);
+	--message-list-toolbar-bg-color: #eee;
+	--message-header-bg-clr: #eee;
+	--dialog-clr: var(--appearance-text-primary);
+	--dialog-bg-clr: var(--appearance-surface-raised);
+	--dialog-border-clr: var(--appearance-border);
+	--input-clr: var(--appearance-text-input);
+	--input-bg-clr: var(--appearance-surface-input);
+	--input-border-clr: #aaa;
+}
+
+html[data-appearance-scheme="dark"] #rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) {
+	color-scheme: dark;
+	--appearance-canvas: #48525C;
+	--appearance-surface: #333;
+	--appearance-surface-raised: #333;
+	--appearance-text-primary: #fff;
+	--appearance-text-muted: #aaa;
+	--appearance-border: #555;
+	--appearance-link: #6AE;
+	--appearance-surface-input: #222;
+	--appearance-text-input: #fff;
+	--dialog-clr: var(--appearance-text-primary);
+	--dialog-bg-clr: var(--appearance-surface-raised);
+	--dialog-border-clr: var(--appearance-border);
+
+	--main-color: var(--appearance-text-primary);
+	--main-bg-color: var(--appearance-canvas);
+	--main-bg-image: none;
+	--border-color: var(--appearance-border);
+	--hr-color: #666;
+	--link-color: var(--appearance-link);
+	--loading-color: #ddd;
+	--loading-text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+	--dropdown-menu-color: var(--appearance-text-muted);
+	--dropdown-menu-bg-color: var(--appearance-surface);
+	--dropdown-menu-hover-bg-color: var(--appearance-canvas);
+	--dropdown-menu-hover-color: #eee;
+	--dropdown-menu-disable-color: #999;
+	--folders-color: #fff;
+	--folders-disabled-color: #aaa;
+	--folders-selected-color: #fff;
+	--folders-selected-bg-color: #444;
+	--folders-focused-color: #fff;
+	--folders-focused-bg-color: rgba(0, 0, 0, .7);
+	--folders-hover-color: #fff;
+	--folders-hover-bg-color: rgba(0, 0, 0, .5);
+	--folders-drop-color: #fff;
+	--folders-drop-bg-color: rgba(0, 0, 0, .5);
+	--settings-menu-color: #fff;
+	--settings-menu-selected-color: #fff;
+	--settings-menu-selected-bg-color: #444;
+	--settings-menu-hover-color: #fff;
+	--settings-menu-hover-bg-color: rgba(0, 0, 0, .5);
+	--panel-bg-clr: var(--appearance-surface);
+	--message-list-toolbar-bg-color: #111;
+	--message-header-bg-clr: #222;
+	--btn-clr: #fff;
+	--btn-bg-clr: #222;
+	--btn-border-clr: rgba(255, 255, 255, .2);
+	--input-clr: var(--appearance-text-input);
+	--input-bg-clr: var(--appearance-surface-input);
+	--input-border-clr: #aaa;
+}
+
+// Target the application-owned view roots so pasted message/editor classes cannot match.
+#rl-app[data-admin="0"] #V-SettingsMenu > .b-toolbar,
+#rl-app[data-admin="0"] #V-MailFolderList > .b-folders,
+#rl-app[data-admin="1"] #V-AdminPane > .b-toolbar {
+	font-family: var(--appearance-font-ui);
+}
+
+// These application-owned dialog rules stay outside message/editor content.
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) dialog {
+	background-color: var(--appearance-surface-raised, var(--dialog-bg-clr, #fff));
+	border-color: var(--appearance-border, var(--dialog-border-clr, rgba(0, 0, 0, .3)));
+	color: var(--appearance-text-primary, var(--dialog-clr, #333));
+}
+
+// Message content is user-controlled; scope focus styling to application-owned controls only.
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-SettingsMenu :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-SettingsPane :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-PopupsIdentity :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-PopupsContacts :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-PopupsFolderClear :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailFolderList :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageList :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-SystemDropDown :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-PopupsCompose header :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-PopupsCompose .b-header :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageView .top-toolbar :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageView .message-fixed-button-toolbar :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageView .messageItemHeader .subjectParent :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageView #messageItem .bodySubHeader > :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageView #messageItem .attachmentsPlace > summary:focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageView #messageItem .attachmentsPlace .checkboxAttachment:focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageView #messageItem .attachmentsPlace .controls-handle:focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageView #messageItem .attachmentsPlace .attachmentsControls :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageView #messageItem > .btn-toolbar :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-MailMessageView .messageTags :focus-visible,
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-PopupsCompose .b-header .emailaddresses:has(input:focus-visible) {
+	outline: 2px solid var(--appearance-link, #369);
+	outline-offset: 2px;
+	box-shadow: 0 0 0 4px var(--appearance-surface-raised, #fff);
+}
+
+#rl-app[data-admin="0"]:not(:has(#V-Login.LoginView)) #V-PopupsCompose .b-header .emailaddresses input[type="text"]:focus-visible {
+	outline: none;
+	box-shadow: none;
+}

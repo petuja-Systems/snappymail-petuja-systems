@@ -1,42 +1,56 @@
 <div class="btn-toolbar g-ui-user-select-none">
-	<div class="audioPlace"
-			data-bind="visible: '' !== currentAudio(), attr: { title: currentAudio }, click: stopPlay">
+	<button type="button" class="audioPlace"
+			data-bind="visible: '' !== currentAudio(), attr: { title: currentAudio }, click: stopPlay" data-i18n="[aria-label]GLOBAL/CANCEL">
 		<div class="playIcon"><div></div></div>
-		<i class="stopIcon fontastic">⏸</i>
-	</div>
+		<i class="stopIcon ui-icon" data-ui-icon="pause" aria-hidden="true"></i>
+	</button>
+	<fieldset class="appearance-quick-switch" role="radiogroup" data-bind="visible: appearancePreference()" data-i18n="[aria-label]SETTINGS_APPEARANCE/LABEL">
+		<label class="appearance-quick-switch-option" data-appearance-choice="light" data-bind="css: {'is-selected': appearancePreference() === 'light'}" data-i18n="[title]SETTINGS_APPEARANCE/LIGHT">
+			<input type="radio" name="header-appearance" value="light" data-bind="checked: appearancePreference" data-i18n="[aria-label]SETTINGS_APPEARANCE/LIGHT">
+			<span class="appearance-quick-switch-icon" data-ui-icon="sun" aria-hidden="true"></span>
+		</label>
+		<label class="appearance-quick-switch-option" data-appearance-choice="dark" data-bind="css: {'is-selected': appearancePreference() === 'dark'}" data-i18n="[title]SETTINGS_APPEARANCE/DARK">
+			<input type="radio" name="header-appearance" value="dark" data-bind="checked: appearancePreference" data-i18n="[aria-label]SETTINGS_APPEARANCE/DARK">
+			<span class="appearance-quick-switch-icon" data-ui-icon="moon" aria-hidden="true"></span>
+		</label>
+		<label class="appearance-quick-switch-option" data-appearance-choice="system" data-bind="css: {'is-selected': appearancePreference() === 'system'}" data-i18n="[title]SETTINGS_APPEARANCE/SYSTEM">
+			<input type="radio" name="header-appearance" value="system" data-bind="checked: appearancePreference" data-i18n="[aria-label]SETTINGS_APPEARANCE/SYSTEM">
+			<span class="appearance-quick-switch-icon" data-ui-icon="monitor" aria-hidden="true"></span>
+		</label>
+	</fieldset>
 	<div class="btn-group dropdown" data-bind="registerBootstrapDropdown: true, initDom: accountMenu">
-		<a id="top-system-dropdown-id" href="#" tabindex="-1" class="btn single btn-block dropdown-toggle">
+		<button type="button" id="top-system-dropdown-id" class="btn single btn-block dropdown-toggle" aria-haspopup="menu" data-bind="attr: {'aria-label': accountName() || accountEmail()}" data-ui-icon-after="chevron-down">
 			<span class="accountPlace hide-mobile" data-bind="text: accountName(), attr:{ title: accountEmail }"></span>
-			<i class="fontastic" data-bind="css: {'icon-spinner': accountsLoading()}">👤</i>
+			<i data-ui-icon="user-round" data-bind="css: {'ui-spinner': accountsLoading()}"></i>
 <!--
 			<b data-bind="text: accountsUnreadCount, visible: 100 > accountsUnreadCount() && accountsUnreadCount()"></b>
 			<b data-bind="visible: 99 < accountsUnreadCount()">99+</b>
 			&nbsp;
 -->
-		</a>
+		</button>
 		<menu class="dropdown-menu right-edge" tabindex="-1" role="menu" aria-labelledby="top-system-dropdown-id">
 
 			<!-- ko foreach: accounts -->
 			<li role="presentation">
-				<a class="email-title" href="#" data-bind="click: $root.accountClick, text: label(),
-					attr: {title: email, 'data-unread': unreadEmails, 'data-icon': $root.accountEmail() === email ? '✔' : '👤'}"></a>
+				<a class="email-title" href="#" tabindex="-1" data-bind="click: $root.accountClick, text: label(),
+					attr: {title: email, 'data-unread': unreadEmails, 'data-ui-icon': $root.accountEmail() === email ? 'check' : 'user-round'}"></a>
 			</li>
 			<!-- /ko -->
 
 			<li class="dividerbar" role="presentation" data-bind="visible: allowAccounts">
-				<a href="#" tabindex="-1" data-bind="click: addAccountClick" data-icon="✚" data-i18n="TOP_TOOLBAR/BUTTON_ADD_ACCOUNT"></a>
+				<a href="#" tabindex="-1" data-bind="click: addAccountClick" data-ui-icon="plus" data-i18n="TOP_TOOLBAR/BUTTON_ADD_ACCOUNT"></a>
 			</li>
 			<li role="presentation" data-bind="visible: allowContacts">
-				<a href="#" tabindex="-1" data-bind="click: contactsClick" data-icon="📇" data-i18n="GLOBAL/CONTACTS"></a>
+				<a href="#" tabindex="-1" data-bind="click: contactsClick" data-ui-icon="contact-round" data-i18n="GLOBAL/CONTACTS"></a>
 			</li>
 			<li role="presentation">
-				<a href="#" tabindex="-1" data-bind="click: settingsClick" data-icon="⚙" data-i18n="TITLES/SETTINGS"></a>
+				<a href="#" tabindex="-1" data-bind="click: settingsClick" data-ui-icon="settings" data-i18n="TITLES/SETTINGS"></a>
 			</li>
 			<li role="presentation">
-				<a href="#" tabindex="-1" data-bind="click: settingsHelp" data-icon="🛈" data-i18n="GLOBAL/HELP"></a>
+				<a href="#" tabindex="-1" data-bind="click: settingsHelp" data-ui-icon="info" data-i18n="GLOBAL/HELP"></a>
 			</li>
 			<li class="dividerbar" role="presentation">
-				<a href="#" tabindex="-1" data-bind="click: logoutClick" data-icon="⏻" data-i18n="GLOBAL/LOGOUT"></a>
+				<a href="#" tabindex="-1" data-bind="click: logoutClick" data-ui-icon="power" data-i18n="GLOBAL/LOGOUT"></a>
 			</li>
 		</menu>
 	</div>

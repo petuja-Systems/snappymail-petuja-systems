@@ -121,9 +121,7 @@ class Certificate
 			'private_key_type'   => $this->keyType,
 			'encrypt_key'        => true,
 			'encrypt_key_cipher' => $this->cipher,
-			// v3_ca    = Extensions to use when signing a CA
-			// usr_cert = Extensions for when we sign normal certs (specified as default)
-			'x509_extensions'    => 'snappymail_ca', // v3_ca | usr_cert
+			'x509_extensions'    => 'snappymail_req', // Self-signed identity, not a CA
 			// Extensions to add to a certificate request
 			'req_extensions'     => 'snappymail_req', // v3_req
 		);
@@ -134,8 +132,12 @@ class Certificate
 		}
 
 		$pkey = null; // openssl_pkey_new($options);
-		if ($privateKey) {
-			$pkey = \openssl_pkey_get_private($privateKey, $passphrase);
+		if (null !== $privateKey && '' !== $privateKey) {
+			$pem = OpenSSL::pemData($privateKey);
+			if (null === $pem) {
+				throw new \RuntimeException('S/MIME private key must contain PEM data');
+			}
+			$pkey = \openssl_pkey_get_private($pem, $passphrase);
 			if (!$pkey) {
 				throw new \RuntimeException('OpenSSL pkey: ' . \openssl_error_string());
 			}
@@ -144,14 +146,16 @@ class Certificate
 		if ($csr) {
 			$this->x509 = \openssl_csr_sign(
 				$csr,
-				\file_get_contents(__DIR__ . '/snappymail.crt'),
-				\file_get_contents(__DIR__ . '/snappymail.key'),
+				null,
+				$pkey,
 				$this->days,
 				$options
 			);
 			if ($this->x509/* && $this->canSign() && $this->canEncrypt()*/) {
 				$this->pkey = $pkey;
-				$privateKey || \openssl_pkey_export($pkey, $privateKey, $passphrase);
+				if (!$privateKey && !\openssl_pkey_export($pkey, $privateKey, $passphrase, $options)) {
+					throw new \RuntimeException('OpenSSL private key export failed');
+				}
 				$certificate = '';
 				\openssl_x509_export($this->x509, $certificate);
 				return array(

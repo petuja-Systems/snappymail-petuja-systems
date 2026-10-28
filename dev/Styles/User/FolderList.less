@@ -17,6 +17,14 @@
 	width: 100%;
 }
 
+#V-MailFolderList .e-checkbox {
+	background: transparent;
+	border: 0;
+	color: inherit;
+	font: inherit;
+	text-align: start;
+}
+
 /* https://github.com/the-djmaze/snappymail/issues/1427 */
 #V-MailFolderList .e-checkbox {
 	margin: 0 4px;
@@ -78,6 +86,7 @@
 		white-space: nowrap;
 
 		a {
+			--ui-icon-size: var(--ui-icon-size-sidebar);
 			background-color: transparent;
 			border-left: 3px solid transparent;
 			color: var(--folders-color, #333);
@@ -162,18 +171,18 @@
 	}
 
 	.flag-icon {
-		margin-left: 7px;
+		--ui-icon-size: var(--ui-icon-size-status);
+		margin-inline-start: 7px;
 	}
-	.flag-icon::after {
-		content:'☆';
+	.flag-icon::before {
+		margin-inline-end: 0;
+	}
+	.flag-icon[data-ui-icon="star"] {
 		opacity: .5;
 	}
-	.is-flagged {
-		.flag-icon::after {
-			color: orange;
-			content:'★';
-			opacity: 1;
-		}
+	.is-flagged .flag-icon {
+		color: orange;
+		opacity: 1;
 	}
 
 	.b-folders-system {
@@ -195,19 +204,53 @@
 }
 
 #rl-left .buttonCompose {
-	max-height: 2em;
-	max-width: fit-content;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 30px;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	width: calc(100% - 48px);
+	text-align: center;
+	width: 100%;
+}
+
+#rl-left .buttonComposeText {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+html:not(.rl-left-panel-disabled) #V-MailFolderList .b-folders > .b-toolbar {
+	padding-inline-start: @rlLowMargin;
+	padding-inline-end: calc(@rlLowMargin - 2px);
+}
+
+@media screen and (max-width: @maxMobileWidth) {
+	#rl-left .buttonCompose {
+		padding-inline: 4px;
+	}
 }
 
 html.rl-left-panel-disabled {
-	.buttonComposeText,
-	.buttonContacts {
+	.buttonComposeText {
 		display: none;
+	}
+	#rl-left .b-toolbar {
+		padding-inline: 0;
+		text-align: center;
 	}
 	#rl-left .buttonCompose {
 		width: auto;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		margin-right: 0;
+	}
+	#V-MailFolderList .buttonCompose [data-ui-icon="send"] {
+		margin-right: 0;
+	}
+	#V-MailFolderList .buttonCompose [data-ui-icon="send"]::before {
+		margin-inline-end: 0;
 	}
 }

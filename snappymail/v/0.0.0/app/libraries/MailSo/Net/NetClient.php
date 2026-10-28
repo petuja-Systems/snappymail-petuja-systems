@@ -98,12 +98,22 @@ abstract class NetClient
 
 		$this->ssl = \MailSo\Net\Enumerations\ConnectionSecurityType::UseSSL($this->Settings->port, $this->Settings->type);
 
+		if (\preg_match('/^(tcp|ssl|tls):\/\//i', $this->sConnectedHost, $aScheme)) {
+			if (!$this->ssl && 'tcp' !== \strtolower($aScheme[1])) {
+				throw new \InvalidArgumentException('TLS host transport conflicts with configured mode');
+			}
+			// A TCP prefix cannot downgrade the selected implicit TLS mode.
+			$this->sConnectedHost = \substr($this->sConnectedHost, \strlen($aScheme[0]));
+		}
+		if ((isset($aScheme[1]) || $this->ssl || Enumerations\ConnectionSecurityType::STARTTLS === $oSettings->type)
+		 && false !== \strpos($this->sConnectedHost, '://')) {
+			throw new \InvalidArgumentException('Unsupported TLS host transport');
+		}
 		if (!\preg_match('/^[a-z0-9._]{2,8}:\/\//i', $this->sConnectedHost)) {
 			$this->sConnectedHost = ($this->ssl ? 'ssl://' : 'tcp://') . $this->sConnectedHost;
-//			$this->sConnectedHost = ($this->ssl ? 'ssl://' : '') . $this->sConnectedHost;
 		}
 
-		if (!$this->ssl && \MailSo\Net\Enumerations\ConnectionSecurityType::SSL === $this->Settings->type) {
+		if ($this->ssl && !\in_array('ssl', \stream_get_transports())) {
 			$this->writeLogException(
 				new \MailSo\Net\Exceptions\SocketUnsuppoterdSecureConnectionException('SSL isn\'t supported: ('.\implode(', ', \stream_get_transports()).')'),
 				\LOG_ERR);

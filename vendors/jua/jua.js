@@ -248,6 +248,10 @@
 				;
 
 				oXhr.open('POST', sAction, true);
+				// Resolve headers for each queued upload, including account changes.
+				if (this.options.headers) {
+					Object.entries(this.options.headers()).forEach(([name, value]) => oXhr.setRequestHeader(name, value));
+				}
 
 				if (fProgressFunction && oXhr.upload)
 				{

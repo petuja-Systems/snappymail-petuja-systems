@@ -88,6 +88,9 @@ trait Accounts
 		if ($bNew || \strlen($oPassword)) {
 			$oNewAccount = $this->LoginProcess($sEmail, $oPassword, false);
 			$sEmail = $oNewAccount->Email();
+			if (!$this->AdditionalAccountFactorAllowed($sEmail)) {
+				throw new ClientException(Notifications::AuthError);
+			}
 			$aAccount = $oNewAccount->asTokenArray($oMainAccount);
 		} else {
 			$aAccount = \RainLoop\Model\AdditionalAccount::convertArray($aAccounts[$sEmail]);
@@ -127,11 +130,28 @@ trait Accounts
 		if (!$oAccount) {
 			throw new ClientException(Notifications::AccountDoesNotExist);
 		}
-
 		$oImapClient = new \MailSo\Imap\ImapClient;
 		$oImapClient->SetLogger($this->Logger());
 		$this->imapConnect($oAccount, false, $oImapClient);
 		return $oImapClient;
+	}
+
+	/**
+	 * Additional-account credentials cannot satisfy a target mailbox's native
+	 * second-factor requirement. Treat corrupt state and storage failures as a
+	 * denial; callers must not grant secondary mailbox authority in either case.
+	 */
+	public function AdditionalAccountFactorAllowed(string $sEmail): bool
+	{
+		try {
+			$aState = (new \SnappyMail\TwoFactor($this->StorageProvider(), $sEmail))->LoadState();
+			return \in_array($aState['Status'], [
+				\SnappyMail\TwoFactor::STATE_MISSING,
+				\SnappyMail\TwoFactor::STATE_DISABLED
+			], true);
+		} catch (\Throwable $e) {
+			return false;
+		}
 	}
 
 	public function DoAccountUnread(): array
@@ -253,7 +273,6 @@ trait Accounts
 		if ($this->switchAccount(\trim($this->GetActionParam('Email', '')))) {
 			$oAccount = $this->getAccountFromToken();
 			$aResult = $this->getAccountData($oAccount);
-//			$this->Plugins()->InitAppData($bAdmin, $aResult, $oAccount);
 			return $this->DefaultResponse($aResult);
 		}
 		return $this->FalseResponse();

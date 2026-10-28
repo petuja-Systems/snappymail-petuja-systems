@@ -5,6 +5,7 @@
 import ko from 'ko';
 
 import { arrayLength } from 'Common/Utils';
+import { encodeHtml } from 'Common/HtmlEncoding';
 
 import Remote from 'Remote/User/Fetch';
 
@@ -29,7 +30,7 @@ const
 		}
 		const key = privateKey.id,
 			pass = await Passphrases.ask(privateKey,
-				'OpenPGP.js key<br>' + key + ' ' + privateKey.emails[0],
+				'OpenPGP.js key<br>' + encodeHtml(key) + ' ' + encodeHtml(privateKey.emails[0]),
 				'CRYPTO/'+btnTxt
 			);
 		if (pass) {

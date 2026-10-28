@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "添加",
 		"CLOSE": "关闭",
+		"DELETE": "删除",
+		"LOGOUT": "注销",
 		"SAVE": "保存",
 		"TEST": "测试",
 		"UPDATE": "更新",
@@ -27,7 +30,6 @@
 		"CONTACTS": "联系人",
 		"DOMAINS": "域名",
 		"SECURITY": "安全",
-		"PACKAGES": "插件包",
 		"CONFIG": "配置",
 		"ABOUT": "关于"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "界面",
 		"LABEL_LANGUAGE": "语言",
 		"LABEL_LANGUAGE_ADMIN": "语言(后台)",
-		"LABEL_THEME": "主题",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "允许在设置界面中选择语言",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "允许在设置界面中选择主题",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "允许在设置界面中选择背景",
 		"LABEL_SHOW_THUMBNAILS": "显示缩略图(附件)",
 		"LEGEND_MAIN": "主要设置",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "附件大小限制",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "域名",
 		"BUTTON_ADD_DOMAIN": "添加域名",
 		"BUTTON_ADD_ALIAS": "添加别名",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "您确定吗？",
 		"HTML_DOMAINS_HELPER": "允许访问的域名列表。\n<br>\n点击域名进行设置。\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "安全",
 		"LABEL_USE_IMAGE_PROXY": "对外部图片使用本地代理",
 		"LABEL_AUTO_VERIFY": "自动验证签名",
+		"LABEL_ENFORCE_TWO_FACTOR": "强制启用两步验证",
 		"LABEL_SHOW_PHP_INFO": "显示 PHP 信息",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "管理员面板访问凭据",
 		"LABEL_CURRENT_PASSWORD": "当前密码",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "要求验证 SSL 证书",
 		"CRYPTO": "加密",
 		"LABEL_ALLOW_SELF_SIGNED": "允许自签名证书"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "启用插件",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "有更新可用",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "可用于安装",
-		"LEGEND_INSTALLED_PACKAGES": "已安装的插件包",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "目前无法访问插件仓库"
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "关于",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "插件",
-		"DESC_NOTHING_TO_CONFIGURE": "无可用配置"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "您确定要关闭此窗口吗？"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "无效标记",
 		"AuthError": "认证失败",
 		"DomainAlreadyExists": "域名已经存在",
-		"CantSavePluginSettings": "无法保存设置",
-		"CantInstallPackage": "安装插件包失败",
-		"CantDeletePackage": "移除插件包失败",
-		"InvalidPluginPackage": "无效插件包",
-		"UnsupportedPluginPackage": "不支持的插件包",
 		"UnknownError": "未知错误"
 	}
 }

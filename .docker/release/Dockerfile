@@ -1,7 +1,12 @@
 # syntax=docker/dockerfile:1
 
-FROM alpine:3.18.5 AS builder
-RUN apk add --no-cache php82 php82-json php-phar php-zip
+FROM php:8.2-cli-alpine AS builder
+RUN php -r 'if (version_compare(PHP_VERSION, "8.2.35", "<")) { fwrite(STDERR, "petuja.email requires PHP 8.2.35 or newer; found " . PHP_VERSION . PHP_EOL); exit(1); }'
+RUN set -eux; \
+    apk add --no-cache libzip; \
+    apk add --no-cache --virtual .build-dependencies $PHPIZE_DEPS libzip-dev; \
+    docker-php-ext-install zip; \
+    apk del .build-dependencies
 RUN apk add --no-cache npm
 RUN npm install -g gulp yarn
 WORKDIR /source
@@ -24,6 +29,8 @@ RUN set -eux; \
 
 # Inspired by the original Rainloop dockerfile from youtous on GitLab
 FROM php:8.2-fpm-alpine AS final
+
+RUN php -r 'if (version_compare(PHP_VERSION, "8.2.35", "<")) { fwrite(STDERR, "petuja.email requires PHP 8.2.35 or newer; found " . PHP_VERSION . PHP_EOL); exit(1); }'
 
 LABEL org.label-schema.description="SnappyMail webmail client image using nginx, php-fpm on Alpine"
 
@@ -183,6 +190,5 @@ USER root
 WORKDIR /snappymail
 VOLUME /var/lib/snappymail
 EXPOSE 8888
-EXPOSE 9000
 ENTRYPOINT []
 CMD ["/entrypoint.sh"]

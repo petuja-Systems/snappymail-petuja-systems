@@ -86,11 +86,11 @@
 		border: 1px solid rgba(255, 255, 255, .8);
 	}
 
-	.fontastic + input {
+	.ui-icon + input {
 		padding: 0 30px;
 	}
 
-	.controls > .fontastic:first-child {
+	.controls > .ui-icon:first-child {
 		position: absolute;
 		font-size: 121%;
 		line-height: 38px;
@@ -177,25 +177,18 @@ html.rl-started-trigger .LoginView {
 // Product-specific public login surface. Keep the shared rules above intact for
 // the admin login and scope every redesign rule to the user login view.
 #rl-app #V-Login.LoginView {
-	--petuja-login-bg: #0d141b;
 	--petuja-login-surface: rgba(19, 29, 38, 0.92);
 	--petuja-login-surface-border: rgba(255, 255, 255, 0.12);
 	--petuja-login-text: #f4f8fa;
 	--petuja-login-muted: #aebbc2;
 	--petuja-login-input: rgba(5, 12, 18, 0.58);
-	--petuja-login-accent: #11c6db;
 	--petuja-login-accent-deep: #1d6d8b;
-	--petuja-login-accent-soft: rgba(17, 198, 219, 0.14);
-	--petuja-login-warm-soft: rgba(240, 119, 16, 0.08);
 	--petuja-login-danger: #ff9c9c;
 	--petuja-login-danger-soft: rgba(255, 156, 156, 0.12);
 
 	align-items: center;
 	background-color: var(--petuja-login-bg);
-	background-image:
-		radial-gradient(circle at 50% -12%, var(--petuja-login-accent-soft), transparent 42%),
-		radial-gradient(circle at 100% 110%, var(--petuja-login-warm-soft), transparent 34%),
-		linear-gradient(145deg, #0b1117 0%, #111c25 52%, #0b1218 100%);
+	background-image: var(--petuja-login-background-image);
 	box-sizing: border-box;
 	color: var(--petuja-login-text);
 	display: flex;
@@ -238,11 +231,23 @@ html.rl-started-trigger .LoginView {
 		font-family: inherit;
 	}
 
+	// Keep text inside its box when the flex column has insufficient height.
+	> .alert,
+	> .descWrapper {
+		flex-shrink: 0;
+	}
+
+	> .alert {
+		overflow-wrap: break-word;
+		overflow-wrap: anywhere;
+	}
+
 	.login-brand {
 		align-items: center;
 		display: flex;
 		flex-direction: column;
 		gap: 14px;
+		max-inline-size: 100%;
 		margin: 0 auto 22px;
 		text-align: center;
 
@@ -259,7 +264,9 @@ html.rl-started-trigger .LoginView {
 			font-weight: 600;
 			letter-spacing: -0.035em;
 			line-height: 1.1;
+			max-inline-size: 100%;
 			margin: 0;
+			overflow-wrap: anywhere;
 		}
 	}
 
@@ -388,7 +395,7 @@ html.rl-started-trigger .LoginView {
 			}
 		}
 
-		.fontastic + input {
+		.ui-icon + input {
 			padding-left: 42px;
 		}
 
@@ -423,7 +430,7 @@ html.rl-started-trigger .LoginView {
 			min-height: 44px;
 			padding: 4px 6px;
 
-			.fontastic {
+			.ui-icon {
 				color: var(--petuja-login-accent);
 				font-size: 1.1rem;
 				line-height: 1;
@@ -431,6 +438,11 @@ html.rl-started-trigger .LoginView {
 
 			&:hover {
 				background: rgba(255, 255, 255, 0.06);
+			}
+
+			&.is-disabled {
+				cursor: wait;
+				opacity: 0.65;
 			}
 
 			&:focus-visible {
@@ -470,6 +482,55 @@ html.rl-started-trigger .LoginView {
 
 		.login-submit {
 			margin-top: 2px;
+		}
+
+		.login-factor-step {
+			h2 {
+				color: var(--petuja-login-text);
+				font-size: 1.15rem;
+				line-height: 1.35;
+				margin: 0 0 8px;
+			}
+
+			> p {
+				color: var(--petuja-login-muted);
+				line-height: 1.5;
+				margin: 0 0 20px;
+			}
+		}
+
+		.login-factor-control {
+			margin-bottom: 16px;
+		}
+
+		.login-factor-actions {
+			display: grid;
+			gap: 10px;
+		}
+
+		.login-back {
+			background: transparent;
+			border: 1px solid var(--petuja-login-surface-border);
+			border-radius: 12px;
+			color: var(--petuja-login-text);
+			min-height: 44px;
+			transition: background-color 0.2s ease, border-color 0.2s ease;
+
+			&:hover {
+				background: rgba(255, 255, 255, 0.06);
+				border-color: rgba(255, 255, 255, 0.28);
+				color: var(--petuja-login-text);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--petuja-login-accent);
+				outline-offset: 2px;
+			}
+
+			&:disabled {
+				cursor: wait;
+				opacity: 0.65;
+			}
 		}
 
 		.buttonLogin {

@@ -1,0 +1,334 @@
+/* Fixed, local icon registry. Unknown keys have no matching selector and render no icon. */
+.ui-icon-pseudo(@name; @spacing: 0.5em) {
+	content: "";
+	display: inline-block;
+	width: var(--ui-icon-size, 1em);
+	height: var(--ui-icon-size, 1em);
+	margin-inline-end: @spacing;
+	background-color: currentColor;
+	vertical-align: -0.125em;
+	-webkit-mask-image: url("../../images/ui-icons/@{name}.svg");
+	-webkit-mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-size: contain;
+	mask-image: url("../../images/ui-icons/@{name}.svg");
+	mask-position: center;
+	mask-repeat: no-repeat;
+	mask-size: contain;
+}
+
+[data-ui-icon="archive"]::before {
+	.ui-icon-pseudo(archive);
+}
+[data-ui-icon="arrow-down"]::before {
+	.ui-icon-pseudo(arrow-down);
+}
+[data-ui-icon="arrow-down-wide-narrow"]::before {
+	.ui-icon-pseudo(arrow-down-wide-narrow);
+}
+[data-ui-icon="arrow-left"]::before {
+	.ui-icon-pseudo(arrow-left);
+}
+[data-ui-icon="arrow-left-right"]::before {
+	.ui-icon-pseudo(arrow-left-right);
+}
+[data-ui-icon="arrow-right"]::before {
+	.ui-icon-pseudo(arrow-right);
+}
+[data-ui-icon="arrow-up"]::before {
+	.ui-icon-pseudo(arrow-up);
+}
+[data-ui-icon="arrow-up-narrow-wide"]::before {
+	.ui-icon-pseudo(arrow-up-narrow-wide);
+}
+[data-ui-icon="at-sign"]::before {
+	.ui-icon-pseudo(at-sign);
+}
+[data-ui-icon="audio-lines"]::before {
+	.ui-icon-pseudo(audio-lines);
+}
+[data-ui-icon="calendar-days"]::before {
+	.ui-icon-pseudo(calendar-days);
+}
+[data-ui-icon="check"]::before {
+	.ui-icon-pseudo(check);
+}
+[data-ui-icon="check-check"]::before {
+	.ui-icon-pseudo(check-check);
+}
+[data-ui-icon="chevron-down"]::before {
+	.ui-icon-pseudo(chevron-down);
+}
+[data-ui-icon="chevron-left"]::before {
+	.ui-icon-pseudo(chevron-left);
+}
+[data-ui-icon="chevron-right"]::before {
+	.ui-icon-pseudo(chevron-right);
+}
+[data-ui-icon="circle"]::before {
+	.ui-icon-pseudo(circle);
+}
+[data-ui-icon="circle-check"]::before {
+	.ui-icon-pseudo(circle-check);
+}
+[data-ui-icon="circle-dot"]::before {
+	.ui-icon-pseudo(circle-dot);
+}
+[data-ui-icon="circle-help"]::before {
+	.ui-icon-pseudo(circle-help);
+}
+[data-ui-icon="clapperboard"]::before {
+	.ui-icon-pseudo(clapperboard);
+}
+[data-ui-icon="clock-3"]::before {
+	.ui-icon-pseudo(clock-3);
+}
+[data-ui-icon="code"]::before {
+	.ui-icon-pseudo(code);
+}
+[data-ui-icon="contact-round"]::before {
+	.ui-icon-pseudo(contact-round);
+}
+[data-ui-icon="copy"]::before {
+	.ui-icon-pseudo(copy);
+}
+[data-ui-icon="download"]::before {
+	.ui-icon-pseudo(download);
+}
+[data-ui-icon="external-link"]::before {
+	.ui-icon-pseudo(external-link);
+}
+[data-ui-icon="eye"]::before {
+	.ui-icon-pseudo(eye);
+}
+[data-ui-icon="file"]::before {
+	.ui-icon-pseudo(file);
+}
+[data-ui-icon="file-badge"]::before {
+	.ui-icon-pseudo(file-badge);
+}
+[data-ui-icon="file-code-2"]::before {
+	.ui-icon-pseudo(file-code-2);
+}
+[data-ui-icon="file-text"]::before {
+	.ui-icon-pseudo(file-text);
+}
+[data-ui-icon="filter"]::before {
+	.ui-icon-pseudo(filter);
+}
+[data-ui-icon="flame"]::before {
+	.ui-icon-pseudo(flame);
+}
+[data-ui-icon="folder"]::before {
+	.ui-icon-pseudo(folder);
+}
+[data-ui-icon="folder-input"]::before {
+	.ui-icon-pseudo(folder-input);
+}
+[data-ui-icon="folder-open"]::before {
+	.ui-icon-pseudo(folder-open);
+}
+[data-ui-icon="folder-plus"]::before {
+	.ui-icon-pseudo(folder-plus);
+}
+[data-ui-icon="forward"]::before {
+	.ui-icon-pseudo(forward);
+}
+[data-ui-icon="globe"]::before {
+	.ui-icon-pseudo(globe);
+}
+[data-ui-icon="grip-vertical"]::before {
+	.ui-icon-pseudo(grip-vertical);
+}
+[data-ui-icon="image"]::before {
+	.ui-icon-pseudo(image);
+}
+[data-ui-icon="image-plus"]::before {
+	.ui-icon-pseudo(image-plus);
+}
+[data-ui-icon="inbox"]::before {
+	.ui-icon-pseudo(inbox);
+}
+[data-ui-icon="info"]::before {
+	.ui-icon-pseudo(info);
+}
+[data-ui-icon="key-round"]::before {
+	.ui-icon-pseudo(key-round);
+}
+[data-ui-icon="link"]::before {
+	.ui-icon-pseudo(link);
+}
+[data-ui-icon="list-filter"]::before {
+	.ui-icon-pseudo(list-filter);
+}
+[data-ui-icon="list"]::before {
+	.ui-icon-pseudo(list);
+}
+[data-ui-icon="list-ordered"]::before {
+	.ui-icon-pseudo(list-ordered);
+}
+[data-ui-icon="lock-keyhole"]::before {
+	.ui-icon-pseudo(lock-keyhole);
+}
+[data-ui-icon="mail-open"]::before {
+	.ui-icon-pseudo(mail-open);
+}
+[data-ui-icon="mail"]::before {
+	.ui-icon-pseudo(mail);
+}
+[data-ui-icon="maximize"]::before {
+	.ui-icon-pseudo(maximize);
+}
+[data-ui-icon="minimize"]::before {
+	.ui-icon-pseudo(minimize);
+}
+[data-ui-icon="minus"]::before {
+	.ui-icon-pseudo(minus);
+}
+[data-ui-icon="moon"]::before {
+	.ui-icon-pseudo(moon);
+}
+[data-ui-icon="monitor"]::before {
+	.ui-icon-pseudo(monitor);
+}
+[data-ui-icon="more-horizontal"]::before {
+	.ui-icon-pseudo(more-horizontal);
+}
+[data-ui-icon="package"]::before {
+	.ui-icon-pseudo(package);
+}
+[data-ui-icon="palette"]::before {
+	.ui-icon-pseudo(palette);
+}
+[data-ui-icon="paperclip"]::before {
+	.ui-icon-pseudo(paperclip);
+}
+[data-ui-icon="pause"]::before {
+	.ui-icon-pseudo(pause);
+}
+[data-ui-icon="pen-line"]::before {
+	.ui-icon-pseudo(pen-line);
+}
+[data-ui-icon="pencil"]::before {
+	.ui-icon-pseudo(pencil);
+}
+[data-ui-icon="phone"]::before {
+	.ui-icon-pseudo(phone);
+}
+[data-ui-icon="play"]::before {
+	.ui-icon-pseudo(play);
+}
+[data-ui-icon="plus"]::before {
+	.ui-icon-pseudo(plus);
+}
+[data-ui-icon="power"]::before {
+	.ui-icon-pseudo(power);
+}
+[data-ui-icon="presentation"]::before {
+	.ui-icon-pseudo(presentation);
+}
+[data-ui-icon="printer"]::before {
+	.ui-icon-pseudo(printer);
+}
+[data-ui-icon="redo-2"]::before {
+	.ui-icon-pseudo(redo-2);
+}
+[data-ui-icon="reply"]::before {
+	.ui-icon-pseudo(reply);
+}
+[data-ui-icon="reply-all"]::before {
+	.ui-icon-pseudo(reply-all);
+}
+[data-ui-icon="save"]::before {
+	.ui-icon-pseudo(save);
+}
+[data-ui-icon="search"]::before {
+	.ui-icon-pseudo(search);
+}
+[data-ui-icon="send"]::before {
+	.ui-icon-pseudo(send);
+}
+[data-ui-icon="settings"]::before {
+	.ui-icon-pseudo(settings);
+}
+[data-ui-icon="shield-check"]::before {
+	.ui-icon-pseudo(shield-check);
+}
+[data-ui-icon="square"]::before {
+	.ui-icon-pseudo(square);
+}
+[data-ui-icon="square-check"]::before {
+	.ui-icon-pseudo(square-check);
+}
+[data-ui-icon="square-dashed"]::before {
+	.ui-icon-pseudo(square-dashed);
+}
+[data-ui-icon="star"]::before {
+	.ui-icon-pseudo(star);
+}
+[data-ui-icon="star-filled"]::before {
+	.ui-icon-pseudo(star-filled);
+}
+[data-ui-icon="sun"]::before {
+	.ui-icon-pseudo(sun);
+}
+[data-ui-icon="table-2"]::before {
+	.ui-icon-pseudo(table-2);
+}
+[data-ui-icon="tag"]::before {
+	.ui-icon-pseudo(tag);
+}
+[data-ui-icon="tags"]::before {
+	.ui-icon-pseudo(tags);
+}
+[data-ui-icon="trash-2"]::before {
+	.ui-icon-pseudo(trash-2);
+}
+[data-ui-icon="triangle-alert"]::before {
+	.ui-icon-pseudo(triangle-alert);
+}
+[data-ui-icon="undo-2"]::before {
+	.ui-icon-pseudo(undo-2);
+}
+[data-ui-icon="user-round"]::before {
+	.ui-icon-pseudo(user-round);
+}
+[data-ui-icon="user-round-plus"]::before {
+	.ui-icon-pseudo(user-round-plus);
+}
+[data-ui-icon="users-round"]::before {
+	.ui-icon-pseudo(users-round);
+}
+[data-ui-icon="wrench"]::before {
+	.ui-icon-pseudo(wrench);
+}
+[data-ui-icon="x"]::before {
+	.ui-icon-pseudo(x);
+}
+
+[data-ui-icon="spacer"]::before {
+	content: "";
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	margin-inline-end: 0.5em;
+}
+
+[data-ui-icon-after="chevron-down"]::after {
+	.ui-icon-pseudo(chevron-down; 0);
+	margin-inline-start: 0.25em;
+	width: 0.8em;
+	font-size: 80%;
+}
+
+.toggleLeft::before {
+	.ui-icon-pseudo(chevron-left; 0);
+}
+html.rl-left-panel-disabled .toggleLeft::before {
+	.ui-icon-pseudo(chevron-right; 0);
+}
+
+/* Spinner state is drawn by the existing CSS ring on the element itself. */
+.ui-spinner[data-ui-icon]::before {
+	content: none;
+}

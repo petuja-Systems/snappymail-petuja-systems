@@ -1,5 +1,3 @@
-import { runSettingsViewModelHooks } from 'Common/Plugins';
-
 import { AbstractSettingsScreen, settingsAddViewModel } from 'Screen/AbstractSettings';
 
 import { AdminSettingsGeneral } from 'Settings/Admin/General';
@@ -7,7 +5,6 @@ import { AdminSettingsDomains } from 'Settings/Admin/Domains';
 import { AdminSettingsLogin } from 'Settings/Admin/Login';
 import { AdminSettingsContacts } from 'Settings/Admin/Contacts';
 import { AdminSettingsSecurity } from 'Settings/Admin/Security';
-import { AdminSettingsPackages } from 'Settings/Admin/Packages';
 import { AdminSettingsAbout } from 'Settings/Admin/About';
 import { AdminSettingsBranding } from 'Settings/Admin/Branding';
 import { AdminSettingsConfig } from 'Settings/Admin/Config';
@@ -26,14 +23,12 @@ export class SettingsAdminScreen extends AbstractSettingsScreen {
 			AdminSettingsBranding,
 			AdminSettingsContacts,
 			AdminSettingsSecurity,
-			AdminSettingsPackages,
 			AdminSettingsConfig,
 			AdminSettingsAbout
 		].forEach((item, index) =>
 			settingsAddViewModel(item, 0, 0, 0, 0 === index)
 		);
 
-		runSettingsViewModelHooks(true);
 	}
 
 	onShow() {

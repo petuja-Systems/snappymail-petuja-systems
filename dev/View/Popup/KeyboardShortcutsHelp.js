@@ -12,7 +12,7 @@ export class KeyboardShortcutsHelpPopupView extends AbstractViewPopup {
 			last = tabs.length - 1;
 
 //		addShortcut('tab', 'shift',
-		addShortcut('tab,arrowleft,arrowright', '',
+		addShortcut('arrowleft,arrowright', '',
 			'KeyboardShortcutsHelp',
 			event => {
 				let next = 0;

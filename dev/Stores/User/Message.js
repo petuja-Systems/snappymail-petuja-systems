@@ -23,11 +23,16 @@ export const MessageUserStore = new class {
 		addSubscribablesTo(this, {
 			message: message => {
 				clearTimeout(this.MessageSeenTimer);
+				const viewerToolbarHasFocus = !message
+					&& document.activeElement?.closest('.message-view-toolbar-actions');
 				elementById('rl-right').classList.toggle('message-selected', !!message);
 				if (message) {
 					SettingsUserStore.usePreviewPane() || AppUserStore.focusedState(ScopeMessageView);
 				} else {
 					AppUserStore.focusedState(ScopeMessageList);
+					if (viewerToolbarHasFocus) {
+						elementById('V-MailMessageList')?.querySelector('.b-content')?.focus();
+					}
 					exitFullscreen();
 				}
 				[...(this.bodiesDom()?.children || [])].forEach(el => el.hidden = true);

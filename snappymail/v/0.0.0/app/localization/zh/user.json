@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "登录",
 		"LABEL_SIGN_ME": "记住我",
-		"BUTTON_SIGN_IN": "登录"
+		"BUTTON_SIGN_IN": "登录",
+		"TAGLINE": "无论身在何处，都能查看收件箱。",
+		"LEGAL_NAVIGATION": "法律信息",
+		"LEGAL_IMPRINT": "出版信息",
+		"LEGAL_PRIVACY": "隐私",
+		"LEGAL_SOURCE": "源代码",
+		"TWO_FACTOR_TITLE": "两步验证",
+		"TWO_FACTOR_INSTRUCTION": "输入身份验证器应用中的代码或恢复代码。",
+		"TWO_FACTOR_CODE": "验证码",
+		"BUTTON_VERIFY": "验证并登录"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "添加账户"
@@ -276,7 +285,7 @@
 	"POPUPS_IDENTITY": {
 		"TITLE_ADD_IDENTITY": "添加身份",
 		"TITLE_UPDATE_IDENTITY": "更新身份",
-		"LABEL": "",
+		"LABEL": "标签",
 		"BUTTON_ADD_IDENTITY": "添加",
 		"SIGNATURE": "Signature",
 		"LABEL_SIGNATURE_INSERT_BEFORE": "在回信中插入签名再引用来信"
@@ -439,8 +448,13 @@
 		"FOLDERS": "文件夹",
 		"ACCOUNTS": "账户",
 		"FILTERS": "筛选器",
-		"SECURITY": "安全",
-		"THEMES": "主题"
+		"SECURITY": "安全"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "外观",
+		"LIGHT": "浅色",
+		"DARK": "深色",
+		"SYSTEM": "系统"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "简单",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "安全",
 		"LABEL_AUTOLOGOUT": "自动登出",
 		"FORGET_KEY_PASS": "忘记私钥密码",
+		"TFA_LEGEND": "两步验证 (TOTP)",
+		"TFA_STATUS_LABEL": "状态",
+		"TFA_STATUS_MISSING": "未设置",
+		"TFA_STATUS_DISABLED": "未设置",
+		"TFA_STATUS_ENABLED": "已设置",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "创建新密钥",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "密钥",
+		"TFA_QR_INSTRUCTIONS": "将下面的信息导入 Google Authenticator (或其他 TOTP 客户端)。 扫描下面的二维码或手动输入密钥。\n",
+		"TFA_RECOVERY_CODES": "备用代码",
+		"TFA_RECOVERY_CODES_WARNING": "如果你无法从验证器获取验证码，你可以使用备用代码登录。 当你使用过某一个备用代码后，它将会失效。\n",
+		"TFA_CODE_LABEL": "代码",
+		"TFA_ENABLE": "启用",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "从不"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "地址簿 URL",
 		"LABEL_CONTACTS_SYNC_USER": "用户名",
 		"SYNC_READ": "只读"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "主题",
-		"LABEL_BACKGROUND": "背景",
-		"LABEL_FONTS": "字体",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "上传背景 (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "文件过大",
-		"ERROR_FILE_TYPE_ERROR": "无效类型 (仅支持JPG和PNG)",
-		"ERROR_UNKNOWN": "上传时发生未知错误"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "文件夹列表",

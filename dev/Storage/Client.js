@@ -28,7 +28,8 @@ try {
 			data[key] = ''+value; // forces the value to a string
 			document.cookie = sName+'='+encodeURIComponent(JSON.stringify(data))
 				+";expires="+((new Date(Date.now()+(365*24*60*60*1000))).toGMTString())
-				+";path=/;samesite=strict";
+				+";path=/;samesite=strict"
+				+('https:' === win.location.protocol ? ';secure' : '');
 		}
 	};
 }

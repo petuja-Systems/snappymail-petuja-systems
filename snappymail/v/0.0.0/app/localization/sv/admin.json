@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Lägg till",
 		"CLOSE": "Stäng",
+		"DELETE": "Ta bort",
+		"LOGOUT": "Logga ut",
 		"SAVE": "Spara",
 		"TEST": "Test",
 		"UPDATE": "Uppdatera",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Kontakter",
 		"DOMAINS": "Domäner",
 		"SECURITY": "Säkerhet",
-		"PACKAGES": "Tillägg",
 		"CONFIG": "Config",
 		"ABOUT": "Om"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Gränssnitt",
 		"LABEL_LANGUAGE": "Språk",
 		"LABEL_LANGUAGE_ADMIN": "Språk (administratör)",
-		"LABEL_THEME": "Tema",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Tillåt språkändringar på konfigurationspanelen ",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Tillåt tema val på konfigurationspanelen",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Tillåt bakgrundsändringar på konfigurationspanelen",
 		"LABEL_SHOW_THUMBNAILS": "Visa miniatyrer (bilagor)",
 		"LEGEND_MAIN": "Huvud",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Bilagor storlek",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domäner",
 		"BUTTON_ADD_DOMAIN": "Lägg till domän",
 		"BUTTON_ADD_ALIAS": "Lägg till Alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Är du säker?",
 		"HTML_DOMAINS_HELPER": "Lista med domäner webmail tillåts access.\n<br>\nKlicka på namnet för att konfigurera domain.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Säkerhet",
 		"LABEL_USE_IMAGE_PROXY": "Använd lokal proxy för externa bilder",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Kräv tvåstegsverifiering",
 		"LABEL_SHOW_PHP_INFO": "Visa PHP-information",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Administrativsuppgifter",
 		"LABEL_CURRENT_PASSWORD": "Nuvarande lösenord",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Kräver verifiering av SSL-certifikat som används",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Låt självsignerade certifikat"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Aktivera Tillägg",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Tillåt uppdateringar",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Tillåt installation",
-		"LEGEND_INSTALLED_PACKAGES": "installerade paket",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Det går inte att komma åt arkivet för tillfället."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Om",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Tillägget",
-		"DESC_NOTHING_TO_CONFIGURE": "Inget att konfigurera"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Är du säker på att du vill stänga sidan?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "ogiltiga symboler",
 		"AuthError": "Autentisering misslyckades",
 		"DomainAlreadyExists": "Domänen finns redan",
-		"CantSavePluginSettings": "Kan inte spara inställningarna",
-		"CantInstallPackage": "Det gick inte att installera tillägget",
-		"CantDeletePackage": "Det gick inte att ta bort tillägget",
-		"InvalidPluginPackage": "Ogiltigt tilläggspaket",
-		"UnsupportedPluginPackage": "Tillägg som inte stöds",
 		"UnknownError": "Okänt fel"
 	}
 }

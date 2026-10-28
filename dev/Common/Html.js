@@ -1,21 +1,16 @@
 import { createElement } from 'Common/Globals';
 import { forEachObjectEntry, isArray, pInt } from 'Common/Utils';
 import { SettingsUserStore } from 'Stores/User/Settings';
+import { encodeHtml } from 'Common/HtmlEncoding';
+
+export { encodeHtml };
 
 const
 	tmpl = createElement('template'),
 
 	turndown = new TurndownService(),
 
-	htmlre = /[&<>"']/g,
 	httpre = /^(https?:)?\/\//i,
-	htmlmap = {
-		'&': '&amp;',
-		'<': '&lt;',
-		'>': '&gt;',
-		'"': '&quot;',
-		"'": '&#x27;'
-	},
 
 	keepTagContent = 'form,button,data', // font
 
@@ -38,7 +33,7 @@ const
 		// Table Elements
 		'caption','col','colgroup','table','tbody','td','tfoot','th','thead','tr',
 		// Disallowed but converted later
-		'style','xmp'
+		'xmp'
 	].join(','),
 
 	nonEmptyTags = [
@@ -121,104 +116,29 @@ const
 		return url;
 	},
 
-	cleanCSS = source =>
-		source.trim()
-			.replace(/;\s*-[^;]+/g, '')
-			.replace(/^\s*-[^;]+(;|$)/g, '')
-			.replace(/white-space[^;]+/g, '')
-			// Drop Microsoft Office style properties
-//			.replace(/mso-[^:;]+:[^;]+/gi, '')
-	,
-
-	/*
-		Parses given css string, and returns css object
-		keys as selectors and values are css rules
-		eliminates all css comments before parsing
-
-		@param source css string to be parsed
-
-		@return object css
-	*/
-	parseCSS = source => {
-		const css = [];
-		css.toString = () => css.reduce(
-			(ret, tmp) =>
-				ret + tmp.selector + ' {\n'
-					+ (tmp.type === 'media' ? tmp.subStyles.toString() : tmp.rules)
-					+ '}\n'
-			,
-			''
-		);
-		/**
-		 * Given css array, parses it and then for every selector,
-		 * prepends namespace to prevent css collision issues
-		 */
-		css.applyNamespace = namespace => css.forEach(obj => {
-			if (obj.type === 'media') {
-				obj.subStyles.applyNamespace(namespace);
-			} else {
-				obj.selector = obj.selector.split(',').map(selector =>
-					(namespace + ' .mail-body ' + selector.replace(/\./g, '.msg-'))
-					.replace(/\sbody/gi, '')
-				).join(',');
-			}
-		});
-
-		if (source) {
-			source = source
-				// strip comments
-				.replace(/\/\*[\s\S]*?\*\//gi, '')
-				// strip MS Word comments
-				.replace(/<!--[\s\S]*?-->/gi, '')
-				// strip HTML, as < is no CSS combinator anyway
-				.replace(/<[\s\S]*/gi, '');
-//				.replace(/<\/?[a-z][\s\S]*?>/gi, '');
-
-			// unified regex to match css & media queries together
-			let unified = /(?:(\s*?@(?:media)[\s\S]*?){([\s\S]*?)}\s*?})|(?:([\s\S]*?){([\s\S]*?)})/gi,
-				arr;
-
-			while (true) {
-				arr = unified.exec(source);
-				if (arr === null) {
-					break;
-				}
-
-				let selector = arr[arr[2] === undefined ? 3 : 1].split('\r\n').join('\n').trim()
-					// Never have more than a single line break in a row
-					.replace(/\n+/, "\n")
-					// Remove :root and html
-					.split(/\s+/g).map(item => item.replace(/^(:root|html)$/, '')).join(' ').trim();
-
-				// determine the type
-				if (selector.includes('@media')) {
-					// we have a media query
-					css.push({
-						selector: selector,
-						type: 'media',
-						subStyles: parseCSS(arr[2] + '\n}') //recursively parse media query inner css
-					});
-				} else if (selector && !selector.includes('@')) {
-					// we have standard css
-					// ignores @import, @keyframe, @font-face statements
-					css.push({
-						selector: selector,
-						rules: cleanCSS(arr[4])
-					});
-				}
-			}
+	// Native CSSOM parses inline declarations. Only properties whose value grammar
+	// cannot load resources are retained; stylesheet rules and CSS images are unsupported.
+	safeStyleProperties = new Set((
+		'background-color border border-bottom border-bottom-color border-bottom-left-radius '
+		+ 'border-bottom-right-radius border-bottom-style border-bottom-width border-collapse border-color '
+		+ 'border-left border-left-color border-left-style border-left-width border-radius border-right '
+		+ 'border-right-color border-right-style border-right-width border-spacing border-style border-top '
+		+ 'border-top-color border-top-left-radius border-top-right-radius border-top-style border-top-width '
+		+ 'border-width box-sizing caption-side color direction display empty-cells float font font-family '
+		+ 'font-size font-stretch font-style font-variant font-weight height letter-spacing line-height '
+		+ 'margin margin-bottom margin-left margin-right margin-top max-height max-width opacity overflow '
+		+ 'overflow-wrap padding padding-bottom padding-left padding-right padding-top table-layout '
+		+ 'text-align text-decoration text-decoration-color text-decoration-line text-decoration-style '
+		+ 'text-indent text-overflow text-transform unicode-bidi vertical-align visibility width '
+		+ 'word-break word-spacing word-wrap'
+	).split(' ')),
+	cleanStyle = style => Array.from(style).forEach(property => {
+		if (!safeStyleProperties.has(property)) {
+			style.removeProperty(property);
 		}
-
-		return css;
-	};
+	});
 
 export const
-
-	/**
-	 * @param {string} text
-	 * @returns {string}
-	 */
-	encodeHtml = text => (text?.toString?.() || '' + text).replace(htmlre, m => htmlmap[m]),
 
 	/**
 	 * Clears the Message Html for viewing
@@ -260,7 +180,7 @@ export const
 				// defaults
 				'name',
 				'dir', 'lang', 'style', 'title',
-				'background', 'bgcolor', 'alt', 'height', 'width', 'src', 'href',
+				'bgcolor', 'alt', 'height', 'width', 'src', 'href',
 				'border', 'bordercolor', 'charset', 'direction',
 				// a
 				'download', 'hreflang',
@@ -287,12 +207,6 @@ export const
 				// others
 				//'class', 'id', 'target'
 			];
-
-		if (SettingsUserStore.allowStyles()) {
-			allowedAttributes.push('class');
-		} else {
-			msgId = 0;
-		}
 
 		tmpl.innerHTML = html
 //			.replace(/<pre[^>]*>[\s\S]*?<\/pre>/gi, pre => pre.replace(/\n/g, '\n<br>'))
@@ -364,21 +278,6 @@ export const
 			const name = oElement.tagName,
 				oStyle = oElement.style;
 
-			if ('STYLE' === name) {
-				let css = msgId ? parseCSS(oElement.textContent) : [];
-				if (css.length) {
-					css.applyNamespace(msgId);
-					css = css.toString();
-					if (SettingsUserStore.removeColors()) {
-						css = css.replace(/(background-)?color:[^};]+;?/g, '');
-					}
-					oElement.textContent = css;
-				} else {
-					oElement.remove();
-				}
-				return;
-			}
-
 			if ('XMP' === name) {
 				const pre = createElement('pre');
 				pre.innerHTML = encodeHtml(oElement.innerHTML);
@@ -413,8 +312,6 @@ export const
 				forEachObjectEntry(tasks, (name, cb) =>
 					hasAttribute(name) && cb(delAttribute(name), oElement)
 				);
-			} else if (msgId && className) {
-				oElement.className = className.replace(/(^|\s+)/g, '$1msg-');
 			}
 
 			if (oElement.hasAttributes()) {
@@ -431,41 +328,50 @@ export const
 			let value;
 
 //			if ('TABLE' === name || 'TD' === name || 'TH' === name) {
-			if (!oStyle.backgroundImage) {
-				if ('TD' !== name && 'TH' !== name) {
-					['width','height'].forEach(key => {
-						if (hasAttribute(key)) {
-							value = delAttribute(key);
-							oStyle[key] || (oStyle[key] = value.includes('%') ? value : value + 'px');
-						}
-					});
-					// Make width responsive
-					value = oStyle.width;
-					if (100 < parseInt(value,10) && !oStyle.maxWidth) {
-						oStyle.maxWidth = value;
-						oStyle.width = '100%';
+			if ('TD' !== name && 'TH' !== name) {
+				['width','height'].forEach(key => {
+					if (hasAttribute(key)) {
+						value = delAttribute(key);
+						oStyle[key] || (oStyle[key] = value.includes('%') ? value : value + 'px');
 					}
-					// Make height responsive
-					value = oStyle.removeProperty('height');
-					if (value && !oStyle.maxHeight) {
-						oStyle.maxHeight = value;
-					}
+				});
+				// Make width responsive
+				value = oStyle.width;
+				if (100 < parseInt(value,10) && !oStyle.maxWidth) {
+					oStyle.maxWidth = value;
+					oStyle.width = '100%';
+				}
+				// Make height responsive
+				value = oStyle.removeProperty('height');
+				if (value && !oStyle.maxHeight) {
+					oStyle.maxHeight = value;
 				}
 			}
 //			} else
 			if ('A' === name) {
-				value = oElement.href;
-				if (!/^([a-z]+):/i.test(value)) {
-					setAttribute('data-x-href-broken', value);
-					delAttribute('href');
-				} else {
-					oElement.href = stripTracking(value);
-					if (oElement.href != value) {
-						result.tracking = true;
-						setAttribute('data-x-href-tracking', value);
+				if (hasAttribute('href')) {
+					value = oElement.href;
+					let originalDestination, destination;
+					try {
+						originalDestination = new URL(value, document.baseURI);
+						destination = new URL(stripTracking(value), document.baseURI);
+					} catch {
+						originalDestination = destination = null;
 					}
-					setAttribute('target', '_blank');
-//					setAttribute('rel', 'external nofollow noopener noreferrer');
+					const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
+					if (originalDestination && destination
+						&& allowedProtocols.includes(originalDestination.protocol)
+						&& allowedProtocols.includes(destination.protocol)) {
+						oElement.href = destination.href;
+						if (oElement.href !== value) {
+							result.tracking = true;
+							setAttribute('data-x-href-tracking', value);
+						}
+						setAttribute('target', '_blank');
+//						setAttribute('rel', 'external nofollow noopener noreferrer');
+					} else {
+						delAttribute('href');
+					}
 				}
 				setAttribute('tabindex', '-1');
 				aColor && !oElement.style.color && (oElement.style.color = aColor);
@@ -484,8 +390,10 @@ export const
 			}
 			*/
 
-			let skipStyle = false;
 			if (isMsg) {
+				// Responsive candidates must not escape the message image consent/proxy path.
+				delAttribute('srcset');
+				delAttribute('sizes');
 				value = isMsg && delAttribute('src');
 				if (value) {
 					if ('IMG' === name) {
@@ -521,7 +429,6 @@ export const
 									'google-analytics.com'
 								].filter(uri => value.toLowerCase().includes(uri)).length
 						)) {
-							skipStyle = true;
 							oStyle.display = 'none';
 	//						setAttribute('style', 'display:none');
 							setAttribute('data-x-src-hidden', value);
@@ -554,10 +461,6 @@ export const
 				}
 			}
 
-			if (hasAttribute('background')) {
-				oStyle.backgroundImage = 'url("' + delAttribute('background') + '")';
-			}
-
 			if (hasAttribute('bgcolor')) {
 				oStyle.backgroundColor = delAttribute('bgcolor');
 			}
@@ -566,70 +469,11 @@ export const
 				oStyle.color = delAttribute('color');
 			}
 
-			if (!skipStyle) {
-/*
-				if ('fixed' === oStyle.position) {
-					oStyle.position = 'absolute';
-				}
-*/
-				oStyle.removeProperty('behavior');
-				oStyle.removeProperty('cursor');
-				oStyle.removeProperty('min-width');
-
-				const
-					urls_remote = [], // 'data-x-style-url'
-					urls_broken = []; // 'data-x-broken-style-src'
-				['backgroundImage', 'listStyleImage', 'content'].forEach(property => {
-					if (oStyle[property]) {
-						let value = oStyle[property],
-							found = value.match(/url\s*\(([^)]+)\)/i);
-						if (found) {
-							oStyle[property] = null;
-							found = found[1].replace(/^["'\s]+|["'\s]+$/g, '');
-							let lowerUrl = found.toLowerCase();
-							if (lowerUrl.startsWith('cid:')) {
-								const attachment = findAttachmentByCid(found);
-								if (attachment?.linkPreview && name) {
-									oStyle[property] = "url('" + attachment.linkPreview() + "')";
-									attachment.isInline(true);
-									attachment.isLinked(true);
-								}
-							} else if (httpre.test(lowerUrl)) {
-								result.hasExternals = true;
-								urls_remote.push([property, found]);
-							} else if (lowerUrl.startsWith('data:image/')) {
-								oStyle[property] = value;
-							} else {
-								urls_broken.push([property, found]);
-							}
-						}
-					}
-				});
-//				oStyle.removeProperty('background-image');
-//				oStyle.removeProperty('list-style-image');
-
-				if (urls_remote.length) {
-					setAttribute('data-x-style-url', JSON.stringify(urls_remote));
-				}
-				if (urls_broken.length) {
-					setAttribute('data-x-style-broken-urls', JSON.stringify(urls_broken));
-				}
-/*
-				// https://github.com/the-djmaze/snappymail/issues/1082
-				if (11 > pInt(oStyle.fontSize)) {
-					oStyle.removeProperty('font-size');
-				}
-*/
-				// Removes background and color
-				// Many e-mails incorrectly only define one, not both
-				// And in dark theme mode this kills the readability
-				if (SettingsUserStore.removeColors()) {
-					oStyle.removeProperty('background-color');
-					oStyle.removeProperty('background-image');
-					oStyle.removeProperty('color');
-				}
-
-				oStyle.cssText && (oStyle.cssText = cleanCSS(oStyle.cssText));
+			cleanStyle(oStyle);
+			// Removing both colors preserves readability in dark themes.
+			if (SettingsUserStore.removeColors()) {
+				oStyle.removeProperty('background-color');
+				oStyle.removeProperty('color');
 			}
 
 			if (debug && aAttrsForRemove.length) {

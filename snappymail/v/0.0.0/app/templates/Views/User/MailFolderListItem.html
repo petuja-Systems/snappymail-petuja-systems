@@ -2,7 +2,7 @@
 	<a data-bind="dropmessages: $data,
 	   css: { 'selected': selected() && !isSystemFolder(), 'system': isSystemFolder, 'selectable': canBeSelected, 'unread-sub': hasUnreadInSub, 'anim-action-class': actionBlink },
 	   attr: { 'data-unread': unreadCount, href: href }">
-		<i data-bind="css: collapsedCss()"></i>
+		<i class="e-collapsed-sign" data-bind="attr: {'data-ui-icon': collapsedIcon()}"></i>
 		<!-- ko text: name --><!-- /ko -->
 	</a>
 	<!-- ko if: hasVisibleSubfolders -->

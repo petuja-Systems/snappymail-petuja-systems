@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
 		"LABEL_SIGN_ME": "Gogora nazazu",
-		"BUTTON_SIGN_IN": "Sartu"
+		"BUTTON_SIGN_IN": "Sartu",
+		"TAGLINE": "Zure sarrera-ontzia, zauden tokian zaudela.",
+		"LEGAL_NAVIGATION": "Lege-informazioa",
+		"LEGAL_IMPRINT": "Argitalpen-oharra",
+		"LEGAL_PRIVACY": "Pribatutasuna",
+		"LEGAL_SOURCE": "Iturburu-kodea",
+		"TWO_FACTOR_TITLE": "Bi urratseko egiaztapena",
+		"TWO_FACTOR_INSTRUCTION": "Sartu autentifikazio-aplikazioko kode bat edo berreskuratze-kode bat.",
+		"TWO_FACTOR_CODE": "Egiaztapen-kodea",
+		"BUTTON_VERIFY": "Egiaztatu eta hasi saioa"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Gehitu kontua"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Karpetak",
 		"ACCOUNTS": "Kontuak",
 		"FILTERS": "Iragazkiak",
-		"SECURITY": "Segurtasuna",
-		"THEMES": "Itxurak"
+		"SECURITY": "Segurtasuna"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Itxura",
+		"LIGHT": "Argia",
+		"DARK": "Iluna",
+		"SYSTEM": "Sistema"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Arrunta",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Segurtasuna",
 		"LABEL_AUTOLOGOUT": "Saioa automatikoki itxi",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Inoiz"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Helbide-liburuaren URL-a",
 		"LABEL_CONTACTS_SYNC_USER": "Erabiltzailea",
 		"SYNC_READ": "Irakurtzeko soilik"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Gaiak",
-		"LABEL_BACKGROUND": "Atzealdeko irudiak",
-		"LABEL_FONTS": "Letra-tipoak",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Kargatu atzealdeko irudia (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Fitxategia handiegia da",
-		"ERROR_FILE_TYPE_ERROR": "Ez-baliozko fitxategi-mota (JPG eta PNG soilik)",
-		"ERROR_UNKNOWN": "Fitxategi-karga errore ezezagun bat gertatu da"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Karpeta Zerrenda",

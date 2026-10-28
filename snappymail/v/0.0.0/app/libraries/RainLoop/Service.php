@@ -4,6 +4,27 @@ namespace RainLoop;
 
 abstract class Service
 {
+	// Product releases can share APP_VERSION while cache.index advances before current switches.
+	private static function templateCacheFileName(
+		string $sLanguage,
+		string $sCacheIndex,
+		string $sAppJsMin,
+		string $sAppCssMin,
+		array $aTemplateParameters
+	) : string {
+		return 'TMPL:' . \sha1(
+			Utils::jsonEncode(array(
+				$sLanguage,
+				$sCacheIndex,
+				$sAppJsMin,
+				$sAppCssMin,
+				$aTemplateParameters,
+				APP_VERSION,
+				\realpath(APP_INDEX_ROOT_PATH) ?: APP_INDEX_ROOT_PATH
+			))
+		);
+	}
+
 	/**
 	 * @staticvar bool $bOne
 	 */
@@ -43,28 +64,6 @@ abstract class Service
 			return true;
 		}
 
-		// See https://github.com/kjdev/php-ext-brotli
-		if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])
-		 && $oConfig->Get('webmail', 'compress_output', false)
-		 && !\ini_get('zlib.output_compression')
-		 && !\ini_get('brotli.output_compression')
-		) {
-			if (\is_callable('brotli_compress_add') && false !== \stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'br')) {
-				\ob_start(function(string $buffer, int $phase){
-					static $resource;
-					if ($phase & PHP_OUTPUT_HANDLER_START) {
-						\header('Content-Encoding: br');
-						$resource = \brotli_compress_init(/*int $quality = 11, int $mode = BROTLI_GENERIC*/);
-					}
-					return \brotli_compress_add($resource, $buffer, ($phase & PHP_OUTPUT_HANDLER_FINAL) ? BROTLI_FINISH : BROTLI_PROCESS);
-				});
-			} else {
-				\ob_start('ob_gzhandler');
-			}
-		} else {
-			\ob_start();
-		}
-
 		$sQuery = \trim($_SERVER['QUERY_STRING'] ?? '');
 		$iPos = \strpos($sQuery, '&');
 		if (0 < $iPos) {
@@ -92,9 +91,40 @@ abstract class Service
 			$bAdmin = \mb_strtolower($sAdminPanelHost) === \mb_strtolower($oHttp->GetHost());
 		}
 
-		$oActions = $bAdmin ? new ActionsAdmin() : Api::Actions();
+		// See https://github.com/kjdev/php-ext-brotli
+		$bRaw = isset($aPaths[0]) && 'raw' === \strtolower(\preg_replace('/@.+$/', '', $aPaths[0]));
+		if ($bRaw) {
+			// Raw ranges describe decoded bytes; never compress or retain a whole part.
+			\ini_set('zlib.output_compression', '0');
+			\ini_set('brotli.output_compression', '0');
+			if (\ini_get('zlib.output_compression') || \ini_get('brotli.output_compression')) {
+				\MailSo\Base\Http::StatusHeader(500);
+				return false;
+			}
+			\header('X-XSS-Protection: 1; mode=block');
+			\ob_start(null, 8192);
+		} else if (!empty($_SERVER['HTTP_ACCEPT_ENCODING'])
+		 && $oConfig->Get('webmail', 'compress_output', false)
+		 && !\ini_get('zlib.output_compression')
+		 && !\ini_get('brotli.output_compression')
+		) {
+			if (\is_callable('brotli_compress_add') && false !== \stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'br')) {
+				\ob_start(function(string $buffer, int $phase){
+					static $resource;
+					if ($phase & PHP_OUTPUT_HANDLER_START) {
+						\header('Content-Encoding: br');
+						$resource = \brotli_compress_init(/*int $quality = 11, int $mode = BROTLI_GENERIC*/);
+					}
+					return \brotli_compress_add($resource, $buffer, ($phase & PHP_OUTPUT_HANDLER_FINAL) ? BROTLI_FINISH : BROTLI_PROCESS);
+				});
+			} else {
+				\ob_start('ob_gzhandler');
+			}
+		} else {
+			\ob_start();
+		}
 
-		$oActions->Plugins()->RunHook('filter.http-paths', array(&$aPaths));
+		$oActions = $bAdmin ? new ActionsAdmin() : Api::Actions();
 
 		if ($oHttp->IsPost()) {
 			$oHttp->ServerNoCache();
@@ -111,6 +141,8 @@ abstract class Service
 		}
 
 		$bIndex = true;
+		$sMethodName = '';
+		$sMethodExtra = '';
 		if (\count($aPaths) && !empty($aPaths[0]) && 'index' !== \strtolower($aPaths[0])) {
 			if ('mailto' !== \strtolower($aPaths[0]) && !\SnappyMail\HTTP\SecFetch::matchAnyRule($oConfig->Get('security', 'secfetch_allow', ''))) {
 				\MailSo\Base\Http::StatusHeader(403);
@@ -125,13 +157,20 @@ abstract class Service
 
 			$sMethodName = 'Service'.\preg_replace('/@.+$/', '', $aPaths[0]);
 			$sMethodExtra = \strpos($aPaths[0], '@') ? \preg_replace('/^[^@]+@/', '', $aPaths[0]) : '';
+		}
 
+		if ($sMethodName && !$oActions->isTwoFactorServiceAllowed($sMethodName, $bAdmin)) {
+			\MailSo\Base\Http::StatusHeader(403);
+			echo $oServiceActions->ErrorTemplates('Access Denied.',
+				'Two-factor enrollment is required before accessing this service.');
+			return false;
+		}
+
+		if (\count($aPaths) && !empty($aPaths[0]) && 'index' !== \strtolower($aPaths[0])) {
 			if (\method_exists($oServiceActions, $sMethodName) && \is_callable(array($oServiceActions, $sMethodName))) {
 				$bIndex = false;
 				$oServiceActions->SetQuery($sQuery)->SetPaths($aPaths);
 				echo $oServiceActions->{$sMethodName}($sMethodExtra);
-			} else if ($oActions->Plugins()->RunAdditionalPart($aPaths[0], $aPaths)) {
-				$bIndex = false;
 			}
 		}
 
@@ -171,28 +210,44 @@ abstract class Service
 
 			$oActions = Api::Actions();
 
-			$sThemeName = $oActions->GetTheme($bAdmin);
+			$sAppearancePreference = $oActions->GetBootstrapAppearancePreference($bAdmin);
+			$aReloadPath = \parse_url(Utils::WebPath());
+			$sReloadHref = \is_array($aReloadPath)
+				&& isset($aReloadPath['path'])
+				&& !isset($aReloadPath['scheme'])
+				&& !isset($aReloadPath['host'])
+				&& !isset($aReloadPath['query'])
+				&& !isset($aReloadPath['fragment'])
+				&& '/' === ($aReloadPath['path'][0] ?? '')
+				&& !\str_starts_with($aReloadPath['path'], '//')
+				&& !\str_contains($aReloadPath['path'], '\\')
+				&& !\preg_match('/[\x00-\x20\x7f]/', $aReloadPath['path'])
+				? $aReloadPath['path'] : '/';
+			if ($bAdmin && empty($sAdminPanelHost)) {
+				$sReloadHref .= '?' . ($oConfig->Get('admin_panel', 'key', '') ?: 'admin');
+			}
+			$aStaticLanguage = \SnappyMail\L10n::load($sLanguage, 'static');
 
 			$aTemplateParameters = array(
-				'{{BaseAppThemeName}}' => $sThemeName,
+				'{{BaseAppearancePreferenceAttribute}}' => '' !== $sAppearancePreference
+					? ' data-appearance-preference="'.$sAppearancePreference.'"'
+					: '',
 				'{{BaseAppFaviconPngLinkTag}}' => $sFaviconPngLink ? '<link type="image/png" rel="shortcut icon" href="'.$sFaviconPngLink.'">' : '',
 				'{{BaseAppFaviconTouchLinkTag}}' => $sAppleTouchLink ? '<link type="image/png" rel="apple-touch-icon" href="'.$sAppleTouchLink.'">' : '',
 				'{{BaseAppManifestLink}}' => Utils::WebStaticPath('manifest.json'),
-				'{{BaseFavIconSvg}}' => $sFaviconUrl ? '' : Utils::WebStaticPath('favicon.svg'),
-				'{{LoadingDescriptionEsc}}' => \htmlspecialchars($oConfig->Get('webmail', 'loading_description', 'SnappyMail'), ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
+				'{{BaseFavIconSvg}}' => $sFaviconUrl ? '' : Utils::WebStaticPath('images/petuja-systems-logo.svg'),
+				'{{LoadingDescriptionEsc}}' => \htmlspecialchars($oConfig->Get('webmail', 'loading_description', 'petuja.email'), ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
+				'{{ReloadHref}}' => \htmlspecialchars($sReloadHref, ENT_QUOTES|ENT_SUBSTITUTE, 'UTF-8'),
+				'{{ReloadLabelEsc}}' => \htmlspecialchars($aStaticLanguage['BACK_LINK'] ?? 'Reload', ENT_QUOTES|ENT_SUBSTITUTE, 'UTF-8'),
 				'{{BaseAppAdmin}}' => $bAdmin ? 1 : 0
 			);
 
-			$sCacheFileName = 'TMPL:' . \sha1(
-				Utils::jsonEncode(array(
-					$sLanguage,
-					$oConfig->Get('cache', 'index', ''),
-					$oActions->Plugins()->Hash(),
-					$sAppJsMin,
-					$sAppCssMin,
-					$aTemplateParameters,
-					APP_VERSION
-				))
+			$sCacheFileName = self::templateCacheFileName(
+				$sLanguage,
+				$oConfig->Get('cache', 'index', ''),
+				$sAppJsMin,
+				$sAppCssMin,
+				$aTemplateParameters
 			);
 
 			// https://github.com/the-djmaze/snappymail/issues/1024
@@ -210,7 +265,6 @@ abstract class Service
 				$aTemplateParameters['{{BaseAppBootCss}}'] = \file_get_contents(APP_VERSION_ROOT_PATH.'static/css/boot'.$sAppCssMin.'.css');
 				$aTemplateParameters['{{BaseAppBootScript}}'] = \file_get_contents(APP_VERSION_ROOT_PATH.'static/js'.($sAppJsMin ? '/min' : '').'/boot'.$sAppJsMin.'.js');
 				$aTemplateParameters['{{BaseAppMainCssLink}}'] = Utils::WebStaticPath('css/'.($bAdmin ? 'admin' : 'app').$sAppCssMin.'.css');
-				$aTemplateParameters['{{BaseAppThemeCss}}'] = \preg_replace('/\\s*([:;{},]+)\\s*/s', '$1', $oActions->compileCss($sThemeName, $bAdmin));
 				$aTemplateParameters['{{BaseLanguage}}'] = $oActions->compileLanguage($sLanguage, $bAdmin);
 				$aTemplateParameters['{{BaseTemplates}}'] = Utils::ClearHtmlOutput($oServiceActions->compileTemplates($bAdmin));
 				$aTemplateParameters['{{NO_SCRIPT_DESC}}'] = \nl2br($oActions->StaticI18N('NO_SCRIPT_TITLE') . "\n" . $oActions->StaticI18N('NO_SCRIPT_DESC'));
@@ -226,7 +280,7 @@ abstract class Service
 			}
 
 			$SameSite = \strtolower($oConfig->Get('security', 'cookie_samesite', 'Strict'));
-			$Secure = (isset($_SERVER['HTTPS']) || 'none' == $SameSite) ? ';secure' : '';
+			$Secure = \SnappyMail\Cookies::isSecure() ? ';secure' : '';
 			$sResult = \str_replace('samesite=strict', "samesite={$SameSite}{$Secure}", $sResult);
 
 			$sScriptNonce = \SnappyMail\UUID::generate();

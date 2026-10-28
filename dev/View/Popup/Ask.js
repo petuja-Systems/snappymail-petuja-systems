@@ -72,7 +72,7 @@ export class AskPopupView extends AbstractViewPopup {
 
 	onBuild() {
 //		shortcuts.add('tab', 'shift', 'Ask', () => {
-		shortcuts.add('tab,arrowright,arrowleft', '', 'Ask', () => {
+		shortcuts.add('arrowright,arrowleft', '', 'Ask', () => {
 			let yes = this.querySelector('.buttonYes'),
 				no = this.querySelector('.buttonNo');
 			if (yes.matches(':focus')) {

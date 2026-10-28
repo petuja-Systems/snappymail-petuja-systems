@@ -6,7 +6,7 @@
 	min-height: 300px;
 
 	.control-group {
-		label.iconsize24 {
+		label.ui-icon-size-24 {
 			padding-top: 0;
 			width: 50px;
 		}
@@ -57,6 +57,15 @@
 			padding: 10px;
 			line-height: 13px;
 			box-shadow: inset 0 -1px 0 #ccc;
+
+			button.g-ui-link {
+				appearance: none;
+				background: transparent;
+				border: 0;
+				font: inherit;
+				line-height: inherit;
+				margin: 0;
+			}
 		}
 
 		.listEmptyList, .listEmptyListLoading, .listEmptySearchList {
@@ -192,6 +201,17 @@
 	.tab-content {
 		grid-column-end: 4;
 		padding-top: 20px;
+	}
+}
+
+html[data-appearance-scheme="dark"] #rl-app[data-admin="0"] #V-PopupsContacts {
+	.tabs > label:hover,
+	.tabs > label:focus-visible,
+	.tabs > [id^="tab"]:checked + label {
+		background-color: var(--appearance-surface-raised, #333);
+		border-color: var(--appearance-border, #555);
+		color: var(--appearance-text-primary, #fff);
+		opacity: 1;
 	}
 }
 

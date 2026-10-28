@@ -1,5 +1,5 @@
 <header>
-	<a href="#" class="close" data-bind="click: close">×</a>
+	<button type="button" class="close ui-icon-only" data-bind="click: close" data-ui-icon="x" data-i18n="[aria-label]GLOBAL/CLOSE"></button>
 	<h3 data-i18n="POPUPS_DOMAIN_ALIAS/TITLE_ADD_DOMAIN_ALIAS"></h3>
 </header>
 <form id="DomainAlias" class="modal-body" spellcheck="false" autocomplete="off" autocapitalize="none" data-bind="submit: createCommand" >
@@ -25,10 +25,10 @@
 	</div>
 </form>
 <footer>
-	<button class="btn buttonClose" data-bind="click: close" data-icon="✖" data-i18n="GLOBAL/CLOSE"></button>
-	<button class="btn" data-bind="command: createCommand">
-		<i class="fontastic" data-bind="visible: !saving()">✚</i>
-		<i class="icon-spinner" data-bind="visible: saving"></i>
+	<button type="button" class="btn buttonClose" data-bind="click: close" data-ui-icon="x" data-i18n="GLOBAL/CLOSE"></button>
+	<button type="button" class="btn" data-bind="command: createCommand">
+		<i class="ui-icon" data-bind="visible: !saving()" data-ui-icon="plus"></i>
+		<i class="ui-spinner" data-bind="visible: saving"></i>
 		<span data-i18n="GLOBAL/ADD"></span>
 	</button>
 </footer>

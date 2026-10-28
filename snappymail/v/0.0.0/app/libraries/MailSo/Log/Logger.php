@@ -150,7 +150,7 @@ class Logger extends \SplFixedArray
 		\E_USER_ERROR => \LOG_ERR,
 		\E_USER_WARNING => \LOG_WARNING,
 		\E_USER_NOTICE => \LOG_NOTICE,
-		\E_STRICT => \LOG_CRIT,
+		2048 => \LOG_CRIT, // Legacy E_STRICT; the constant is deprecated in PHP 8.4.
 		\E_RECOVERABLE_ERROR => \LOG_ERR,
 		\E_DEPRECATED => \LOG_INFO,
 		\E_USER_DEPRECATED => \LOG_INFO
@@ -168,7 +168,7 @@ class Logger extends \SplFixedArray
 		\E_USER_ERROR => '-USER',
 		\E_USER_WARNING => '-USER',
 		\E_USER_NOTICE => '-USER',
-		\E_STRICT => '-STRICT',
+		2048 => '-STRICT', // Preserve the legacy mapping without resolving E_STRICT.
 		\E_RECOVERABLE_ERROR => '-RECOVERABLE',
 		\E_DEPRECATED => '-DEPRECATED',
 		\E_USER_DEPRECATED => '-USER_DEPRECATED'
@@ -192,8 +192,9 @@ class Logger extends \SplFixedArray
 	 */
 	public function __phpExceptionHandler(\Throwable $oException): void
 	{
-		$this->Write('Uncaught exception: ' . $oException, \LOG_CRIT);
-		\error_log('Uncaught exception: ' . $oException);
+		$message = 'Uncaught exception: ' . $oException;
+		$this->Write($message, \LOG_CRIT);
+		\error_log($this->maskSecrets($message));
 	}
 
 	public function __loggerShutDown() : void
@@ -227,9 +228,7 @@ class Logger extends \SplFixedArray
 
 		$this->bUsed = true;
 
-		if (!$this->bShowSecrets && $this->aSecretWords) {
-			$sDesc = \str_replace($this->aSecretWords, '*******', $sDesc);
-		}
+		$sDesc = $this->maskSecrets($sDesc);
 
 		$iResult = 1;
 
@@ -239,6 +238,13 @@ class Logger extends \SplFixedArray
 		}
 
 		return (bool) $iResult;
+	}
+
+	private function maskSecrets(string $message) : string
+	{
+		return !$this->bShowSecrets && $this->aSecretWords
+			? \str_replace($this->aSecretWords, '*******', $message)
+			: $message;
 	}
 
 	/**

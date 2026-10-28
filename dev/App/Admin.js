@@ -1,7 +1,7 @@
 import 'External/ko';
 
 import { SettingsGet, SettingsAdmin } from 'Common/Globals';
-import { initThemes } from 'Stores/Theme';
+import { initResponsiveState } from 'Stores/Theme';
 
 import Remote from 'Remote/Admin/Fetch';
 
@@ -20,7 +20,7 @@ export class AdminApp extends AbstractApp {
 	}
 
 	refresh() {
-		initThemes();
+		initResponsiveState();
 		this.start();
 	}
 

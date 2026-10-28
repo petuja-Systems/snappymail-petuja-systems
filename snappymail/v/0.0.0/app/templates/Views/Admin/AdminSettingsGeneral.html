@@ -16,32 +16,22 @@
 <div class="form-horizontal">
 	<div class="legend" data-i18n="TAB_GENERAL/LEGEND_INTERFACE"></div>
 	<div class="control-group">
-		<label data-i18n="TAB_GENERAL/LABEL_LANGUAGE"></label>
+		<label id="admin-language-label" data-i18n="TAB_GENERAL/LABEL_LANGUAGE"></label>
 		<div>
-			<span class="select" tabindex="0" data-bind="text: languageFullName, click: selectLanguage, onSpace: selectLanguage, onEnter: selectLanguage"></span>
+			<button type="button" class="select ui-text-action" aria-labelledby="admin-language-label admin-language-value" data-bind="click: selectLanguage">
+				<span id="admin-language-value" data-bind="text: languageFullName"></span>
+			</button>
 			<span data-bind="saveTrigger: languageTrigger"></span>
 		</div>
 	</div>
 	<div class="control-group">
-		<label data-i18n="TAB_GENERAL/LABEL_LANGUAGE_ADMIN"></label>
+		<label id="admin-language-admin-label" data-i18n="TAB_GENERAL/LABEL_LANGUAGE_ADMIN"></label>
 		<div>
-			<span class="select" tabindex="0" data-bind="text: languageAdminFullName, click: selectLanguageAdmin, onSpace: selectLanguageAdmin, onEnter: selectLanguageAdmin"></span>
+			<button type="button" class="select ui-text-action" aria-labelledby="admin-language-admin-label admin-language-admin-value" data-bind="click: selectLanguageAdmin">
+				<span id="admin-language-admin-value" data-bind="text: languageAdminFullName"></span>
+			</button>
 			<span data-bind="saveTrigger: languageAdminTrigger"></span>
 		</div>
-	</div>
-	<div class="control-group">
-		<label data-i18n="TAB_GENERAL/LABEL_THEME"></label>
-		<div data-bind="component: {
-			name: 'Select',
-			params: {
-				options: themesOptions,
-				value: theme,
-				trigger: themeTrigger,
-				optionsText: 'optText',
-				optionsValue: 'optValue',
-				size: 2
-			}
-		}"></div>
 	</div>
 	<div class="control-group">
 		<div>
@@ -50,20 +40,6 @@
 				params: {
 					label: 'TAB_GENERAL/LABEL_ALLOW_LANGUAGES_ON_SETTINGS',
 					value: allowLanguagesOnSettings
-				}
-			}"></div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'TAB_GENERAL/LABEL_ALLOW_THEMES_ON_SETTINGS',
-					value: capaThemes
-				}
-			}"></div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'TAB_GENERAL/LABEL_ALLOW_BACKGROUND_ON_SETTINGS',
-					value: capaUserBackground
 				}
 			}"></div>
 		</div>

@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Đăng nhập",
 		"LABEL_SIGN_ME": "Nhớ tên tôi",
-		"BUTTON_SIGN_IN": "Đăng nhập"
+		"BUTTON_SIGN_IN": "Đăng nhập",
+		"TAGLINE": "Hộp thư đến của bạn, dù bạn ở bất cứ đâu.",
+		"LEGAL_NAVIGATION": "Thông tin pháp lý",
+		"LEGAL_IMPRINT": "Thông tin xuất bản",
+		"LEGAL_PRIVACY": "Quyền riêng tư",
+		"LEGAL_SOURCE": "Mã nguồn",
+		"TWO_FACTOR_TITLE": "Xác minh hai bước",
+		"TWO_FACTOR_INSTRUCTION": "Nhập mã từ ứng dụng xác thực hoặc mã khôi phục.",
+		"TWO_FACTOR_CODE": "Mã xác minh",
+		"BUTTON_VERIFY": "Xác minh và đăng nhập"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Thêm tài khoản"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Folders",
 		"ACCOUNTS": "Accounts",
 		"FILTERS": "Filters",
-		"SECURITY": "Security",
-		"THEMES": "Themes"
+		"SECURITY": "Security"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Giao diện",
+		"LIGHT": "Sáng",
+		"DARK": "Tối",
+		"SYSTEM": "Hệ thống"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Đơn giản",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "An ninh",
 		"LABEL_AUTOLOGOUT": "Tự động đăng xuất",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Không tự động đăng xuất"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Đường link của sổ địa chỉ",
 		"LABEL_CONTACTS_SYNC_USER": "Người dùng",
 		"SYNC_READ": "Chỉ cho phép đọc"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Phông nền",
-		"LABEL_BACKGROUND": "Hình nền",
-		"LABEL_FONTS": "Fonts",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Tải hình nền lên (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Tập tin hình ảnh quá lớn",
-		"ERROR_FILE_TYPE_ERROR": "Định dạng tập tin hình ảnh không hợp lệ (chỉ tải lên được JPG và PNG)",
-		"ERROR_UNKNOWN": "Bị một lỗi chưa xác định khi tải tập tin lên"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Danh sách thư mục",

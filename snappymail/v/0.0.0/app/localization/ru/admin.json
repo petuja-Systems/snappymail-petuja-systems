@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Добавить",
 		"CLOSE": "Закрыть",
+		"DELETE": "Удалить",
+		"LOGOUT": "Выйти",
 		"SAVE": "Сохранить",
 		"TEST": "Тест",
 		"UPDATE": "Обновить",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Контакты",
 		"DOMAINS": "Домены",
 		"SECURITY": "Безопасность",
-		"PACKAGES": "Плагины",
 		"CONFIG": "Файл конфигурации",
 		"ABOUT": "О Программе"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Интерфейс",
 		"LABEL_LANGUAGE": "Язык",
 		"LABEL_LANGUAGE_ADMIN": "Язык (Панели Администратора)",
-		"LABEL_THEME": "Темы",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Разрешить выбор языка на экране настроек",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Разрешить выбор темы на экране настроек",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Разрешить выбор фона на экране настроек",
 		"LABEL_SHOW_THUMBNAILS": "Показывать миниатюры (для вложений)",
 		"LEGEND_MAIN": "Основное",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Предельный размер вложений",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Домены",
 		"BUTTON_ADD_DOMAIN": "Добавить домен",
 		"BUTTON_ADD_ALIAS": "Добавить псевдоним",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Вы уверены?",
 		"HTML_DOMAINS_HELPER": "Список доменов к которым разрешен доступ.\n<br>\nНажмите на имя, чтобы настроить домен.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Безопасность",
 		"LABEL_USE_IMAGE_PROXY": "Использовать локальный прокси для внешних изображений",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Требовать двухэтапную проверку",
 		"LABEL_SHOW_PHP_INFO": "Показать PHP информацию",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Учетные данные для доступа к панели администратора",
 		"LABEL_CURRENT_PASSWORD": "Текущий пароль",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Требовать проверку SSL сертификата для",
 		"CRYPTO": "Шифрование",
 		"LABEL_ALLOW_SELF_SIGNED": "Разрешить самоподписанные сертификаты"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Включить плагины",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Доступно для обновления",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Доступно для установки",
-		"LEGEND_INSTALLED_PACKAGES": "Установленные пакеты",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Не удается получить доступ к хранилищу пакетов в данный момент."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "О программе",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Плагин",
-		"DESC_NOTHING_TO_CONFIGURE": "Без настроек"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Вы уверены, что хотите закрыть это окно?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Неверный токен запроса",
 		"AuthError": "Не удалось авторизоваться",
 		"DomainAlreadyExists": "Домен уже существует",
-		"CantSavePluginSettings": "Не могу сохранить настройки",
-		"CantInstallPackage": "Ошибка установки плагина",
-		"CantDeletePackage": "Ошибка удаления плагина",
-		"InvalidPluginPackage": "Ошибка пакета плагина",
-		"UnsupportedPluginPackage": "Для работы плагина необходима полная поддержка сервера",
 		"UnknownError": "Неизвестная ошибка"
 	}
 }

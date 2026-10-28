@@ -90,7 +90,7 @@ if (defined('APP_VERSION')) {
 		clearstatcache();
 	}
 
-	foreach (array('configs', 'domains', 'plugins', 'storage') as $sName) {
+	foreach (array('configs', 'domains', 'storage') as $sName) {
 		if (!is_dir(APP_PRIVATE_DATA.$sName)) {
 			mkdir(APP_PRIVATE_DATA.$sName, 0700, true);
 		}
@@ -117,17 +117,6 @@ if (defined('APP_VERSION')) {
 			$config['SMTP']['shortLogin'] = true;
 			file_put_contents($sFile, json_encode($config, JSON_PRETTY_PRINT));
 		}
-	}
-
-	if (defined('SNAPPYMAIL_UPDATE_PLUGINS')) {
-		// Update plugins
-		$asApi = !empty($_ENV['SNAPPYMAIL_INCLUDE_AS_API']);
-		$_ENV['SNAPPYMAIL_INCLUDE_AS_API'] = true;
-		$aList = \SnappyMail\Repository::getEnabledPackagesNames();
-		foreach ($aList as $sId) {
-			\SnappyMail\Repository::installPackage('plugin', $sId);
-		}
-		$_ENV['SNAPPYMAIL_INCLUDE_AS_API'] = $asApi;
 	}
 
 }

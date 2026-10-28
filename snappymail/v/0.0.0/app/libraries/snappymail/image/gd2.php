@@ -36,9 +36,7 @@ class GD2 implements \SnappyMail\Image
 
 	public static function createFromString(string &$data)
 	{
-		if (!($imginfo = \getimagesizefromstring($data))) {
-			throw new \InvalidArgumentException('Invalid image');
-		}
+		$imginfo = Limits::inspect($data);
 		$format = '';
 		switch ($imginfo[2])
 		{
@@ -54,6 +52,7 @@ class GD2 implements \SnappyMail\Image
 		if (!$gd2->img) {
 			throw new \InvalidArgumentException('Failed to load image');
 		}
+		Limits::checkGeometry(\imagesx($gd2->img), \imagesy($gd2->img));
 		$gd2->file = 'blob';
 		$gd2->type = (int) $imginfo[2];
 		$gd2->format = $format;
@@ -63,7 +62,7 @@ class GD2 implements \SnappyMail\Image
 
 	public static function createFromStream($fp)
 	{
-		$data = \stream_get_contents($fp);
+		$data = Limits::read($fp);
 		return static::createFromString($data);
 	}
 
@@ -158,24 +157,17 @@ class GD2 implements \SnappyMail\Image
 
 	public function cropThumbnailImage($width, $height)
 	{
+		Limits::checkGeometry($width, $height);
 		$x = \imagesx($this->img);
 		$y = \imagesy($this->img);
-		$tx = $x/$width;
-		$ty = $y/$height;
-		if ($tx > $ty) {
-			$x = \round($x/$ty);
-			$this->thumbnailImage($x, $height);
-			$x = \floor(($x-$width)/2);
-			$y = 0;
-		} else if ($tx < $ty) {
-			$y = \round($y/$tx);
-			$this->thumbnailImage($width, $y);
-			$x = 0;
-			$y = \floor(($y-$height)/2);
-		} else {
-			return $this->thumbnailImage($width, $height);
+		// Crop the source first: resizing a narrow image first amplifies the intermediate.
+		$cropWidth = \max(1, (int) \min($x, \floor($y * $width / $height)));
+		$cropHeight = \max(1, (int) \min($y, \floor($x * $height / $width)));
+		if ($cropWidth !== $x || $cropHeight !== $y) {
+			$this->cropImage($cropWidth, $cropHeight,
+				(int) \floor(($x - $cropWidth) / 2), (int) \floor(($y - $cropHeight) / 2));
 		}
-		return $this->cropImage($width, $height, $x, $y);
+		return $this->thumbnailImage($width, $height);
 	}
 
 	public function flipImage()

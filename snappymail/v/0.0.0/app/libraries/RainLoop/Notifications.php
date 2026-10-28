@@ -61,13 +61,6 @@ class Notifications
 	const InvalidInputArgument = 903;
 	const UnknownError = 999;
 
-	// Admin
-//	const CantInstallPackage = 701;
-//	const CantDeletePackage = 702;
-	const InvalidPluginPackage = 703;
-	const UnsupportedPluginPackage = 704;
-	const CantSavePluginSettings = 705;
-
 	static public function GetNotificationsMessage(int $iCode, ?\Throwable $oPrevious = null) : string
 	{
 		if (self::ClientViewError === $iCode && $oPrevious) {

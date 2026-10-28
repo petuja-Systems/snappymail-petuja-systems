@@ -1,4 +1,3 @@
-import { fireEvent } from 'Common/Globals';
 import { getNotification } from 'Common/Translator';
 import { addObservablesTo, addSubscribablesTo } from 'External/ko';
 
@@ -40,7 +39,7 @@ export class AdminLoginView extends AbstractViewLogin {
 	submitCommand(self, event) {
 		let form = event.target.form,
 			data = new FormData(form),
-			valid = form.reportValidity() && fireEvent('sm-admin-login', data, 1);
+			valid = form.reportValidity();
 
 		this.loginError(!this.login());
 		this.passwordError(!this.password());
@@ -51,10 +50,6 @@ export class AdminLoginView extends AbstractViewLogin {
 
 			Remote.request('AdminLogin',
 				(iError, oData) => {
-					fireEvent('sm-admin-login-response', {
-						error: iError,
-						data: oData
-					});
 					if (iError) {
 						this.submitRequest(false);
 						this.submitError(getNotification(iError));

@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Inlognaam",
 		"LABEL_SIGN_ME": "Aangemeld blijven",
-		"BUTTON_SIGN_IN": "Aanmelden"
+		"BUTTON_SIGN_IN": "Aanmelden",
+		"TAGLINE": "Je inbox, waar je ook bent.",
+		"LEGAL_NAVIGATION": "Juridische informatie",
+		"LEGAL_IMPRINT": "Colofon",
+		"LEGAL_PRIVACY": "Privacy",
+		"LEGAL_SOURCE": "Broncode",
+		"TWO_FACTOR_TITLE": "Verificatie in twee stappen",
+		"TWO_FACTOR_INSTRUCTION": "Voer een code uit je verificatie-app of een herstelcode in.",
+		"TWO_FACTOR_CODE": "Verificatiecode",
+		"BUTTON_VERIFY": "Verifiëren en inloggen"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Account toevoegen"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Mappen",
 		"ACCOUNTS": "Accounts",
 		"FILTERS": "Filters",
-		"SECURITY": "Beveiliging",
-		"THEMES": "Thema's"
+		"SECURITY": "Beveiliging"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Uiterlijk",
+		"LIGHT": "Licht",
+		"DARK": "Donker",
+		"SYSTEM": "Systeem"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Simpel",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Beveiliging",
 		"LABEL_AUTOLOGOUT": "Automatisch uitloggen",
 		"FORGET_KEY_PASS": "Vergeet privésleutel wachtwoord",
+		"TFA_LEGEND": "2-Stap verificatie",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Niet geconfigureerd",
+		"TFA_STATUS_DISABLED": "Niet geconfigureerd",
+		"TFA_STATUS_ENABLED": "Geconfigureerd",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Nieuwe geheime sleutel aanmaken",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Geheime sleutel",
+		"TFA_QR_INSTRUCTIONS": "Importeer deze informatie in uw Google Authenticator-client (of andere TOTP-client) door gebruik te maken van de QR code hier beneden of door de code handmatig in te voeren.",
+		"TFA_RECOVERY_CODES": "Backup codes",
+		"TFA_RECOVERY_CODES_WARNING": "Als u geen codes ontvangt via de Google Authenticator kunt u de backup codes gebruiken om in te loggen. Na gebruik van de backup code wordt deze inactief.",
+		"TFA_CODE_LABEL": "Code",
+		"TFA_ENABLE": "Activeren",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Nooit"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Adresboek URL",
 		"LABEL_CONTACTS_SYNC_USER": "Gebruikersnaam",
 		"SYNC_READ": "Alleen lezen"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Thema's",
-		"LABEL_BACKGROUND": "Achtergrond",
-		"LABEL_FONTS": "Lettertypes",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Upload achtergrond afbeelding (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Bestand is te groot",
-		"ERROR_FILE_TYPE_ERROR": "Onjuist bestandstype (alleen JPG and PNG)",
-		"ERROR_UNKNOWN": "Er is een onbekende fout opgetreden"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Mappen lijst",

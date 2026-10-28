@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Tilføj",
 		"CLOSE": "Luk",
+		"DELETE": "Slet",
+		"LOGOUT": "Log ud",
 		"SAVE": "Gem",
 		"TEST": "Test",
 		"UPDATE": "Opdater",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Kontakter",
 		"DOMAINS": "Domæner",
 		"SECURITY": "Sikkerhed",
-		"PACKAGES": "Pakker",
 		"CONFIG": "Config",
 		"ABOUT": "Om"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Grænseflade",
 		"LABEL_LANGUAGE": "Sprog",
 		"LABEL_LANGUAGE_ADMIN": "Sprog (admin)",
-		"LABEL_THEME": "Tema",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Tillad sprogvalg i indstillinger",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Tillad temavalg i indstillinger",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Tillad baggrundsvalg i indstillinger",
 		"LABEL_SHOW_THUMBNAILS": "Vis miniaturer (vedhæftede filer)",
 		"LEGEND_MAIN": "Primære",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Vedhæftede filers størrelsesgrænse",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domæner",
 		"BUTTON_ADD_DOMAIN": "Tilføj domæne",
 		"BUTTON_ADD_ALIAS": "Tilføj alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Er du sikker?",
 		"HTML_DOMAINS_HELPER": "Liste over domæner webmail er tilladt adgang til.\n<br>\nKlik på navnet for at konfigurere domænet.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Sikkerhed",
 		"LABEL_USE_IMAGE_PROXY": "Brug lokal proxy til eksterne billeder",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Kræv totrinsbekræftelse",
 		"LABEL_SHOW_PHP_INFO": "Vis PHP informationer",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Admin Panel Adgangsoplysninger",
 		"LABEL_CURRENT_PASSWORD": "Nuværende adgangskode",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Kræv verifikation af brugt SSL certifikat",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Tillad selvsignerede certifikater"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Enable extensions",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Opdatering tilgængelig",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Installation tilgængelig",
-		"LEGEND_INSTALLED_PACKAGES": "Installerede pakker",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Kan ikke tilgå depotet lige nu."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Om",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Tilføjelse",
-		"DESC_NOTHING_TO_CONFIGURE": "Intet at opsætte"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Vil du lukke vinduet?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Ugyldigt tegn",
 		"AuthError": "Godkendelse fejlede",
 		"DomainAlreadyExists": "Domæne eksisterer allerede",
-		"CantSavePluginSettings": "Kan ikke gemme instillinger",
-		"CantInstallPackage": "Installation af pakke mislykkedes",
-		"CantDeletePackage": "Fjernelse af pakke mislykkedes",
-		"InvalidPluginPackage": "Ugyldig tilføjelsespakke",
-		"UnsupportedPluginPackage": "Tilføjelsespakke ikke understøttet",
 		"UnknownError": "Ukendt fejl"
 	}
 }

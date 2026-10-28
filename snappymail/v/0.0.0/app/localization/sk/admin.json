@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Pridať",
 		"CLOSE": "Zatvoriť",
+		"DELETE": "Odstrániť",
+		"LOGOUT": "Odhlásiť",
 		"SAVE": "Uložiť",
 		"TEST": "Test",
 		"UPDATE": "Aktualizovať",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Kontakty",
 		"DOMAINS": "Domény",
 		"SECURITY": "Zabezpečenie",
-		"PACKAGES": "Balíčky",
 		"CONFIG": "Config",
 		"ABOUT": "O programe"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Rozhranie",
 		"LABEL_LANGUAGE": "Jazyk",
 		"LABEL_LANGUAGE_ADMIN": "Jazyk (admin)",
-		"LABEL_THEME": "Téma",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Povoliť výber jazyka v nastaveniach",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Povoliť výber témy v nastaveniach",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Povoliť výber pozadia v nastaveniach",
 		"LABEL_SHOW_THUMBNAILS": "Zobraziť náhľady (prílohy)",
 		"LEGEND_MAIN": "Všeobecné",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Maximálna veľkosť prílohy",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domény",
 		"BUTTON_ADD_DOMAIN": "Pridať doménu",
 		"BUTTON_ADD_ALIAS": "Pridať alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Ste si istí?",
 		"HTML_DOMAINS_HELPER": "List of domains that are allowed.\n<br>\nClick on the name to configure the domain.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Bezpečnosť",
 		"LABEL_USE_IMAGE_PROXY": "Use local proxy for external images",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Vyžadovať dvojstupňové overenie",
 		"LABEL_SHOW_PHP_INFO": "Zobraziť informácie o PHP",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Admin Panel Access Credentials",
 		"LABEL_CURRENT_PASSWORD": "Súčasné heslo",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Require verification of SSL certificate used",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Allow self signed certificates"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Enable extensions",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Dostupné na aktualizáciu",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Dostupné na inštaláciu",
-		"LEGEND_INSTALLED_PACKAGES": "Nainštalované balíčky",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Cannot access the repository at the moment."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "O programe",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Doplnok",
-		"DESC_NOTHING_TO_CONFIGURE": "Nothing to configure"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Are you sure you want to close this window?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Neplatný token",
 		"AuthError": "Overenie zlyhalo",
 		"DomainAlreadyExists": "Táto Doména už existuje",
-		"CantSavePluginSettings": "Nastavenia sa nepodarilo uložiť",
-		"CantInstallPackage": "Inštalácia balíčka zlyhala",
-		"CantDeletePackage": "Odstránenie balíčka zlyhalo",
-		"InvalidPluginPackage": "Invalid plugin package",
-		"UnsupportedPluginPackage": "Unsupported plugin package",
 		"UnknownError": "Neznáma chyba"
 	}
 }

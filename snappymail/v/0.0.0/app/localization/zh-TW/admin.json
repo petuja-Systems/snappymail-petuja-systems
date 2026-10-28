@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "新增",
 		"CLOSE": "關閉",
+		"DELETE": "刪除",
+		"LOGOUT": "登出",
 		"SAVE": "儲存",
 		"TEST": "測試",
 		"UPDATE": "更新",
@@ -27,7 +30,6 @@
 		"CONTACTS": "聯絡人",
 		"DOMAINS": "域名",
 		"SECURITY": "安全",
-		"PACKAGES": "外掛包",
 		"CONFIG": "配置",
 		"ABOUT": "關於"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "介面",
 		"LABEL_LANGUAGE": "語言",
 		"LABEL_LANGUAGE_ADMIN": "語言(後臺)",
-		"LABEL_THEME": "主題",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "允許在設定介面中選擇語言",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "允許在設定介面中選擇主題",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "允許在設定介面中選擇背景",
 		"LABEL_SHOW_THUMBNAILS": "顯示縮圖(附件)",
 		"LEGEND_MAIN": "主要設定",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "附件大小限制",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "域名",
 		"BUTTON_ADD_DOMAIN": "新增域名",
 		"BUTTON_ADD_ALIAS": "新增別名",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "您確定嗎？",
 		"HTML_DOMAINS_HELPER": "允許訪問的域名列表。\n<br>\n點選域名進行設定。\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "安全",
 		"LABEL_USE_IMAGE_PROXY": "對外部圖片使用本地代理",
 		"LABEL_AUTO_VERIFY": "自動驗證簽名",
+		"LABEL_ENFORCE_TWO_FACTOR": "強制啟用兩步驗證",
 		"LABEL_SHOW_PHP_INFO": "顯示 PHP 資訊",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "管理員面板訪問憑據",
 		"LABEL_CURRENT_PASSWORD": "當前密碼",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "要求驗證 SSL 證書",
 		"CRYPTO": "加密",
 		"LABEL_ALLOW_SELF_SIGNED": "允許自簽名證書"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "啟用外掛",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "有更新可用",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "可用於安裝",
-		"LEGEND_INSTALLED_PACKAGES": "已安裝的外掛包",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "目前無法訪問外掛倉庫"
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "關於",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "外掛",
-		"DESC_NOTHING_TO_CONFIGURE": "無可用配置"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "您確定要關閉此視窗嗎？"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "標記無效",
 		"AuthError": "驗證失敗",
 		"DomainAlreadyExists": "域名已經存在",
-		"CantSavePluginSettings": "無法儲存設定",
-		"CantInstallPackage": "安裝外掛包失敗",
-		"CantDeletePackage": "移除外掛包失敗",
-		"InvalidPluginPackage": "無效外掛包",
-		"UnsupportedPluginPackage": "不支援的外掛包",
 		"UnknownError": "未知錯誤"
 	}
 }

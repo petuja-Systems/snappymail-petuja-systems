@@ -15,7 +15,10 @@
     "url": "git://github.com/the-djmaze/snappymail.git"
   },
   "scripts": {
-    "watch-css": "gulp watchCss"
+    "test:login-layout": "playwright test --config tests/browser/playwright.config.mjs",
+    "watch-css": "gulp watchCss",
+    "dev:demo": "node scripts/dev-demo.mjs",
+    "dev:demo:reset": "node scripts/dev-demo.mjs --reset"
   },
   "license": "SEE LICENSE IN LICENSE",
   "licenses": [
@@ -40,6 +43,9 @@
     "openpgp"
   ],
   "readmeFilename": "README.md",
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  },
   "dependencies": {
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-replace": "^3.0.1",

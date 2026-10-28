@@ -14,16 +14,6 @@ services:
       - redis-network
     restart: unless-stopped
 
-  # This provides prometheus metrics for snappymail's php-fpm
-  php-fpm-exporter:
-    image: hipages/php-fpm_exporter:2.2.0
-    ports:
-      - 9253:9253
-    environment:
-      - PHP_FPM_SCRAPE_URI=tcp://snappymail:9000/status
-    networks:
-      - default
-
   db:
     image: postgres:15-alpine
     environment:

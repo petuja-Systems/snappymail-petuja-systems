@@ -11,7 +11,7 @@
 
 	this.BSN = {
 		Dropdown: function(toggleBtn) {
-			let menu, menuItems = [];
+			let menu, menuItems = [], openingClick;
 			const self = this,
 				parent = toggleBtn.parentNode,
 				preventEmptyAnchor = e => {
@@ -26,17 +26,28 @@
 					if (bool) {
 						toggleBtn.removeEventListener('click',clickHandler);
 					} else {
-						setTimeout(() => toggleBtn.addEventListener('click',clickHandler), 1);
+						toggleBtn.addEventListener('click',clickHandler);
 					}
 				},
-				toggleEvents = () => {
+				toggleDismissEvents = () => {
 					const action = (toggleBtn.open ? 'add' : 'remove') + 'EventListener';
 					doc[action]('click',dismissHandler);
-					doc[action]('keydown',preventScroll);
-					doc[action]('keyup',keyHandler);
 					doc[action]('focus',dismissHandler);
 				},
+				toggleKeyboardEvents = () => {
+					const action = (toggleBtn.open ? 'add' : 'remove') + 'EventListener';
+					doc[action]('keydown',preventScroll);
+					doc[action]('keyup',keyHandler);
+				},
+				toggleEvents = () => {
+					toggleDismissEvents();
+					toggleKeyboardEvents();
+				},
 				dismissHandler = e => {
+					if (e === openingClick) {
+						openingClick = null;
+						return;
+					}
 					const eventTarget = e.target;
 					if ((!menu.contains(eventTarget) && !toggleBtn.contains(eventTarget)) || e.type !== 'focus') {
 						self.hide();
@@ -44,6 +55,7 @@
 					}
 				},
 				clickHandler = e => {
+					openingClick = e;
 					self.show();
 					preventEmptyAnchor(e);
 				},
@@ -72,10 +84,9 @@
 				menuItems = [...menu.querySelectorAll('A')].filter(item => 'none' != item.parentNode.style.display);
 				!('tabindex' in menu) && menu.setAttribute('tabindex', '0');
 				open(true);
-				setTimeout(() => {
-					setFocus( menu.getElementsByTagName('INPUT')[0] || toggleBtn );
-					toggleEvents();
-				},1);
+				toggleKeyboardEvents();
+				toggleDismissEvents();
+				setFocus(menu.getElementsByTagName('INPUT')[0] || toggleBtn);
 			};
 			self.hide = () => {
 				open(false);

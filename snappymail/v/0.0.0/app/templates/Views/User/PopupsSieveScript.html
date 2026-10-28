@@ -1,6 +1,6 @@
 <!-- ko with: script -->
 <header>
-	<a href="#" class="close" data-bind="click: $root.close">×</a>
+	<button type="button" class="close ui-icon-only" data-bind="click: $root.close" data-ui-icon="x" data-i18n="[aria-label]GLOBAL/CLOSE"></button>
 	<h3>
 		<span data-i18n="POPUPS_SIEVE_SCRIPT/TITLE_CREATE" data-bind="visible: !exists()"></span>
 		<span data-i18n="POPUPS_SIEVE_SCRIPT/TITLE_EDIT" data-bind="visible: exists"></span>
@@ -16,8 +16,8 @@
 			data-i18n="[placeholder]GLOBAL/NAME">
 	</div>
 
-	<div class="alert g-ui-user-select-none" data-bind="visible: hasChanges" data-icon="⚠" data-i18n="POPUPS_SIEVE_SCRIPT/CHANGES_NEED_TO_BE_SAVED_DESC"></div>
-	<div class="alert alert-error g-ui-user-select-none" style="white-space:pre" data-bind="visible: $root.errorText, text: $root.errorText" data-icon="⚠"></div>
+	<div class="alert g-ui-user-select-none" data-bind="visible: hasChanges" data-ui-icon="triangle-alert" data-i18n="POPUPS_SIEVE_SCRIPT/CHANGES_NEED_TO_BE_SAVED_DESC"></div>
+	<div class="alert alert-error g-ui-user-select-none" style="white-space:pre" data-bind="visible: $root.errorText, text: $root.errorText" data-ui-icon="triangle-alert"></div>
 
 	<div class="control-group" data-bind="visible: $root.rawActive">
 		<details>
@@ -49,38 +49,40 @@
 			</colgroup>
 			<tbody data-bind="foreach: filters, i18nUpdate: filters">
 				<tr class="filter-item" draggable="true" data-bind="sortableItem: { list: $parent.filters }">
-					<td class="fontastic" data-bind="click: function () { $parent.hasChanges(true); enabled(!enabled()); }, text: enabled() ? '☑' : '☐'"></td>
-					<td class="drag-wrapper fontastic drag-handle">⬍</td>
+					<td><button type="button" class="ui-icon-only" data-bind="click: function () { $parent.hasChanges(true); enabled(!enabled()); }, attr: {'aria-label': name(), 'aria-pressed': enabled(), 'data-ui-icon': enabled() ? 'square-check' : 'square'}"></button></td>
+					<td class="drag-wrapper ui-icon drag-handle" data-ui-icon="grip-vertical"></td>
 					<td class="e-action">
-						<span class="filter-name" data-bind="text: name()"></span>
-						&nbsp;&nbsp;
-						<span class="filter-sub-name" data-bind="text: nameSub()"></span>
+						<button type="button" class="filter-edit ui-text-action">
+							<span class="filter-name" data-bind="text: name()"></span>
+							&nbsp;&nbsp;
+							<span class="filter-sub-name" data-bind="text: nameSub()"></span>
+						</button>
 					</td>
 					<td>
-						<a class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, click: function(oFilter) { $root.deleteFilter(oFilter); }"
-							data-i18n="GLOBAL/ARE_YOU_SURE"></a>
+						<button type="button" class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, hasfocus: askDelete, click: function(oFilter) { $root.deleteFilter(oFilter); }"
+							data-i18n="GLOBAL/ARE_YOU_SURE"></button>
 					</td>
 					<td>
-						<span class="delete-filter fontastic" data-bind="visible: !askDelete(), click: function (oFilter) { $root.filterForDeletion(oFilter); }">🗑</span>
+						<button type="button" class="delete-filter ui-icon ui-icon-only" data-bind="visible: !askDelete(), click: function (oFilter) { $root.filterForDeletion(oFilter); }" data-ui-icon="trash-2" data-i18n="[aria-label]GLOBAL/DELETE"></button>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<a class="btn" data-bind="click: $root.addFilter" data-icon="✚" data-i18n="POPUPS_SIEVE_SCRIPT/BUTTON_ADD_FILTER"></a>
+		<button type="button" class="btn" data-bind="click: $root.addFilter" data-ui-icon="plus" data-i18n="POPUPS_SIEVE_SCRIPT/BUTTON_ADD_FILTER"></button>
 	</div>
 </form>
 <footer>
-	<a class="btn" data-bind="visible: allowFilters(), click: function() { $root.toggleFiltersRaw(); }, css: {'active': $root.rawActive }" data-i18n="[title]POPUPS_SIEVE_SCRIPT/BUTTON_RAW_SCRIPT">
-		<i class="icon-file-code"></i>
-	</a>
+	<button type="button" class="btn" data-bind="visible: allowFilters(), click: function() { $root.toggleFiltersRaw(); }, css: {'active': $root.rawActive }, attr: {'aria-pressed': $root.rawActive()}" data-i18n="[aria-label]POPUPS_SIEVE_SCRIPT/BUTTON_RAW_SCRIPT">
+		<i class="" data-ui-icon="file-code-2"></i>
+	</button>
 <!--
 	<a class="btn" data-bind="visible: $root.rawActive, click: function() { $root.validateScript(); }">
 		<span data-i18n="POPUPS_SIEVE_SCRIPT/VALIDATE"></span>
 	</a>
 -->
-	<a class="btn buttonSave" data-bind="click: function() { $root.saveScript(); }, css: {'btn-danger': $root.saveError}">
-		<i class="fontastic" data-bind="css: {'icon-spinner': $root.saving}">💾</i>
+	<button type="button" class="btn buttonSave" data-bind="click: function() { $root.saveScript(); }, css: {'btn-danger': $root.saveError}">
+		<i class="ui-icon" data-bind="css: {'ui-spinner': $root.saving}" data-ui-icon="save"></i>
 		<span data-i18n="GLOBAL/SAVE"></span>
-	</a>
+	</button>
 </footer>
 <!-- /ko -->

@@ -1,20 +1,22 @@
 <tr data-bind="css: { 'selectable': selectable, 'system': isSystemFolder }">
-	<td data-bind="click: edit, css: 'deep-' + deep">
-		<span class="folder-name" data-bind="text: name, tooltipErrorTip: errorMsg"></span>
-		<span class="folder-system-name" data-bind="text: nameInfo, visible: isSystemFolder"></span>
-		<span class="folder-size" data-bind="text: friendlySize, visible: size"></span>
+	<td data-bind="css: 'deep-' + deep">
+		<button type="button" class="folder-edit ui-text-action" data-bind="click: edit">
+			<span class="folder-name" data-bind="text: name, tooltipErrorTip: errorMsg"></span>
+			<span class="folder-system-name" data-bind="text: nameInfo, visible: isSystemFolder"></span>
+			<span class="folder-size" data-bind="text: friendlySize, visible: size"></span>
+		</button>
 	</td>
 	<td data-i18n="[title]SETTINGS_FOLDERS/HELP_DELETE_FOLDER">
-		<a class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, click: $root.deleteFolder"
-			data-i18n="GLOBAL/ARE_YOU_SURE"></a>
-		<span class="e-action fontastic" data-bind="visible: canBeDeleted() && !askDelete(), click: $root.folderForDeletion">🗑</span>
+		<button type="button" class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, hasfocus: askDelete, click: $root.deleteFolder"
+			data-i18n="GLOBAL/ARE_YOU_SURE"></button>
+		<button type="button" class="e-action ui-icon ui-icon-only" data-bind="visible: canBeDeleted() && !askDelete(), click: $root.folderForDeletion" data-ui-icon="trash-2" data-i18n="[aria-label]SETTINGS_FOLDERS/HELP_DELETE_FOLDER"></button>
 	</td>
 	<td data-i18n="[title]SETTINGS_FOLDERS/HELP_SHOW_HIDE_FOLDER" data-bind="if: canBeSubscribed">
-		<span class="e-action fontastic" data-bind="css: {'unsubscribed-folder':!isSubscribed()}, click: $root.toggleFolderSubscription">👁</span>
+		<button type="button" class="e-action ui-icon ui-icon-only" data-bind="css: {'unsubscribed-folder':!isSubscribed()}, attr: {'aria-pressed': isSubscribed()}, click: $root.toggleFolderSubscription" data-ui-icon="eye" data-i18n="[aria-label]SETTINGS_FOLDERS/HELP_SHOW_HIDE_FOLDER"></button>
 	</td>
 	<!-- ko if: $root.displaySpecSetting -->
 	<td data-i18n="[title]SETTINGS_FOLDERS/HELP_CHECK_FOR_NEW_MESSAGES" data-bind="if: canBeSelected() && isSubscribed()">
-		<span class="e-action icon-check-mark-circle-two" data-bind="css: {'check-folder':checkable(), 'unchecked-folder':!checkable()}, click: $root.toggleFolderCheckable"></span>
+		<button type="button" class="e-action ui-icon ui-icon-only" data-bind="css: {'check-folder':checkable(), 'unchecked-folder':!checkable()}, attr: {'aria-pressed': checkable()}, click: $root.toggleFolderCheckable" data-ui-icon="circle-check" data-i18n="[aria-label]SETTINGS_FOLDERS/HELP_CHECK_FOR_NEW_MESSAGES"></button>
 	</td>
 	<!-- /ko -->
 	<!-- ko if: $root.showKolab -->

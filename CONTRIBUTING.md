@@ -1,27 +1,23 @@
 # Contributing to petuja.email
 
-petuja.email is a maintained customization of SnappyMail 2.38.2. Changes should
-preserve upstream attribution, remain reviewable against the fixed SnappyMail
-baseline, and avoid mixing unrelated refactors into product work.
+petuja.email is based on SnappyMail 2.38.2. Keep changes reviewable against
+that upstream baseline and avoid combining unrelated work.
 
 ## Before starting
 
-Read:
+Read the public project guidance:
 
 - [Development](docs/DEVELOPMENT.md)
-- [Upstream and release strategy](docs/UPSTREAM.md)
+- [Upstream relationship](docs/UPSTREAM.md)
 - [Product identity](docs/BRANDING.md)
-- [Change workflow](docs/CHANGE_WORKFLOW.md)
 
-The public petuja Systems source repository may contain release-specific source
-branches as well as upstream-tracking branches. Verify that you are working from
-the intended petuja.email source ref before preparing a change.
+Base changes on the intended petuja.email source revision and state the user
+impact, scope, and relevant upstream behavior in the change description. For
+substantial external changes, discuss the approach with the maintainers before
+beginning a large implementation.
 
-For substantial external changes, discuss the intended scope with the
-maintainers before investing in a large implementation.
-
-Security vulnerabilities must **not** be reported through a public issue or pull
-request. Follow [SECURITY.md](SECURITY.md).
+Do not report security vulnerabilities through a public issue or pull request.
+Follow [SECURITY.md](SECURITY.md).
 
 ## Development setup
 
@@ -31,40 +27,37 @@ Install the pinned JavaScript dependencies:
 corepack yarn install --frozen-lockfile
 ```
 
-Build and lint the normal development output:
+Build and lint the development output:
 
 ```bash
 corepack yarn gulp
 ```
 
-The repository uses the existing SnappyMail source/build layout. Edit source
-files rather than generated CSS or JavaScript.
-
-For a safe local runtime, follow
-[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Never copy production credentials,
-mail, contacts, private keys, certificates, logs, or runtime data into a
-development checkout.
+The repository keeps the SnappyMail source and build layout. Edit source files
+rather than generated CSS or JavaScript. See [Development](docs/DEVELOPMENT.md)
+for local runtime, demo, and test instructions. Never copy production
+credentials, mail, contacts, private keys, certificates, logs, or runtime data
+into a development checkout.
 
 ## Change guidelines
 
 Keep changes focused and minimal.
 
 - Preserve SnappyMail, RainLoop, and third-party copyright and license notices.
-- Keep the approved product name exactly `petuja.email`; `petuja` is lowercase.
+- Use the approved product name `petuja.email`; keep `petuja` lowercase.
 - Do not globally replace upstream `SnappyMail` or `RainLoop` identifiers.
 - Do not commit secrets, production configuration, user data, caches, logs, or
   generated release archives.
 - Do not add analytics, telemetry, remote fonts, third-party scripts, or other
-  runtime dependencies without explicit review.
+  runtime dependencies without review.
 - Preserve authentication, session, cookie, mail-rendering, attachment,
-  encryption, and plugin behavior unless the change explicitly requires
+  encryption, and integration behavior unless the change explicitly requires
   modifying it.
-- Keep source changes compatible with the existing build and release tooling
-  unless a separately reviewed toolchain change is intended.
+- Keep source changes compatible with the existing build and packaging tools.
 
-Application changes use the staged analysis, implementation, security-audit, and
-regression-audit process documented in
-[docs/CHANGE_WORKFLOW.md](docs/CHANGE_WORKFLOW.md).
+Security-sensitive changes need focused security review and regression tests.
+Other changes should include tests for important behavior and verify that
+protected behavior remains unchanged.
 
 ## Validation
 
@@ -76,14 +69,14 @@ corepack yarn gulp
 git diff --check
 ```
 
-PHP changes should also pass `php -l` for the affected files. Changes that
-affect release packaging should be checked with the release workflow documented
-in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+PHP changes should also pass `php -l` for affected files. Packaging changes
+should be checked with `php release.php` or, where the build has already run,
+`php release.php --skip-gulp`.
 
 Never use real production credentials or customer accounts for validation.
 
 ## License
 
-By contributing to this repository, you are contributing to software distributed
-under the [GNU Affero General Public License v3.0](LICENSE), subject to the
-existing upstream and third-party license notices in the repository.
+Contributions are distributed under the
+[GNU Affero General Public License v3.0](LICENSE), subject to existing
+upstream and third-party license notices in the repository.

@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
 		"LABEL_SIGN_ME": "Zapamiętaj mnie",
-		"BUTTON_SIGN_IN": "Zaloguj"
+		"BUTTON_SIGN_IN": "Zaloguj",
+		"TAGLINE": "Twoja skrzynka odbiorcza, gdziekolwiek jesteś.",
+		"LEGAL_NAVIGATION": "Informacje prawne",
+		"LEGAL_IMPRINT": "Nota prawna",
+		"LEGAL_PRIVACY": "Prywatność",
+		"LEGAL_SOURCE": "Kod źródłowy",
+		"TWO_FACTOR_TITLE": "Weryfikacja dwuetapowa",
+		"TWO_FACTOR_INSTRUCTION": "Wpisz kod z aplikacji uwierzytelniającej lub kod odzyskiwania.",
+		"TWO_FACTOR_CODE": "Kod weryfikacyjny",
+		"BUTTON_VERIFY": "Zweryfikuj i zaloguj się"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Dodaj konto"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Foldery",
 		"ACCOUNTS": "Konta",
 		"FILTERS": "Filtry",
-		"SECURITY": "Bezpieczeństwo",
-		"THEMES": "Motywy"
+		"SECURITY": "Bezpieczeństwo"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Wygląd",
+		"LIGHT": "Jasny",
+		"DARK": "Ciemny",
+		"SYSTEM": "Systemowy"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Proste",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Bezpieczeństwo",
 		"LABEL_AUTOLOGOUT": "Automatyczne wylogowanie",
 		"FORGET_KEY_PASS": "Zapomnij hasło klucza prywatnego",
+		"TFA_LEGEND": "2FA (TOTP)",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Nieskonfigurowano",
+		"TFA_STATUS_DISABLED": "Nieskonfigurowano",
+		"TFA_STATUS_ENABLED": "Skonfigurowano",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Utwórz sekretny klucz",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Twój sekretny klucz",
+		"TFA_QR_INSTRUCTIONS": "Zaimportuj tę infomację do aplikacji Google Authenticator (lub innego klienta TOTP) używając kodu QR poniżej lub wpisz sekretny klucz ręcznie.",
+		"TFA_RECOVERY_CODES": "Kody zapasowe",
+		"TFA_RECOVERY_CODES_WARNING": "Jeśli nie możesz uzyskać kodów poprzez aplikację Google Authenticator (lub innego klienta TOTP), możesz użyć kodów zapasowych aby się zalogować. Po użyciu kodu zapasowego do zalogowania, stanie się on nieaktywny.",
+		"TFA_CODE_LABEL": "Kod",
+		"TFA_ENABLE": "Aktywuj",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Nigdy"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "URL książki adresowej",
 		"LABEL_CONTACTS_SYNC_USER": "Użytkownik",
 		"SYNC_READ": "Tylko do odczytu"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Motywy",
-		"LABEL_BACKGROUND": "Tło",
-		"LABEL_FONTS": "Czcionki",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Prześlij własne tło (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Plik jest za duży",
-		"ERROR_FILE_TYPE_ERROR": "Nieprawidłowy format pliku (obsługiwane są wyłącznie pliki JPG i PNG)",
-		"ERROR_UNKNOWN": "Wystąpił nieznany błąd w trakcie przesyłania pliku na serwer"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Lista folderów",

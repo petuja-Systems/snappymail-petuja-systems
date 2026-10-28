@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Logg inn",
 		"LABEL_SIGN_ME": "Husk meg",
-		"BUTTON_SIGN_IN": "Logg inn"
+		"BUTTON_SIGN_IN": "Logg inn",
+		"TAGLINE": "Innboksen din, uansett hvor du er.",
+		"LEGAL_NAVIGATION": "Juridisk informasjon",
+		"LEGAL_IMPRINT": "Utgiverinformasjon",
+		"LEGAL_PRIVACY": "Personvern",
+		"LEGAL_SOURCE": "Kildekode",
+		"TWO_FACTOR_TITLE": "To-trinnsbekreftelse",
+		"TWO_FACTOR_INSTRUCTION": "Skriv inn en kode fra autentiseringsappen eller en gjenopprettingskode.",
+		"TWO_FACTOR_CODE": "Bekreftelseskode",
+		"BUTTON_VERIFY": "Bekreft og logg inn"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Legg til konto"
@@ -126,7 +135,7 @@
 		"PUT_MESSAGE_HERE": "Dra en melding hit for å vise den i lista",
 		"TODAY_AT": "i dag, %TIME%",
 		"YESTERDAY_AT": "i går, %TIME%",
-		"NEW_MESSAGE_NOTIFICATION": "Du har %count% nye meldinger",
+		"NEW_MESSAGE_NOTIFICATION": "Du har %COUNT% nye meldinger",
 		"QUOTA_SIZE": "Bruker <strong> %SIZE% ( %PROC%% ) <\/strong> av <strong> %LIMIT% <\/strong>",
 		"SORT": "Sort",
 		"NO_SORT": "Mail server does not support sorting",
@@ -439,8 +448,13 @@
 		"FOLDERS": "Mapper",
 		"ACCOUNTS": "Kontoer",
 		"FILTERS": "Filters",
-		"SECURITY": "Sikkerhet",
-		"THEMES": "Tema"
+		"SECURITY": "Sikkerhet"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Utseende",
+		"LIGHT": "Lys",
+		"DARK": "Mørk",
+		"SYSTEM": "System"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Enkel",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Sikkerhet",
 		"LABEL_AUTOLOGOUT": "Logg ut automatisk etter",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Aldri"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Nettadresse til adressebok",
 		"LABEL_CONTACTS_SYNC_USER": "Bruker",
 		"SYNC_READ": "Skrivebeskyttet"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Tema",
-		"LABEL_BACKGROUND": "Bakgrunn",
-		"LABEL_FONTS": "Fonts",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Last opp bakgrunnsbilde (.jpg eller .png)",
-		"ERROR_FILE_IS_TOO_BIG": "Fila er for stor (1mb +)",
-		"ERROR_FILE_TYPE_ERROR": "Ugyldig filtype (bruk .jpg eller .png)",
-		"ERROR_UNKNOWN": "Det oppstod en ukjent feil under opplasting av fil"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Mappeliste",

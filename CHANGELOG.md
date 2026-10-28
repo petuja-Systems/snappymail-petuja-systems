@@ -6,6 +6,109 @@ own product versioning independently from the underlying SnappyMail engine.
 The historical SnappyMail changelog is retained below for upstream provenance
 and technical context.
 
+## petuja.email 1.1.0 — 2026-10-28
+
+Based on SnappyMail 2.38.2.
+
+### Added
+
+- Native TOTP two-factor enrollment, recovery codes, and a two-step sign-in
+  flow shown only after primary authentication succeeds, with forced enrollment
+  and compatible existing enrollment records retained.
+- Native Light, Dark, and System appearance options, an authenticated
+  appearance preference, and a quick appearance switch, with compatibility
+  handling for recognized legacy theme preferences.
+- A notification chime and a local synthetic demo with Contacts when SQLite is
+  available, plus a localized manual Reload action for bootstrap and
+  fatal-error pages.
+
+### Changed
+
+- Hardened session revocation and Remember-Me assurance, forced enrollment,
+  pending-session handling, and bounded public-login abuse controls.
+- Improved message selection and view actions, read-state handling, folder
+  status work, Compose, Contacts, and Settings. Keyboard and focus behavior,
+  touch layouts, RTL spacing, and accessibility were refined across selected
+  flows.
+- Raised the minimum supported PHP version to 8.2.35; no maximum PHP version is
+  declared.
+- Updated product title, favicon, and local icon assets. Strengthened release
+  provenance with exact-source and corresponding-source checks, manifests and
+  checksums, immutable release layouts, and persistence and rollback
+  safeguards.
+
+### Security
+
+- Bound native two-factor challenges to the guest session and CSRF context,
+  limited challenge attempts, rejected replayed TOTP steps, and made recovery
+  codes single-use. Authenticated sessions and Remember-Me restoration retain
+  factor assurance.
+- Cumulatively bounded failed TOTP and recovery-code attempts across fresh
+  guest sessions and challenges, using account-level and source-level abuse
+  controls. Forced enrollment and pending-session issuance use the same
+  admission controls; exhausted or unavailable accounting does not issue
+  authenticated or Remember-Me authority.
+- Tightened public password-login abuse controls and preserved the distinction
+  between rejected credentials and mail-provider or TLS failures. Hardened
+  CSRF, action-method, Origin, upload, proxy/header-trust, and secure-cookie
+  boundaries.
+- Required peer verification for mail, Contacts, and outbound HTTPS transports.
+  Restricted server-side external-image fetches to validated public
+  destinations and bounded HTTP and CardDAV responses. Tightened
+  sender-controlled HTML, CSS, URL, attachment, and MIME-resource handling,
+  with bounded thumbnail processing and folder-status work; malformed or
+  oversized requests are rejected before expensive mailbox work. Contacts CSV
+  exports apply text safeguards and standard quoting.
+- Bound account storage to collision-resistant identities and explicit
+  ownership. Legacy data is not automatically adopted when ownership is
+  ambiguous, and unsupported paths, layouts, and filesystem permissions fail
+  closed.
+- Required explicit trust for S/MIME recipient certificates and removed shared
+  or example signing private keys and demo OpenPGP private-key material from
+  shipped source. User-held identities remain separate from application trust.
+- Reduced the shipped attack surface by removing the generic plugin runtime
+  and retired optional integrations. Release tooling validates source
+  correspondence and public exports, separates trusted controls from exported
+  content, and uses bounded inputs and immutable release/rollback procedures.
+
+### Removed
+
+- Removed the generic plugin runtime, catalog, hooks, and optional integration
+  paths; reCAPTCHA, avatar, and snowfall plugins have no direct 1.1.0
+  replacement.
+- Removed legacy theme selection, application UI-font and uploaded-background
+  customization, stale Settings controls, and Fontastic compatibility CSS,
+  fonts, and build paths. Local SVG and Lucide icons remain.
+- Removed example and shared application S/MIME signer keypairs and the OpenPGP
+  demo private-key fixture from shipped source/runtime packaging. Signature
+  verification checks integrity; recipient identity trust remains an explicit
+  choice.
+
+### Upgrade notes
+
+- Before production adoption, follow the persistence and release procedures:
+  use PHP 8.2.35 or newer, verify a backup with an isolated restore, establish
+  an authoritative legacy account-ownership map, review the Contacts backend
+  separately, and keep persistent data outside immutable release directories.
+  Do not overwrite persistent `data/`; ownership is never inferred, and
+  uncertain or unmapped data must remain untouched. No maximum PHP version is
+  declared.
+- Preserve per-user S/MIME and GPG/PGP identities; existing personal S/MIME
+  certificates and keys remain in place and are not migrated. Previously saved
+  S/MIME recipient certificates remain on disk but are no longer available as
+  saved encryption recipients. To use one, verify its identity and fingerprint
+  through a trusted source, then explicitly re-import its public certificate.
+  Newly generated identity certificates are self-signed and are not trusted
+  automatically.
+- Treat historical shared S/MIME signing material as disclosed. Operators
+  must inventory deployed copies, retire trust where applicable, and replace
+  or reissue affected certificates under their trust policy. Removing keys
+  from source does not perform production cleanup, revocation, or rotation.
+- Review deployment-specific plugin dependencies before upgrade; the generic
+  plugin runtime and optional plugin integrations have been removed. Supported
+  legacy appearance preferences are handled compatibly, while old UI-font and
+  uploaded-background customization is retired.
+
 ## petuja.email 1.0.1 — 2026-09-23
 
 Based on SnappyMail 2.38.2

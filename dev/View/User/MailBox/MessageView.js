@@ -13,6 +13,7 @@ import {
 } from 'Common/EnumsUser';
 import { RFC822 } from 'Common/File';
 import {
+	doc,
 	elementById,
 	keyScopeReal,
 	Settings,
@@ -27,10 +28,12 @@ import {
 import { arrayLength } from 'Common/Utils';
 import { download, downloadZip, mailToHelper, showMessageComposer, moveAction } from 'Common/UtilsUser';
 import { isFullscreen, exitFullscreen, toggleFullscreen } from 'Common/Fullscreen';
+import { staticLink } from 'Common/Links';
 
 import { SMAudio } from 'Common/Audio';
+import { encodeHtml } from 'Common/HtmlEncoding';
 
-import { i18n } from 'Common/Translator';
+import { i18n, i18nHtml } from 'Common/Translator';
 
 import { AppUserStore } from 'Stores/User/App';
 import { SettingsUserStore } from 'Stores/User/Settings';
@@ -123,6 +126,7 @@ export class MailMessageView extends AbstractViewRight {
 
 		this.msgDefaultAction = SettingsUserStore.msgDefaultAction;
 		this.simpleAttachmentsList = SettingsUserStore.simpleAttachmentsList;
+		this.messageViewLogoUrl = staticLink('images/petuja-systems-logo.svg');
 
 		addObservablesTo(this, {
 			showAttachmentControls: !!Local.get(ClientSideKeyNameMessageAttachmentControls),
@@ -173,11 +177,15 @@ export class MailMessageView extends AbstractViewRight {
 
 			messageVisible: () => !MessageUserStore.loading() && !!currentMessage(),
 
-			tagsToHTML: () => currentMessage()?.flags().map(value =>
-					isAllowedKeyword(value)
-					? '<span class="focused msgflag-'+value+'">' + i18n('MESSAGE_TAGS/'+value,0,value) + '</span>'
-					: ''
-				).join(' '),
+			tagsToHTML: () => currentMessage()?.flags().map(value => {
+				if (!isAllowedKeyword(value)) {
+					return '';
+				}
+				const encodedValue = encodeHtml(value);
+				return '<span class="focused msgflag-'+encodedValue+'">'
+					+ i18n('MESSAGE_TAGS/'+value, 0, encodedValue)
+					+ '</span>';
+			}).join(' '),
 
 			askReadReceipt: () => currentMessage()?.readReceipt
 				&& !(MessagelistUserStore.isDraftFolder() || MessagelistUserStore.isSentFolder())
@@ -199,12 +207,12 @@ export class MailMessageView extends AbstractViewRight {
 					case 'none':
 						return '';
 					case 'pass':
-						return '✔';
+						return 'check';
 					default:
-						return '✖';
+						return 'x';
 				}
 			},
-			dkimIconClass: () => 'pass' === this.dkimData()[0] ? 'iconcolor-green' : 'iconcolor-red',
+			dkimIconClass: () => 'pass' === this.dkimData()[0] ? 'ui-icon-color-green' : 'ui-icon-color-red',
 
 			dkimTitle:() => {
 				const dkim = this.dkimData();
@@ -291,6 +299,8 @@ export class MailMessageView extends AbstractViewRight {
 		this.actionsMenu().ddBtn.hide();
 		AppUserStore.focusedState(ScopeFolderList);
 		moveAction(mode);
+		const folderList = elementById('V-MailFolderList');
+		(folderList?.querySelector('li a.focused') || folderList?.querySelector('li a.selectable'))?.focus();
 	}
 
 	moveCommand(vm, event) {
@@ -327,7 +337,13 @@ export class MailMessageView extends AbstractViewRight {
 	}
 
 	onBuild(dom) {
-		const eqs = (ev, s) => ev.target.closestWithin(s, dom);
+		const eqs = (ev, s) => ev.target.closestWithin(s, dom),
+			focusMessageList = () => {
+				AppUserStore.focusedState(ScopeMessageList);
+				elementById('V-MailMessageList')?.querySelector('.b-content')?.focus();
+			};
+
+		dom.addEventListener('focusin', () => AppUserStore.focusedState(ScopeMessageView));
 		dom.addEventListener('click', event => {
 			let el = eqs(event, 'a');
 			if (el && 0 === event.button && mailToHelper(el.href)) {
@@ -392,7 +408,9 @@ export class MailMessageView extends AbstractViewRight {
 			}
 		});
 
-		keyScopeReal.subscribe(value => this.messageDomFocused(ScopeMessageView === value));
+		keyScopeReal.subscribe(value => this.messageDomFocused(
+			ScopeMessageView === value && !dom.contains(doc.activeElement)
+		));
 
 		// initShortcuts
 
@@ -403,12 +421,12 @@ export class MailMessageView extends AbstractViewRight {
 				if (isFullscreen()) {
 					exitFullscreen();
 					if (preview) {
-						AppUserStore.focusedState(ScopeMessageList);
+						focusMessageList();
 					}
 				} else if (!preview) {
 					currentMessage(null);
 				} else {
-					AppUserStore.focusedState(ScopeMessageList);
+					focusMessageList();
 				}
 
 				return false;
@@ -417,8 +435,10 @@ export class MailMessageView extends AbstractViewRight {
 
 		// fullscreen
 		addShortcut('enter,open', '', ScopeMessageView, () => {
-			isFullscreen() || toggleFullscreen();
-			return false;
+			if (!formFieldFocused()) {
+				isFullscreen() || toggleFullscreen();
+				return false;
+			}
 		});
 
 		// reply
@@ -474,39 +494,37 @@ export class MailMessageView extends AbstractViewRight {
 			}
 		});
 
-		addShortcut('arrowup,arrowleft', 'meta', [ScopeMessageList, ScopeMessageView], () => {
+		registerShortcut('arrowup,arrowleft', 'meta', [ScopeMessageList, ScopeMessageView], () => {
 			this.goUpCommand();
 			return false;
 		});
 
-		addShortcut('arrowdown,arrowright', 'meta', [ScopeMessageList, ScopeMessageView], () => {
+		registerShortcut('arrowdown,arrowright', 'meta', [ScopeMessageList, ScopeMessageView], () => {
 			this.goDownCommand();
 			return false;
 		});
 
 		// delete
 		addShortcut('delete', '', ScopeMessageView, () => {
-			this.deleteCommand();
-			return false;
+			if (!formFieldFocused()) {
+				this.deleteCommand();
+				return false;
+			}
 		});
 		addShortcut('delete', 'shift', ScopeMessageView, () => {
-			this.deleteWithoutMoveCommand();
-			return false;
+			if (!formFieldFocused()) {
+				this.deleteWithoutMoveCommand();
+				return false;
+			}
 		});
 
 		// change focused state
 		addShortcut('arrowleft', '', ScopeMessageView, () => {
-			if (!isFullscreen() && currentMessage() && SettingsUserStore.usePreviewPane()
+			if (!formFieldFocused() && !isFullscreen() && currentMessage() && SettingsUserStore.usePreviewPane()
 			 && !oMessageScrollerDom().scrollLeft) {
-				AppUserStore.focusedState(ScopeMessageList);
+				focusMessageList();
 				return false;
 			}
-		});
-		addShortcut('tab', 'shift', ScopeMessageView, () => {
-			if (!isFullscreen() && currentMessage() && SettingsUserStore.usePreviewPane()) {
-				AppUserStore.focusedState(ScopeMessageList);
-			}
-			return false;
 		});
 
 		MessageUserStore.bodiesDom(dom.querySelector('.bodyText'));
@@ -682,7 +700,7 @@ export class MailMessageView extends AbstractViewRight {
 			params.privateKey = identity.smimeKey();
 			if (identity.smimeKeyEncrypted()) {
 				pass = await Passphrases.ask(identity,
-					i18n('SMIME/PRIVATE_KEY_OF', {EMAIL: identity.email()}),
+					i18nHtml('SMIME/PRIVATE_KEY_OF', {EMAIL: identity.email()}),
 					'CRYPTO/DECRYPT'
 				);
 				if (!pass) {
@@ -711,22 +729,28 @@ export class MailMessageView extends AbstractViewRight {
 
 	smimeVerify(/*self, event*/) {
 		const message = currentMessage(),
-			data = message.smimeSigned(); // { partId: "1", micAlg: "pgp-sha256" }
-		if (data) {
+			currentData = message.smimeSigned(); // { partId: "1", micAlg: "pgp-sha256" }
+		if (currentData) {
+			const data = { ...currentData };
+			delete data.success;
+			message.smimeSigned(data);
 			const params = { ...data }; // clone
 			params.folder = message.folder;
 			params.uid = message.uid;
 			params.bodyPart = data.bodyPart?.raw;
 			params.sigPart = data.sigPart?.bodyRaw;
 			Remote.post('SMimeVerifyMessage', null, params).then(response => {
-				if (response?.Result) {
+				if (true === response?.Result?.success) {
 					if (response.Result.body) {
 						MimeToMessage(response.Result.body, message);
 						message.html() ? message.viewHtml() : message.viewPlain();
 					}
-					data.success = response.Result.success;
-					message.smimeSigned(data);
+					message.smimeSigned({ ...data, success: true });
 				}
+			}).catch(() => {
+				// A failed request is not proof of a valid signature.
+				delete data.success;
+				message.smimeSigned({ ...data });
 			});
 		}
 	}

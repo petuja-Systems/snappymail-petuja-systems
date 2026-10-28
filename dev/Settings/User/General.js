@@ -20,16 +20,21 @@ import { SettingsUserStore } from 'Stores/User/Settings';
 import { IdentityUserStore } from 'Stores/User/Identity';
 import { NotificationUserStore } from 'Stores/User/Notification';
 import { MessagelistUserStore } from 'Stores/User/Messagelist';
+import { AppearanceStore } from 'Stores/Appearance';
 
 import Remote from 'Remote/User/Fetch';
 
 import { LanguagesPopupView } from 'View/Popup/Languages';
+
+const checkMailIntervalPresets = [5, 10, 15, 30, 60];
 
 export class UserSettingsGeneral extends AbstractViewSettings {
 	constructor() {
 		super();
 
 		this.mailto = ko.observable(!!navigator.registerProtocolHandler);
+		this.appearance = AppearanceStore.preference;
+		this.appearanceTrigger = AppearanceStore.saveStatus;
 
 		this.language = LanguageStore.language;
 		this.languages = LanguageStore.languages;
@@ -40,6 +45,11 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 		this.notificationSounds = ko.observableArray(SettingsGet('newMailSounds'));
 
 		this.minRefreshInterval = SettingsGet('minRefreshInterval');
+		this.checkMailIntervalOptionAfterRender = (option, item) => {
+			if (item) {
+				option.disabled = item.disabled;
+			}
+		};
 
 		this.desktopNotifications = NotificationUserStore.enabled;
 		this.isDesktopNotificationAllowed = NotificationUserStore.allowed;
@@ -59,7 +69,7 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 		 'editorDefaultType', 'editorWysiwyg', 'msgDefaultAction', 'maxBlockquotesLevel',
 		 // These are in addSettings()
 		 'requestReadReceipt', 'requestDsn', 'requireTLS', 'pgpSign', 'pgpEncrypt',
-		 'viewHTML', 'viewImages', 'viewImagesWhitelist', 'removeColors', 'allowStyles', 'allowDraftAutosave',
+		 'viewHTML', 'viewImages', 'viewImagesWhitelist', 'removeColors', 'allowDraftAutosave',
 		 'hideDeleted', 'listInlineAttachments', 'simpleAttachmentsList', 'collapseBlockquotes',
 		 'useCheckboxesInList', 'listGrouped', 'replySameFolder', 'allowSpellcheck',
 		 'messageReadAuto', 'showNextMessage', 'messageNewWindow', 'markdown'
@@ -106,6 +116,28 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 					{ id: LayoutSideView, name: i18n('SETTINGS_GENERAL/LAYOUT_VERTICAL_SPLIT') },
 					{ id: LayoutBottomView, name: i18n('SETTINGS_GENERAL/LAYOUT_HORIZONTAL_SPLIT') }
 				];
+			},
+
+			checkMailIntervalOptions: () => {
+				const
+					minimum = Number(this.minRefreshInterval) || 1,
+					interval = this.checkMailInterval(),
+					options = checkMailIntervalPresets.map(id => ({
+						id,
+						name: String(id),
+						disabled: id < minimum
+					}));
+
+				if (Number.isInteger(interval) && !checkMailIntervalPresets.includes(interval)) {
+					options.push({ id: interval, name: String(interval), disabled: true });
+				}
+
+				return options.sort((a, b) => a.id - b.id);
+			},
+
+			checkMailIntervalDisabled: () => {
+				const minimum = Number(this.minRefreshInterval) || 1;
+				return checkMailIntervalPresets.every(id => id < minimum);
 			}
 		});
 
@@ -120,7 +152,7 @@ export class UserSettingsGeneral extends AbstractViewSettings {
 
 		this.addSettings([
 			'requestReadReceipt', 'requestDsn', 'requireTLS', 'pgpSign', 'pgpEncrypt',
-			'ViewHTML', 'ViewImages', 'ViewImagesWhitelist', 'RemoveColors', 'AllowStyles', 'AllowDraftAutosave',
+			'ViewHTML', 'ViewImages', 'ViewImagesWhitelist', 'RemoveColors', 'AllowDraftAutosave',
 			'HideDeleted', 'ListInlineAttachments', 'simpleAttachmentsList', 'CollapseBlockquotes',
 			'UseCheckboxesInList', 'listGrouped', 'ReplySameFolder', 'allowSpellcheck',
 			'messageReadAuto', 'showNextMessage', 'messageNewWindow', 'markdown',

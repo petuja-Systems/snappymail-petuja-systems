@@ -36,7 +36,8 @@ import { FolderUserStore } from 'Stores/User/Folder';
 import { PgpUserStore } from 'Stores/User/Pgp';
 import { SMimeUserStore } from 'Stores/User/SMime';
 import { MessagelistUserStore } from 'Stores/User/Messagelist';
-import { ThemeStore, initThemes } from 'Stores/Theme';
+import { ThemeStore, initResponsiveState } from 'Stores/Theme';
+import { clearAppearance, initAppearance } from 'Stores/Appearance';
 import { LanguageStore } from 'Stores/Language';
 import { MessageUserStore } from 'Stores/User/Message';
 
@@ -60,6 +61,7 @@ import {
 	setRefreshFoldersInterval
 } from 'Common/Folders';
 import { loadFolders } from 'Model/FolderCollection';
+import { startForcedEnrollmentRouting } from 'App/ForcedEnrollmentRouting.mjs';
 
 export class AppUser extends AbstractApp {
 	constructor() {
@@ -155,6 +157,7 @@ export class AppUser extends AbstractApp {
 	}
 
 	bootstart() {
+		this.syncAppearance();
 		super.bootstart();
 
 		addEventListener('beforeunload', event => {
@@ -166,13 +169,33 @@ export class AppUser extends AbstractApp {
 	}
 
 	refresh() {
-		initThemes();
+		this.syncAppearance();
+		initResponsiveState();
 		LanguageStore.language(SettingsGet('language'));
 		this.start();
 	}
 
+	syncAppearance() {
+		if (SettingsGet('Auth') && !SettingsGet('SetupTwoFactor')) {
+			initAppearance(SettingsGet('Appearance'));
+		} else {
+			clearAppearance();
+		}
+	}
+
 	start() {
 		if (SettingsGet('Auth')) {
+			if (startForcedEnrollmentRouting(SettingsGet('SetupTwoFactor'), {
+				location: document.location,
+				addEventListener,
+				startSecurityScreen: () => {
+					AccountUserStore.email(SettingsGet('Email'));
+					startScreens([SettingsUserScreen]);
+				}
+			})) {
+				return;
+			}
+
 			rl.setTitle(i18n('GLOBAL/LOADING'));
 
 			SMAudio.notifications(!!SettingsGet('SoundNotification'));

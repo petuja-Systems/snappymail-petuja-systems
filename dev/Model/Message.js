@@ -73,9 +73,6 @@ body > * {
 	padding: 0.25em;
 	margin-right: 1em;
 }
-#attachments > *::before {
-	content: '📎 ';
-}
 	</style>
 </head>
 <body></body>
@@ -193,7 +190,7 @@ export class MessageModel extends AbstractModel {
 
 		addComputablesTo(this, {
 			attachmentIconClass: () =>
-				this.encrypted() ? 'icon-lock' : FileInfo.getAttachmentsIconClass(this.attachments()),
+				this.encrypted() ? 'lock-keyhole' : FileInfo.getAttachmentsIconClass(this.attachments()),
 			threadsLen: () => rl.app.messageList.threadUid() ? 0 : this.threads().length,
 			threadUnseenLen: () => rl.app.messageList.threadUid() ? 0 : this.threadUnseen().length,
 
@@ -497,7 +494,7 @@ export class MessageModel extends AbstractModel {
 			prop = property => style.getPropertyValue(property);
 		let attachments = '';
 		this.attachments.forEach(attachment => {
-			attachments += `<a href="${attachment.linkDownload()}">${attachment.fileName}</a>`;
+			attachments += `<a href="${encodeHtml(attachment.linkDownload())}">${encodeHtml(attachment.fileName)}</a>`;
 		});
 		sdoc.write(PreviewHTML
 			.replace('<title>', '<title>'+subject)
@@ -569,14 +566,6 @@ export class MessageModel extends AbstractModel {
 				if (isValid(src)) {
 					node.src = useProxy ? proxy(src) : src;
 				}
-			});
-
-			body.querySelectorAll('[data-x-style-url]').forEach(node => {
-				JSON.parse(node.dataset.xStyleUrl).forEach(data => {
-					if (isValid(data[1])) {
-						node.style[data[0]] = "url('" + (useProxy ? proxy(data[1]) : data[1]) + "')"
-					}
-				});
 			});
 
 			this.hasImages(hasImages);

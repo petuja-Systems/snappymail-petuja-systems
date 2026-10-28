@@ -14,6 +14,7 @@ trait User
 	use Contacts;
 	use Filters;
 	use Folders;
+	use TwoFactor;
 	use Messages;
 	use Attachments;
 	use Pgp;
@@ -35,39 +36,48 @@ trait User
 	 */
 	public function DoLogin() : array
 	{
-		try {
-			$oAccount = $this->LoginProcess(
-				\MailSo\Base\Utils::Trim($this->GetActionParam('Email', '')),
-				new \SnappyMail\SensitiveString($this->GetActionParam('Password', ''))
-			);
-		} catch (\Throwable $oException) {
-			$this->loginErrorDelay();
-			throw $oException;
-		}
+		$sEmail = $this->GetActionParam('Email', '');
+		$sPassword = $this->GetActionParam('Password', '');
+		$sEmail = \is_scalar($sEmail) ? (string) $sEmail : '';
+		$sPassword = \is_scalar($sPassword) ? (string) $sPassword : '';
+
+		$oAccount = $this->LoginPublicPassword(
+			\MailSo\Base\Utils::Trim($sEmail),
+			new \SnappyMail\SensitiveString($sPassword)
+		);
 
 		empty($this->GetActionParam('signMe', 0)) || $this->SetSignMeToken($oAccount);
 
-		$sLanguage = $this->GetActionParam('language', '');
-		if ($oAccount && $sLanguage) {
-			$oSettings = $this->SettingsProvider()->Load($oAccount);
-			if ($oSettings) {
-				$sLanguage = $this->ValidateLanguage($sLanguage);
-				$sCurrentLanguage = $oSettings->GetConf('language', '');
-
-				if ($sCurrentLanguage !== $sLanguage) {
-					$oSettings->SetConf('language', $sLanguage);
-					$oSettings->save();
-				}
-			}
-		}
+		$this->persistLoginLanguage($oAccount);
 
 		return $this->DefaultResponse($this->AppData(false));
+	}
+
+	/**
+	 * Preserve the selected public-login language only after primary/final auth.
+	 */
+	private function persistLoginLanguage(\RainLoop\Model\MainAccount $oAccount) : void
+	{
+		$mLanguage = $this->GetActionParam('language', '');
+		$sLanguage = \is_scalar($mLanguage) ? (string) $mLanguage : '';
+		if ('' === $sLanguage) {
+			return;
+		}
+
+		$oSettings = $this->SettingsProvider()->Load($oAccount);
+		if ($oSettings) {
+			$sLanguage = $this->ValidateLanguage($sLanguage);
+			if ($oSettings->GetConf('language', '') !== $sLanguage) {
+				$oSettings->SetConf('language', $sLanguage);
+				$oSettings->save();
+			}
+		}
 	}
 
 	public function DoLogout() : array
 	{
 		$bMain = true; // empty($_COOKIE[self::AUTH_ADDITIONAL_TOKEN_KEY]);
-		$this->Logout($bMain);
+		$this->Logout($bMain, true);
 		$bMain && $this->ClearSignMeData();
 		return $this->TrueResponse();
 	}
@@ -128,13 +138,26 @@ trait User
 
 	public function DoSettingsUpdate() : array
 	{
+		if (!$this->Http()->IsPost()) {
+			throw new ClientException(Notifications::AuthError);
+		}
+
 		$oAccount = $this->getAccountFromToken();
+		$aActionParams = $this->GetActionParams();
+		$bHasAppearance = \array_key_exists('Appearance', $aActionParams);
+		$mAppearance = $bHasAppearance ? $aActionParams['Appearance'] : null;
+		if ($bHasAppearance && !\RainLoop\Actions::IsAppearancePreference($mAppearance)) {
+			throw new ClientException(Notifications::InvalidInputArgument);
+		}
 
 		$self = $this;
 		$oConfig = $this->Config();
 
 		$oSettings = $this->SettingsProvider()->Load($oAccount);
 		$oSettingsLocal = $this->SettingsProvider(true)->Load($oAccount);
+		if ($bHasAppearance) {
+			$oSettings->SetConf('Appearance', $mAppearance);
+		}
 
 		if ($oConfig->Get('webmail', 'allow_languages_on_settings', true)) {
 			$this->setSettingsFromParams($oSettings, 'language', 'string', function ($sLanguage) use ($self) {
@@ -144,17 +167,6 @@ trait User
 //			$oSettings->SetConf('language', $this->ValidateLanguage($oConfig->Get('webmail', 'language', 'en')));
 		}
 		$this->setSettingsFromParams($oSettings, 'hourCycle', 'string');
-
-		if ($this->GetCapa(Capa::THEMES)) {
-			$this->setSettingsFromParams($oSettingsLocal, 'Theme', 'string', function ($sTheme) use ($self) {
-				return $self->ValidateTheme($sTheme);
-			});
-			$this->setSettingsFromParams($oSettings, 'fontSansSerif', 'string');
-			$this->setSettingsFromParams($oSettings, 'fontSerif', 'string');
-			$this->setSettingsFromParams($oSettings, 'fontMono', 'string');
-		} else {
-//			$oSettingsLocal->SetConf('Theme', $this->ValidateTheme($oConfig->Get('webmail', 'theme', 'Default')));
-		}
 
 		$this->setSettingsFromParams($oSettings, 'MessagesPerPage', 'int', function ($iValue) {
 			return \min(100, \max(10, $iValue));
@@ -236,8 +248,6 @@ trait User
 		$sQuery = \trim($this->GetActionParam('Query', ''));
 		$iLimit = (int) $this->Config()->Get('contacts', 'suggestions_limit', 20);
 
-		$this->Plugins()->RunHook('json.suggestions-input-parameters', array(&$sQuery, &$iLimit, $oAccount));
-
 		$aResult = array();
 
 		if ($oSuggestionsProvider = $this->SuggestionsProvider()) {
@@ -245,27 +255,6 @@ trait User
 		}
 
 		return $this->DefaultResponse($aResult);
-	}
-
-	public function DoClearUserBackground() : array
-	{
-		if (!$this->GetCapa(Capa::USER_BACKGROUND)) {
-			return $this->FalseResponse();
-		}
-
-		$oAccount = $this->getAccountFromToken();
-		$oSettings = $this->SettingsProvider()->Load($oAccount);
-		if ($oAccount && $oSettings) {
-			$this->StorageProvider()->Clear($oAccount,
-				\RainLoop\Providers\Storage\Enumerations\StorageType::CONFIG,
-				'background'
-			);
-
-			$oSettings->SetConf('UserBackgroundName', '');
-			$oSettings->SetConf('UserBackgroundHash', '');
-		}
-
-		return $this->DefaultResponse($oAccount && $oSettings ? $oSettings->save() : false);
 	}
 
 	private function setSettingsFromParams(\RainLoop\Settings $oSettings, string $sConfigName, string $sType = 'string', ?callable $cCallback = null) : void

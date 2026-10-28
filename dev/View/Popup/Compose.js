@@ -18,7 +18,7 @@ import { koArrayWithDestroy, addObservablesTo, addComputablesTo, addSubscribable
 import { UNUSED_OPTION_VALUE } from 'Common/Consts';
 import { folderInformation } from 'Common/Folders';
 import { serverRequest } from 'Common/Links';
-import { i18n, getNotification, getUploadErrorDescByCode, timestampToString } from 'Common/Translator';
+import { i18n, i18nHtml, getNotification, getUploadErrorDescByCode, timestampToString } from 'Common/Translator';
 import { setFolderETag } from 'Common/Cache';
 import { SettingsCapa, SettingsGet, elementById, addShortcut, createElement } from 'Common/Globals';
 //import { exitFullscreen, isFullscreen, toggleFullscreen } from 'Common/Fullscreen';
@@ -761,20 +761,41 @@ export class ComposePopupView extends AbstractViewPopup {
 				let signature = identity.signature() || '',
 					isHtml = signature.startsWith(':HTML:'),
 					fromLine = oLastMessage ? emailArrayToStringLineHelper(oLastMessage.from, true) : '';
-				if (fromLine) {
-					signature = signature.replace(/{{FROM-FULL}}/g, fromLine);
-					if (!fromLine.includes(' ') && 0 < fromLine.indexOf('@')) {
-						fromLine = fromLine.replace(/@\S+/, '');
-					}
-					signature = signature.replace(/{{FROM}}/g, fromLine);
-				}
 				signature = (isHtml ? signature.slice(6) : signature)
 					.replace(/\r/g, '')
-					.replace(/\s{1,2}?{{FROM}}/g, '')
-					.replace(/\s{1,2}?{{FROM-FULL}}/g, '')
 					.replace(/{{DATE}}/g, new Date().format({dateStyle: 'full', timeStyle: 'short'}))
 					.replace(/{{TIME}}/g, new Date().format('LT'))
 					.replace(/{{MOMENT:[^}]+}}/g, '');
+				if (fromLine) {
+					const fromShort = !fromLine.includes(' ') && 0 < fromLine.indexOf('@')
+							? fromLine.replace(/@\S+/, '') : fromLine,
+						senderText = (match, full) => full ? fromLine : fromShort;
+					if (isHtml) {
+						tpl.innerHTML = signature;
+						// Sender fields are text, never URLs, styles or executable attributes.
+						tpl.content.querySelectorAll('*').forEach(node => {
+							[...node.attributes].forEach(attribute => {
+								if (/{{FROM(-FULL)?}}/.test(attribute.value)) {
+									node.removeAttribute(attribute.name);
+								}
+							});
+						});
+						const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_TEXT);
+						while (walker.nextNode()) {
+							const node = walker.currentNode;
+							if (!node.parentElement?.closest('script,style,xmp,iframe,noembed,noframes,plaintext,noscript')) {
+								node.textContent = node.textContent.replace(/{{FROM(-FULL)?}}/g, senderText);
+							}
+						}
+						signature = tpl.innerHTML;
+					} else {
+						signature = signature.replace(/{{FROM(-FULL)?}}/g, senderText);
+					}
+				} else {
+					signature = signature
+						.replace(/\s{1,2}?{{FROM}}/g, '')
+						.replace(/\s{1,2}?{{FROM-FULL}}/g, '');
+				}
 				signature.length && editor.setSignature(signature, isHtml, !!identity.signatureInsertBefore());
 			});
 		}
@@ -1089,6 +1110,7 @@ export class ComposePopupView extends AbstractViewPopup {
 		// initUploader
 		const oJua = new Jua({
 				action: serverRequest('Upload'),
+				headers: () => ({ 'X-SM-Token': rl.settings.app('token') }),
 				clickElement: dom.querySelector('#composeUploadButton'),
 				dragAndDropElement: dom.querySelector('.b-attachment-place')
 			}),
@@ -1593,7 +1615,7 @@ export class ComposePopupView extends AbstractViewPopup {
 //					params.attachCertificate = false;
 					if (identity.smimeKeyEncrypted()) {
 						const pass = await Passphrases.ask(identity,
-							i18n('SMIME/PRIVATE_KEY_OF', {EMAIL: identity.email()}),
+							i18nHtml('SMIME/PRIVATE_KEY_OF', {EMAIL: identity.email()}),
 							'CRYPTO/SIGN'
 						);
 						if (null != pass) {

@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Dodaj",
 		"CLOSE": "Zamknij",
+		"DELETE": "Usuń",
+		"LOGOUT": "Wyloguj",
 		"SAVE": "Zapisz",
 		"TEST": "Testuj",
 		"UPDATE": "Zaktualizuj",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Kontakty",
 		"DOMAINS": "Domeny",
 		"SECURITY": "Bezpieczeństwo",
-		"PACKAGES": "Pakiety",
 		"CONFIG": "Plik konfiguracyjny",
 		"ABOUT": "O programie"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Interfejs",
 		"LABEL_LANGUAGE": "Język",
 		"LABEL_LANGUAGE_ADMIN": "Język (admin)",
-		"LABEL_THEME": "Motyw",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Zezwól użytkownikowi na wybór języka",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Zezwól użytkownikowi na zmianę motywu",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Zezwól użytkownikowi na użycie własnego tła",
 		"LABEL_SHOW_THUMBNAILS": "Pokaż miniatury (załączniki)",
 		"LEGEND_MAIN": "Główne",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Maksymalny rozmiar załącznika",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domeny",
 		"BUTTON_ADD_DOMAIN": "Dodaj domenę",
 		"BUTTON_ADD_ALIAS": "Dodaj alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Czy na pewno?",
 		"HTML_DOMAINS_HELPER": "Lista domen, do których można uzyskać dostęp poprzez tego klienta.\n<br>\nKliknij na nazwę, aby skonfigurować domenę.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Bezpieczeństwo",
 		"LABEL_USE_IMAGE_PROXY": "Użyj lokalnego serwera proxy dla zewnętrznych obrazów",
 		"LABEL_AUTO_VERIFY": "Weryfikuj podpisy automatycznie",
+		"LABEL_ENFORCE_TWO_FACTOR": "Wymagaj weryfikacji dwuetapowej",
 		"LABEL_SHOW_PHP_INFO": "Pokaż informacje o wersji PHP",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Poświadczenia dostępu do panelu administracyjnego",
 		"LABEL_CURRENT_PASSWORD": "Bieżące hasło",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Wymagaj weryfikacji używanego certyfikatu SSL",
 		"CRYPTO": "Kryptografia",
 		"LABEL_ALLOW_SELF_SIGNED": "Zezwól na certyfikaty podpisane samodzielnie"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Włącz obsługę wtyczek",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Dostępne do aktualizacji",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Dostępne do zainstalowania",
-		"LEGEND_INSTALLED_PACKAGES": "Zainstalowane pakiety",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Nie można uzyskać dostępu do repozytorium."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "O programie",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Prawidłowe nagłówki informacji o SPAMie",
 		"VALID_VIRUS_HEADERS": "Prawidłowe nagłówki informacji o wirusach"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Wtyczka",
-		"DESC_NOTHING_TO_CONFIGURE": "Brak opcji do skonfigurowania"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Czy na pewno chcesz zamknąć to okno?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Nieprawidłowy token",
 		"AuthError": "Uwierzytelnienie zakończone niepowodzeniem",
 		"DomainAlreadyExists": "Ta domena już istnieje",
-		"CantSavePluginSettings": "Nie można zapisać ustawień wtyczki",
-		"CantInstallPackage": "Instalacja wtyczki zakończona niepowodzeniem",
-		"CantDeletePackage": "Usunięcie wtyczki zakończone niepowodzeniem",
-		"InvalidPluginPackage": "Nieprawidłowa wtyczka",
-		"UnsupportedPluginPackage": "Nieobsługiwana wtyczka",
 		"UnknownError": "Nieznany błąd"
 	}
 }

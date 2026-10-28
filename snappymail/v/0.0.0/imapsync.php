@@ -76,6 +76,16 @@ echo 'OPTIONS
 	exit;
 }
 
+// Protect credential parsing before the common application bootstrap is loaded.
+if (is_callable('ini_get') && '1' !== ini_get('zend.exception_ignore_args') && is_callable('ini_set')) {
+	ini_set('zend.exception_ignore_args', '1');
+}
+if (!is_callable('ini_get') || '1' !== ini_get('zend.exception_ignore_args')) {
+	http_response_code(500);
+	echo 'Required PHP security configuration is unavailable.';
+	exit(1);
+}
+
 // php.net/getopt doesn't allow spaced values like `--host1 example.com`
 // and we also ask on the command line when value is empty
 function get_opt(string $short_options, array $long_options) {
@@ -182,15 +192,10 @@ function getImapClient(int $host)
 	$ImapSettings->useAuth = true;
 
 	$oImapClient = new \MailSo\Imap\ImapClient;
-//	$oAccount = new \RainLoop\Model\Account;
 	$oImapClient->SetLogger(\RainLoop\API::Logger());
-//	$oPlugins->RunHook('imap.before-connect', array($oAccount, $oImapClient, $ImapSettings));
 	$oImapClient->Connect($ImapSettings);
-//	$oPlugins->RunHook('imap.after-connect', array($oAccount, $oImapClient, $ImapSettings));
 	if (!isset($options['justconnect'])) {
-//		$oPlugins->RunHook('imap.before-login', array($oAccount, $oImapClient, $ImapSettings));
 		$oImapClient->Login($ImapSettings);
-//		$oPlugins->RunHook('imap.after-login', array($oAccount, $oImapClient, $bResult, $ImapSettings));
 	}
 	return $oImapClient;
 }

@@ -13,7 +13,6 @@ class Actions
 	use Actions\Raw;
 	use Actions\Response;
 	use Actions\Localization;
-	use Actions\Themes;
 
 	use \MailSo\Log\Inherit;
 
@@ -41,6 +40,36 @@ class Actions
 
 	const APP_DUMMY = '********';
 
+	private const APPEARANCE_PREFERENCES = ['light', 'dark', 'system'];
+
+	/**
+	 * Exact built-in theme IDs only. Values represent user preferences, not the
+	 * effective color scheme. Clear is intentionally omitted because it defines
+	 * no unambiguous light/dark appearance; unknown IDs use the safe Light fallback.
+	 */
+	private const LEGACY_THEME_APPEARANCE = [
+		'A' => 'light',
+		'BlackWood' => 'dark',
+		'Blurred' => 'light',
+		'BlurredDark' => 'dark',
+		'DarkShine' => 'light',
+		'Default' => 'light',
+		'Linen' => 'light',
+		'Love' => 'light',
+		'LoveDark' => 'dark',
+		'Magnetic' => 'dark',
+		'NextcloudV25+' => 'system',
+		'NightShine' => 'dark',
+		'Snow' => 'light',
+		'SnowDarkV1' => 'dark',
+		'Squares' => 'light',
+		'SquaresDark' => 'dark',
+		'Stripes' => 'light',
+		'StripesDark' => 'dark',
+		'Wood' => 'light',
+		'Xv' => 'light'
+	];
+
 	/**
 	 * @var \MailSo\Base\Http
 	 */
@@ -55,11 +84,6 @@ class Actions
 	 * @var \MailSo\Mail\MailClient
 	 */
 	protected $oMailClient = null;
-
-	/**
-	 * @var \RainLoop\Plugins\Manager
-	 */
-	protected $oPlugins = null;
 
 	/**
 	 * @var \MailSo\Log\Logger
@@ -113,7 +137,7 @@ class Actions
 
 	function __construct()
 	{
-		$this->oConfig = API::Config();
+		$this->oConfig = Api::Config();
 
 		$this->oLogger = API::Logger();
 		if ($this->oConfig->Get('logs', 'enable', false) || $this->oConfig->Get('debug', 'enable', false)) {
@@ -137,17 +161,14 @@ class Actions
 
 			$this->logWrite(
 				'[SM:' . APP_VERSION . '][IP:'
-				. $oHttp->GetClientIp($this->oConfig->Get('labs', 'http_client_ip_check_proxy', false))
+				. $oHttp->GetClientIp()
 				. '][PID:' . (\MailSo\Base\Utils::FunctionCallable('getmypid') ? \getmypid() : 'unknown')
 				. '][' . \MailSo\Base\Http::GetServer('SERVER_SOFTWARE', '~')
 				. '][' . \PHP_SAPI
 				. '][Streams:' . \implode(',', \stream_get_transports())
-				. '][' . $oHttp->GetMethod() . ' ' . $oHttp->GetScheme() . '://' . $oHttp->GetHost(false) . \MailSo\Base\Http::GetServer('REQUEST_URI', '') . ']'
+				. '][' . $oHttp->GetMethod() . ' ' . $oHttp->GetScheme() . '://' . $oHttp->GetHost(false) . ']'
 			);
 		}
-
-		$this->oPlugins = new Plugins\Manager($this);
-		$this->oPlugins->RunHook('filter.application-config', array($this->oConfig));
 	}
 
 	public function SetIsJson(bool $bIsJson): self
@@ -170,10 +191,9 @@ class Actions
 	/**
 	 * @return mixed
 	 */
-	protected function fabrica(string $sName, ?Model\Account $oAccount = null)
+	protected function fabrica(string $sName)
 	{
 		$mResult = null;
-		$this->oPlugins->RunHook('main.fabrica', array($sName, &$mResult), false);
 
 		if (null === $mResult) {
 			switch ($sName) {
@@ -201,9 +221,7 @@ class Actions
 					break;
 				case 'filters':
 					// Providers\Filters\FiltersInterface
-					$mResult = new Providers\Filters\SieveStorage(
-						$this->oPlugins, $this->oConfig
-					);
+					$mResult = new Providers\Filters\SieveStorage();
 					break;
 				case 'address-book':
 					// Providers\AddressBook\AddressBookInterface
@@ -234,8 +252,6 @@ class Actions
 			}
 		}
 
-		$this->oPlugins->RunHook('filter.fabrica', array($sName, &$mResult, $oAccount), false);
-
 		return $mResult;
 	}
 
@@ -252,9 +268,12 @@ class Actions
 */
 	}
 
-	protected function compileLogParams(string $sLine, ?Model\Account $oAccount = null, array $aAdditionalParams = array()): string
+	protected function compileLogParams(string $sLine, ?Model\Account $oAccount = null, array $aAdditionalParams = array(), bool $bAuthLog = false): string
 	{
 		$aClear = array();
+		$encode = function ($value) use ($bAuthLog) {
+			return $bAuthLog ? $this->escapeAuthLog((string) $value, true) : $value;
+		};
 
 		if (false !== \strpos($sLine, '{date:')) {
 			$oConfig = $this->oConfig;
@@ -271,14 +290,14 @@ class Actions
 			}
 
 			if ($oAccount) {
-				$sLine = \str_replace('{imap:login}', $oAccount->ImapUser(), $sLine);
-				$sLine = \str_replace('{smtp:login}', $oAccount->SmtpUser(), $sLine);
+				$sLine = \str_replace('{imap:login}', $encode($oAccount->ImapUser()), $sLine);
+				$sLine = \str_replace('{smtp:login}', $encode($oAccount->SmtpUser()), $sLine);
 				$oDomain = $oAccount->Domain();
 				if ($oDomain) {
-					$sLine = \str_replace('{imap:host}', $oDomain->ImapSettings()->host, $sLine);
-					$sLine = \str_replace('{imap:port}', $oDomain->ImapSettings()->port, $sLine);
-					$sLine = \str_replace('{smtp:host}', $oDomain->SmtpSettings()->host, $sLine);
-					$sLine = \str_replace('{smtp:port}', $oDomain->SmtpSettings()->port, $sLine);
+					$sLine = \str_replace('{imap:host}', $encode($oDomain->ImapSettings()->host), $sLine);
+					$sLine = \str_replace('{imap:port}', $encode($oDomain->ImapSettings()->port), $sLine);
+					$sLine = \str_replace('{smtp:host}', $encode($oDomain->SmtpSettings()->host), $sLine);
+					$sLine = \str_replace('{smtp:port}', $encode($oDomain->SmtpSettings()->port), $sLine);
 				}
 			}
 
@@ -289,17 +308,17 @@ class Actions
 		if (false !== \strpos($sLine, '{request:')) {
 			if (false !== \strpos($sLine, '{request:ip}')) {
 				$sLine = \str_replace('{request:ip}',
-					$this->Http()->GetClientIp($this->oConfig->Get('labs', 'http_client_ip_check_proxy', false)),
+					$encode($this->Http()->GetClientIp()),
 					$sLine);
 			}
 
 			if (false !== \strpos($sLine, '{request:domain}')) {
-				$sLine = \str_replace('{request:domain}', $this->Http()->GetHost(true, true), $sLine);
+				$sLine = \str_replace('{request:domain}', $encode($this->Http()->GetHost(true, true)), $sLine);
 			}
 
 			if (false !== \strpos($sLine, '{request:domain-clear}')) {
 				$sLine = \str_replace('{request:domain-clear}',
-					\MailSo\Base\Utils::GetClearDomainName($this->Http()->GetHost(true, true)),
+					$encode(\MailSo\Base\Utils::GetClearDomainName($this->Http()->GetHost(true, true))),
 					$sLine);
 			}
 
@@ -309,14 +328,14 @@ class Actions
 		if (false !== \strpos($sLine, '{user:')) {
 			if (false !== \strpos($sLine, '{user:uid}')) {
 				$sLine = \str_replace('{user:uid}',
-					\base_convert(\sprintf('%u', \crc32(Utils::GetConnectionToken())), 10, 32),
+					$encode(\base_convert(\sprintf('%u', \crc32(Utils::GetConnectionToken())), 10, 32)),
 					$sLine
 				);
 			}
 
 			if (false !== \strpos($sLine, '{user:ip}')) {
 				$sLine = \str_replace('{user:ip}',
-					$this->Http()->GetClientIp($this->oConfig->Get('labs', 'http_client_ip_check_proxy', false)),
+					$encode($this->Http()->GetClientIp()),
 					$sLine);
 			}
 
@@ -328,11 +347,11 @@ class Actions
 				if ($oAccount) {
 					$sEmail = $oAccount->Email();
 
-					$sLine = \str_replace('{user:email}', $sEmail, $sLine);
-					$sLine = \str_replace('{user:login}', \MailSo\Base\Utils::getEmailAddressLocalPart($sEmail), $sLine);
-					$sLine = \str_replace('{user:domain}', \MailSo\Base\Utils::getEmailAddressDomain($sEmail), $sLine);
+					$sLine = \str_replace('{user:email}', $encode($sEmail), $sLine);
+					$sLine = \str_replace('{user:login}', $encode(\MailSo\Base\Utils::getEmailAddressLocalPart($sEmail)), $sLine);
+					$sLine = \str_replace('{user:domain}', $encode(\MailSo\Base\Utils::getEmailAddressDomain($sEmail)), $sLine);
 					$sLine = \str_replace('{user:domain-clear}',
-						\MailSo\Base\Utils::GetClearDomainName(\MailSo\Base\Utils::getEmailAddressDomain($sEmail)),
+						$encode(\MailSo\Base\Utils::GetClearDomainName(\MailSo\Base\Utils::getEmailAddressDomain($sEmail))),
 						$sLine);
 				}
 			}
@@ -349,14 +368,24 @@ class Actions
 		}
 
 		foreach ($aAdditionalParams as $sKey => $sValue) {
-			$sLine = \str_replace($sKey, $sValue, $sLine);
+			$sLine = \str_replace($sKey, $encode($sValue), $sLine);
 		}
 
 		foreach ($aClear as $sKey => $sValue) {
 			$sLine = \preg_replace($sKey, $sValue, $sLine);
 		}
 
-		return $sLine;
+		return $bAuthLog ? $this->escapeAuthLog($sLine, false) : $sLine;
+	}
+
+	private function escapeAuthLog(string $value, bool $field): string
+	{
+		// Fields cannot reproduce the space-delimited event marker of a log filter.
+		$value = \addcslashes($value, $field ? "\0..\37\177\\" : "\0..\37\177");
+		$value = \preg_replace_callback('/\xC2[\x80-\x9F]|\xE2\x80[\xA8\xA9]/', static function ($match) {
+			return \addcslashes($match[0], "\0..\377");
+		}, $value);
+		return $field ? \str_replace(' ', '\x20', $value) : $value;
 	}
 
 	protected function compileLogFileName(string $sFileName): string
@@ -460,8 +489,7 @@ class Actions
 	public function DomainProvider(): Providers\Domain
 	{
 		if (null === $this->oDomainProvider) {
-			$this->oDomainProvider = new Providers\Domain(
-				$this->fabrica('domain'), $this->oPlugins);
+			$this->oDomainProvider = new Providers\Domain($this->fabrica('domain'));
 		}
 
 		return $this->oDomainProvider;
@@ -500,11 +528,6 @@ class Actions
 		return $this->aCachers[$sIndexKey];
 	}
 
-	public function Plugins(): Plugins\Manager
-	{
-		return $this->oPlugins;
-	}
-
 	protected function LoggerAuthHelper(?Model\Account $oAccount, string $sLogin = '', bool $admin = false): void
 	{
 		if ($sLogin) {
@@ -540,13 +563,13 @@ class Actions
 					);
 				}
 			}
-			$this->oLoggerAuth->Write($this->compileLogParams($sLine, $oAccount, $aAdditionalParams), \LOG_WARNING);
+			$this->oLoggerAuth->Write($this->compileLogParams($sLine, $oAccount, $aAdditionalParams, true), \LOG_WARNING);
 		}
 		if (($this->oConfig->Get('logs', 'auth_logging', false) || $this->oConfig->Get('logs', 'auth_syslog', false))
 		 && \openlog('snappymail', 0, \LOG_AUTHPRIV)) {
 			\syslog(\LOG_ERR, $this->compileLogParams(
 				$admin ? 'Admin Auth failed: ip={request:ip} user={user:login}' : 'Auth failed: ip={request:ip} user={imap:login}',
-				$oAccount, $aAdditionalParams
+				$oAccount, $aAdditionalParams, true
 			));
 			\closelog();
 		}
@@ -559,9 +582,8 @@ class Actions
 
 		$aResult = array(
 			'Auth' => false,
-			'title' => $oConfig->Get('webmail', 'title', 'SnappyMail Webmail'),
-			'loadingDescription' => $oConfig->Get('webmail', 'loading_description', 'SnappyMail'),
-			'Plugins' => array(),
+			'title' => $oConfig->Get('webmail', 'title', 'petuja.email'),
+			'loadingDescription' => $oConfig->Get('webmail', 'loading_description', 'petuja.email'),
 			'System' => array(
 				'version' => APP_VERSION,
 				'token' => Utils::GetCsrfToken(),
@@ -617,7 +639,7 @@ class Actions
 						'messageNewWindow' => false,
 						'markdown' => false,
 						'messageReadAuto' => true, // (bool) $oConfig->Get('webmail', 'message_read_auto', true),
-						'MessageReadDelay' => (int) $oConfig->Get('webmail', 'message_read_delay', 5),
+						'MessageReadDelay' => (int) $oConfig->Get('webmail', 'message_read_delay', 2),
 						'MsgDefaultAction' => (int) $oConfig->Get('defaults', 'msg_default_action', 1),
 						'SoundNotification' => true,
 						'NotificationSound' => 'new-mail',
@@ -683,6 +705,7 @@ class Actions
 					}
 */
 					$aResult['hourCycle'] = $oSettings->GetConf('hourCycle', '');
+					$aResult['Appearance'] = $this->ResolveAppearancePreference($oSettings, $oAccount);
 
 					if (!$oSettings->GetConf('MessagesPerPage')) {
 						$oSettings->SetConf('MessagesPerPage', $oSettings->GetConf('MPP', $aResult['MessagesPerPage']));
@@ -729,14 +752,6 @@ class Actions
 					$aResult['Resizer5Width'] = (int)$oSettings->GetConf('Resizer5Width', 0);
 					$aResult['Resizer5Height'] = (int)$oSettings->GetConf('Resizer5Height', 0);
 
-					$aResult['fontSansSerif'] = $oSettings->GetConf('fontSansSerif', '');
-					$aResult['fontSerif'] = $oSettings->GetConf('fontSerif', '');
-					$aResult['fontMono'] = $oSettings->GetConf('fontMono', '');
-
-					if ($this->GetCapa(Capa::USER_BACKGROUND)) {
-						$aResult['userBackgroundName'] = (string)$oSettings->GetConf('UserBackgroundName', '');
-						$aResult['userBackgroundHash'] = (string)$oSettings->GetConf('UserBackgroundHash', '');
-					}
 				}
 
 				$aResult['newMailSounds'] = [];
@@ -750,7 +765,7 @@ class Actions
 			else {
 				if (SNAPPYMAIL_DEV) {
 					$aResult['DevEmail'] = $oConfig->Get('labs', 'dev_email', '');
-					$aResult['DevPassword'] = $oConfig->Get('labs', 'dev_password', '');
+					$aResult['DevPassword'] = '';
 				} else {
 					$aResult['DevEmail'] = '';
 					$aResult['DevPassword'] = '';
@@ -782,17 +797,10 @@ class Actions
 				'upload_max_filesize' => $value,
 				'post_max_size' => \ini_get('post_max_size')
 			);
-			$aResult['System']['themes'] = $this->GetThemes();
 		}
-
-		$aResult['Theme'] = $this->GetTheme($bAdmin);
 
 		$aResult['language'] = $this->GetLanguage();
 		$aResult['clientLanguage'] = $this->ValidateLanguage($this->detectClientLanguage($bAdmin), '', false, true);
-
-		$aResult['PluginsLink'] = $this->oPlugins->HaveJs($bAdmin)
-			? 'Plugins/0/' . ($bAdmin ? 'Admin' : 'User') . '/' . $this->etag($this->oPlugins->Hash()) . '/'
-			: '';
 
 		$bAppJsDebug = $this->oConfig->Get('debug', 'javascript', false)
 			|| $this->oConfig->Get('debug', 'enable', false);
@@ -800,9 +808,53 @@ class Actions
 		$aResult['StaticLibsJs'] = Utils::WebStaticPath('js/' . ($bAppJsDebug ? '' : 'min/') .
 			'libs' . ($bAppJsDebug ? '' : '.min') . '.js');
 
-		$this->oPlugins->InitAppData($bAdmin, $aResult, $oAccount);
+		$aResult = $this->ApplyTwoFactorAppData($bAdmin, $aResult);
 
 		return $aResult;
+	}
+
+	public static function IsAppearancePreference($mValue): bool
+	{
+		return \is_string($mValue) && \in_array($mValue, self::APPEARANCE_PREFERENCES, true);
+	}
+
+	public function GetBootstrapAppearancePreference(bool $bAdmin): string
+	{
+		if ($bAdmin) {
+			return '';
+		}
+
+		$oAccount = $this->getAccountFromToken(false);
+		if (!$oAccount) {
+			return '';
+		}
+
+		$aAuth = $this->ApplyTwoFactorAppData(false, ['Auth' => true]);
+		if (empty($aAuth['Auth']) || !empty($aAuth['SetupTwoFactor'])) {
+			return '';
+		}
+
+		$oSettings = $this->SettingsProvider()->Load($oAccount);
+		return $oSettings instanceof Settings ? $this->ResolveAppearancePreference($oSettings, $oAccount) : '';
+	}
+
+	private function ResolveAppearancePreference(Settings $oSettings, $oAccount): string
+	{
+		$mAppearance = $oSettings->GetConf('Appearance');
+		if (self::IsAppearancePreference($mAppearance)) {
+			return $mAppearance;
+		}
+
+		$oSettingsLocal = $oAccount ? $this->SettingsProvider(true)->Load($oAccount) : null;
+		$aSettingsLocal = $oSettingsLocal instanceof Settings ? $oSettingsLocal->toArray() : [];
+		if (\array_key_exists('Theme', $aSettingsLocal) && '' !== $aSettingsLocal['Theme']) {
+			$sTheme = $aSettingsLocal['Theme'];
+			return \is_string($sTheme) ? (self::LEGACY_THEME_APPEARANCE[$sTheme] ?? 'light') : 'light';
+		}
+
+		// Before native Appearance, accounts without a local Theme inherited this site default.
+		$sTheme = $this->Config()->Get('webmail', 'theme', 'Default');
+		return \is_string($sTheme) ? (self::LEGACY_THEME_APPEARANCE[$sTheme] ?? 'light') : 'light';
 	}
 
 	protected function loginErrorDelay(): void
@@ -878,8 +930,6 @@ class Actions
 				Capa::ATTACHMENT_THUMBNAILS => (bool) $oConfig->Get('interface', 'show_attachment_thumbnail', true)
 					&& ($bAdmin
 						|| \extension_loaded('gd')
-						|| \extension_loaded('gmagick')
-						|| \extension_loaded('imagick')
 					),
 				Capa::ATTACHMENTS_ACTIONS => (bool) $oConfig->Get('capa', 'attachments_actions', false),
 				Capa::CONTACTS            => (bool) $oConfig->Get('contacts', 'enable', false),
@@ -888,9 +938,7 @@ class Actions
 				Capa::IDENTITIES          => (bool) $oConfig->Get('webmail', 'allow_additional_identities', false),
 				Capa::OPENPGP             => (bool) $oConfig->Get('security', 'openpgp', true),
 				Capa::SIEVE               => false,
-				Capa::THEMES              => (bool) $oConfig->Get('webmail', 'allow_themes', false),
-				Capa::USER_BACKGROUND     => (bool) $oConfig->Get('webmail', 'allow_user_background', false),
-				'Kolab'                   => false, // See Kolab plugin
+				'Kolab'                   => false,
 			);
 		}
 		$aResult[Capa::SIEVE] = $bAdmin || ($oAccount && $oAccount->Domain()->SieveSettings()->enabled);
@@ -939,7 +987,7 @@ class Actions
 
 		if ($oAccount && !$this->ImapClient()->IsLoggined()) {
 			try {
-				$oAccount->ImapConnectAndLogin($this->oPlugins, $this->ImapClient(), $this->oConfig);
+				$oAccount->ImapConnectAndLogin($this->ImapClient(), $this->oConfig);
 			} catch (\MailSo\Net\Exceptions\ConnectionException $oException) {
 				throw new Exceptions\ClientException(Notifications::ConnectionError, $oException);
 			} catch (\Throwable $oException) {
@@ -969,8 +1017,6 @@ class Actions
 
 	public function SetActionParams(array $aCurrentActionParams, string $sMethodName = ''): self
 	{
-		$this->oPlugins->RunHook('filter.action-params', array($sMethodName, &$aCurrentActionParams));
-
 		$this->aCurrentActionParams = $aCurrentActionParams;
 
 		return $this;

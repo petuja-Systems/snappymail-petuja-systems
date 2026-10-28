@@ -9,19 +9,14 @@ class Domain extends AbstractProvider
 {
 	private Domain\DomainInterface $oDriver;
 
-	private \RainLoop\Plugins\Manager $oPlugins;
-
-	public function __construct(Domain\DomainInterface $oDriver, \RainLoop\Plugins\Manager $oPlugins)
+	public function __construct(Domain\DomainInterface $oDriver)
 	{
 		$this->oDriver = $oDriver;
-		$this->oPlugins = $oPlugins;
 	}
 
 	public function Load(string $sName, bool $bFindWithWildCard = false, bool $bCheckDisabled = true, bool $bCheckAliases = true) : ?\RainLoop\Model\Domain
 	{
-		$oDomain = $this->oDriver->Load($sName, $bFindWithWildCard, $bCheckDisabled, $bCheckAliases);
-		$oDomain && $this->oPlugins->RunHook('filter.domain', array($oDomain));
-		return $oDomain;
+		return $this->oDriver->Load($sName, $bFindWithWildCard, $bCheckDisabled, $bCheckAliases);
 	}
 
 	public function Save(\RainLoop\Model\Domain $oDomain) : bool

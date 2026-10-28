@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Add",
 		"CLOSE": "Close",
+		"DELETE": "Delete",
+		"LOGOUT": "Logout",
 		"SAVE": "Save",
 		"TEST": "Test",
 		"UPDATE": "Update",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Contacts",
 		"DOMAINS": "Domains",
 		"SECURITY": "Security",
-		"PACKAGES": "Extensions",
 		"CONFIG": "Config",
 		"ABOUT": "About"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Interface",
 		"LABEL_LANGUAGE": "Language",
 		"LABEL_LANGUAGE_ADMIN": "Language (admin)",
-		"LABEL_THEME": "Theme",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Allow language selection on settings screen",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Allow theme selection on settings screen",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Allow background selection on settings screen",
 		"LABEL_SHOW_THUMBNAILS": "Show thumbnails (attachments)",
 		"LEGEND_MAIN": "Main",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Attachment size limit",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domains",
 		"BUTTON_ADD_DOMAIN": "Add Domain",
 		"BUTTON_ADD_ALIAS": "Add Alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Are you sure?",
 		"HTML_DOMAINS_HELPER": "List of domains that are allowed.\n<br>\nClick on the name to configure the domain.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Security",
 		"LABEL_USE_IMAGE_PROXY": "Use local proxy for external images",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Enforce 2-Step Verification",
 		"LABEL_SHOW_PHP_INFO": "Show PHP information",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Admin Panel Access Credentials",
 		"LABEL_CURRENT_PASSWORD": "Current passphrase",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Require verification of SSL certificate",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Allow self signed certificates"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Enable extensions",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Available for Update",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Available for Installation",
-		"LEGEND_INSTALLED_PACKAGES": "Installed Extensions",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Cannot access the repository at the moment."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "About",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Extension",
-		"DESC_NOTHING_TO_CONFIGURE": "Nothing to configure"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Are you sure you want to close this window?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Invalid token",
 		"AuthError": "Authentication failed",
 		"DomainAlreadyExists": "Domain already exists",
-		"CantSavePluginSettings": "Can't save settings",
-		"CantInstallPackage": "Failed to install extension",
-		"CantDeletePackage": "Failed to remove extension",
-		"InvalidPluginPackage": "Invalid extension package",
-		"UnsupportedPluginPackage": "Unsupported extension package",
 		"UnknownError": "Unknown error"
 	}
 }

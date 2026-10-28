@@ -93,7 +93,7 @@ class Utils
 	{
 		\setlocale(LC_CTYPE, 'en_US.UTF-8');
 
-		$aHeaders = \fgetcsv($rFile, 5000, $sDelimiter, '"');
+		$aHeaders = \fgetcsv($rFile, 5000, $sDelimiter, '"', '');
 		if (!$aHeaders || 3 >= \count($aHeaders)) {
 			return;
 		}
@@ -107,7 +107,7 @@ class Utils
 			$aHeaders[$iIndex] = $sItemName;
 		}
 
-		while (false !== ($mRow = \fgetcsv($rFile, 5000, $sDelimiter, '"'))) {
+		while (false !== ($mRow = \fgetcsv($rFile, 5000, $sDelimiter, '"', ''))) {
 			\MailSo\Base\Utils::ResetTimeLimit();
 			$iCount = 0;
 			$oVCard = new VCard;
@@ -152,7 +152,7 @@ class Utils
 				'Home Street', 'Home City', 'Home State', 'Home Postal Code', 'Home Country',
 				'Business Email', 'Business Phone',
 				'Business Street', 'Business City', 'Business State', 'Business Postal Code', 'Business Country'
-			));
+			), ',', '"', '');
 		}
 
 		$aName = isset($oVCard->N) ? $oVCard->N->getParts() : ['','','','',''];
@@ -163,7 +163,7 @@ class Utils
 		$adrWork = $oVCard->getByType('ADR', 'WORK');
 		$adrWork = $adrWork ? $adrWork->getParts() : ['','','','','','',''];
 
-		return \fputcsv($stream, array(
+		$aData = array(
 			(string) $oVCard->FN,       // Title
 			$aName[1],                  // First Name
 			$aName[2],                  // Middle Name
@@ -195,7 +195,17 @@ class Utils
 			$adrWork[4],                // State
 			$adrWork[5],                // Postal Code
 			$adrWork[6]                 // Country
-		));
+		);
+		foreach ($aData as $iIndex => $mValue) {
+			// Keep native CSV coercion for legacy structured array components.
+			if (!\is_array($mValue)) {
+				$sValue = (string) $mValue;
+				// Mark text before any whitespace/control/format prefix; matcher errors fail closed.
+				$aData[$iIndex] = 0 !== \preg_match('/\A[\p{Z}\p{Cc}\p{Cf}]*[=+\-@]/u', $sValue)
+					? "'" . $sValue : $sValue;
+			}
+		}
+		return \fputcsv($stream, $aData, ',', '"', '');
 	}
 
 	public static function VcfStreamToContacts(/*resource*/ $rFile) : iterable

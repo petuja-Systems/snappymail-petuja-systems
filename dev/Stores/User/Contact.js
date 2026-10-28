@@ -46,7 +46,7 @@ ContactUserStore.sync = fResultFunc => {
 				console.error(e);
 				fResultFunc?.(Notifications.UnknownError);
 			}
-		}, 'ContactsSync');
+		}, '', {Action: 'ContactsSync'});
 	}
 };
 

@@ -22,9 +22,14 @@ the upstream engine baseline and is maintained separately.
 
 | Component | Version |
 | --- | --- |
-| petuja.email | **1.0.0** |
+| petuja.email | **1.1.0** |
 | SnappyMail baseline | **2.38.2** |
 | Upstream baseline commit | `e345550c7fddfffdda9095deba64e98dc1c59815` |
+
+This repository contains the finalized petuja.email **1.1.0** release source.
+Corresponding-source publication and Production deployment are separate steps;
+this table identifies the release source and does not identify the version
+currently deployed in Production.
 
 The machine-readable product metadata lives in
 `snappymail/v/0.0.0/app/petuja-product.json`.
@@ -38,8 +43,11 @@ with reviewed product-specific changes, including:
 - a redesigned, responsive public login using local petuja Systems branding;
 - local Rubik typography and associated font licensing;
 - login legal navigation and product/upstream version attribution;
-- selected localization, domain-definition, message-view, and theme
-  customizations.
+- native TOTP two-factor authentication with recovery codes and forced
+  enrollment;
+- native Light/Dark/System appearance with a quick appearance switch;
+- selected localization, domain-definition, message-view, keyboard, and mobile
+  improvements, plus a local synthetic demo environment.
 
 This list describes petuja.email-specific work only. Features available in
 upstream SnappyMail are not necessarily enabled in a particular deployment.

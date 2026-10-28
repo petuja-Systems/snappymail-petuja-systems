@@ -39,10 +39,7 @@ class SSLContext implements \JsonSerializable
 
 	public function __construct()
 	{
-		$oConfig = \RainLoop\API::Config();
-		$this->verify_peer = !!$oConfig->Get('ssl', 'verify_certificate', true);
-		$this->verify_peer_name = !!$oConfig->Get('ssl', 'verify_certificate', true);
-		$this->allow_self_signed = !!$oConfig->Get('ssl', 'allow_self_signed', false);
+		$oConfig = \RainLoop\Api::Config();
 		$this->cafile = \trim($oConfig->Get('ssl', 'cafile', ''));
 		$this->capath = \trim($oConfig->Get('ssl', 'capath', ''));
 		$this->disable_compression = !!$oConfig->Get('ssl', 'disable_compression', true);
@@ -54,7 +51,9 @@ class SSLContext implements \JsonSerializable
 	{
 		$object = new static;
 		foreach ($settings as $key => $value) {
-			$object->$key = $value;
+			if (!\in_array($key, ['verify_peer', 'verify_peer_name', 'allow_self_signed', 'peer_name'], true)) {
+				$object->$key = $value;
+			}
 		}
 		return $object;
 	}
@@ -63,6 +62,12 @@ class SSLContext implements \JsonSerializable
 	public function jsonSerialize()
 	{
 		$aResult = \get_object_vars($this);
+		// Enforce trust for old saved domains and direct API callers alike.
+		$aResult['verify_peer'] = true;
+		$aResult['verify_peer_name'] = true;
+		$aResult['allow_self_signed'] = false;
+		// The socket host, not saved context metadata, selects the peer identity.
+		unset($aResult['peer_name']);
 //		$aResult['@Object'] = 'Object/SSLContext';
 		return \array_filter(
 			$aResult,

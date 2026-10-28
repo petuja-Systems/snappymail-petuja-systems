@@ -11,7 +11,6 @@ import { showScreenPopup } from 'Knoin/Knoin';
 
 import Remote from 'Remote/Admin/Fetch';
 
-import { ThemeStore, convertThemeName, changeTheme } from 'Stores/Theme';
 import { LanguageStore } from 'Stores/Language';
 import { LanguagesPopupView } from 'View/Popup/Languages';
 
@@ -22,14 +21,9 @@ export class AdminSettingsGeneral extends AbstractViewSettings {
 		this.language = LanguageStore.language;
 		this.languageAdmin = ko.observable(SettingsAdmin('language'));
 
-		this.theme = ThemeStore.theme;
-		this.themes = ThemeStore.themes;
-
 		this.addSettings(['allowLanguagesOnSettings']);
 
 		addObservablesTo(this, {
-			capaThemes: SettingsCapa('Themes'),
-			capaUserBackground: SettingsCapa('UserBackground'),
 			capaAdditionalAccounts: SettingsCapa('AdditionalAccounts'),
 			capaIdentities: SettingsCapa('Identities'),
 			capaAttachmentThumbnails: SettingsCapa('AttachmentThumbnails'),
@@ -50,7 +44,6 @@ export class AdminSettingsGeneral extends AbstractViewSettings {
 
 		this.addSetting('language');
 		this.addSetting('attachmentLimit');
-		this.addSetting('Theme', value => changeTheme(value, this.themeTrigger));
 
 		this.uploadData = SettingsGet('phpUploadSizes');
 		this.uploadDataDesc =
@@ -64,8 +57,6 @@ export class AdminSettingsGeneral extends AbstractViewSettings {
 				: '';
 
 		addComputablesTo(this, {
-			themesOptions: () => this.themes.map(theme => ({ optValue: theme, optText: convertThemeName(theme) })),
-
 			languageFullName: () => convertLangName(this.language()),
 			languageAdminFullName: () => convertLangName(this.languageAdmin())
 		});
@@ -90,11 +81,7 @@ export class AdminSettingsGeneral extends AbstractViewSettings {
 
 			capaIdentities: fSaveHelper('CapaIdentities'),
 
-			capaAttachmentThumbnails: fSaveHelper('CapaAttachmentThumbnails'),
-
-			capaThemes: fSaveHelper('CapaThemes'),
-
-			capaUserBackground: fSaveHelper('CapaUserBackground')
+			capaAttachmentThumbnails: fSaveHelper('CapaAttachmentThumbnails')
 		});
 	}
 

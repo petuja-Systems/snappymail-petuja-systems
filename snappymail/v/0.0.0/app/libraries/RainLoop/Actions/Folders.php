@@ -8,6 +8,7 @@ use MailSo\Imap\Enumerations\FolderType;
 
 trait Folders
 {
+	private const FOLDER_INFORMATION_MULTIPLY_MAX_UNIQUE = 10;
 
 	/**
 	 * Appends uploaded rfc822 message to mailbox
@@ -375,12 +376,37 @@ trait Folders
 	{
 		$aResult = array();
 
-		$aFolders = $this->GetActionParam('folders', null);
-		if (\is_array($aFolders)) {
+		$aActionParams = $this->GetActionParams();
+		if (\array_key_exists('folders', $aActionParams)) {
+			// Preserve the action's authentication behavior without opening IMAP until
+			// the caller-provided work has been validated and bounded.
+			$this->getAccountFromToken();
+			$aFolders = $aActionParams['folders'];
+			if (!\is_array($aFolders)) {
+				throw new ClientException(Notifications::InvalidInputArgument);
+			}
+
+			$aUniqueFolders = array();
+			$aSeenFolders = array();
+			foreach ($aFolders as $sFolder) {
+				if (!\is_string($sFolder)) {
+					throw new ClientException(Notifications::InvalidInputArgument);
+				}
+
+				$sFolderKey = "\0" . $sFolder;
+				if (!isset($aSeenFolders[$sFolderKey])) {
+					if (self::FOLDER_INFORMATION_MULTIPLY_MAX_UNIQUE <= \count($aUniqueFolders)) {
+						throw new ClientException(Notifications::InvalidInputArgument);
+					}
+
+					$aSeenFolders[$sFolderKey] = true;
+					$aUniqueFolders[] = $sFolder;
+				}
+			}
+
 			$this->initMailClientConnection();
 
-			$aFolders = \array_unique($aFolders);
-			foreach ($aFolders as $sFolder) {
+			foreach ($aUniqueFolders as $sFolder) {
 				try
 				{
 					$aResult[] = $this->MailClient()->FolderInformation($sFolder);

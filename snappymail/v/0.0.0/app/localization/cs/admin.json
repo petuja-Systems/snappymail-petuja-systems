@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Přidat",
 		"CLOSE": "Zavřít",
+		"DELETE": "Odstranit",
+		"LOGOUT": "Odhlásit",
 		"SAVE": "Uložit",
 		"TEST": "Test",
 		"UPDATE": "Aktualizovat",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Kontakty",
 		"DOMAINS": "Domény",
 		"SECURITY": "Zabezpečení",
-		"PACKAGES": "Balíčky",
 		"CONFIG": "Config",
 		"ABOUT": "Info"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Rozhraní",
 		"LABEL_LANGUAGE": "Jazyk",
 		"LABEL_LANGUAGE_ADMIN": "Jazyk (administrace)",
-		"LABEL_THEME": "Motiv",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Povolit výběr jazyka na přihlašovací obrazovce",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Povolit výběr motivu na přihlašovací obrazovce",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Povolit výběr pozadí na přihlašovací obrazovce",
 		"LABEL_SHOW_THUMBNAILS": "Zobrazovat miniatury (přílohy)",
 		"LEGEND_MAIN": "Hlavní",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Limit velikosti přílohy",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domény",
 		"BUTTON_ADD_DOMAIN": "Přidat Doménu",
 		"BUTTON_ADD_ALIAS": "Přidat alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Jste si jistí?",
 		"HTML_DOMAINS_HELPER": "Seznam domén, ke kterým je možné přistupovat přes webmail.\n<br>\nKlikněte na jméno domény pro její konfiguraci.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Zabezpečení",
 		"LABEL_USE_IMAGE_PROXY": "Použít lokální proxy pro externí obrázky",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Vynutit dvoufázové ověření",
 		"LABEL_SHOW_PHP_INFO": "Zobrazit PHP informace (php_info)",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Přístupové údaje administrace",
 		"LABEL_CURRENT_PASSWORD": "Současné heslo",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Vyžadovat ověření SSL certifikátu",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Povolit self-signed certifikáty"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Povolit pluginy",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Dostupné pro aktualizaci",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Dostupné pro instalaci",
-		"LEGEND_INSTALLED_PACKAGES": "Nainstalované balíčky",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "V tento moment se nelze připojit k repozitáři."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Info",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Plugin",
-		"DESC_NOTHING_TO_CONFIGURE": "Není zde nic ke konfiguraci"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Jste si jistí, že opravdu chcete zavřít toto okno?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Neplatný token",
 		"AuthError": "Chyba autorizace",
 		"DomainAlreadyExists": "Tato doména již existuje",
-		"CantSavePluginSettings": "Nastavení se nepodařilo uložit",
-		"CantInstallPackage": "Instalace balíčku se nezdařila",
-		"CantDeletePackage": "Odstranění balíčku se nezdařilo",
-		"InvalidPluginPackage": "Nevalidní balíček",
-		"UnsupportedPluginPackage": "Nepodporovaný balíček rozšíření",
 		"UnknownError": "Neznámá chyba"
 	}
 }

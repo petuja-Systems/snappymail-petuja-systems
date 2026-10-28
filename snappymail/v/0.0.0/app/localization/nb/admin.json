@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Legg til",
 		"CLOSE": "Lukk",
+		"DELETE": "Slett",
+		"LOGOUT": "Logg ut",
 		"SAVE": "Lagre",
 		"TEST": "Test",
 		"UPDATE": "Oppdater",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Kontakter",
 		"DOMAINS": "Domener",
 		"SECURITY": "Sikkerhet",
-		"PACKAGES": "Pakker",
 		"CONFIG": "Oppsett",
 		"ABOUT": "Om"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Grensesnitt",
 		"LABEL_LANGUAGE": "Språk",
 		"LABEL_LANGUAGE_ADMIN": "Språk (admin)",
-		"LABEL_THEME": "Tema",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "La brukere velge språk på oppsettsskjerm",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "La brukere velge tema på oppsettsskjerm",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "La brukere velge bakgrunn på oppsettsskjerm",
 		"LABEL_SHOW_THUMBNAILS": "Vis miniatyrer (vedlegg)",
 		"LEGEND_MAIN": "Hoved",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Maksimal størrelse på vedlegg",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domener",
 		"BUTTON_ADD_DOMAIN": "Legg til domene",
 		"BUTTON_ADD_ALIAS": "Legg til alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Er du sikker?",
 		"HTML_DOMAINS_HELPER": "Liste over domener som programmet kan få tilgang til.\n<br>\nTrykk på et navn for å sette opp domenet."
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Sikkerhet",
 		"LABEL_USE_IMAGE_PROXY": "Bruk lokal mellomtjener for eksterne bilder",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Krev totrinnsbekreftelse",
 		"LABEL_SHOW_PHP_INFO": "Vis PHP-informasjon",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Akkreditiver for admin-panel",
 		"LABEL_CURRENT_PASSWORD": "Gjeldende passord",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Krev bekreftelse av SSL-sertifikat",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Tillat selvutstedt sertifikat"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Slå på utvidelser",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Tilgjengelig for oppdatering",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Tilgjengelig for installasjon",
-		"LEGEND_INSTALLED_PACKAGES": "Installerte pakker",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Fikk ikke tilgang til pakkelager."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Om",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Tillegg",
-		"DESC_NOTHING_TO_CONFIGURE": "Ingenting å sette opp"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Er du sikker på at du vil lukke dette vinduet?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Ugyldig symbol",
 		"AuthError": "Autentisering mislyktes",
 		"DomainAlreadyExists": "Domenet finnes allerede",
-		"CantSavePluginSettings": "Klarte ikke å lagre innstillinger",
-		"CantInstallPackage": "Klarte ikke å installere pakke",
-		"CantDeletePackage": "Klarte ikke å fjerne pakke",
-		"InvalidPluginPackage": "Ugyldig tilleggspakke",
-		"UnsupportedPluginPackage": "Tilleggspakke støttes ikke",
 		"UnknownError": "Ukjent feil"
 	}
 }

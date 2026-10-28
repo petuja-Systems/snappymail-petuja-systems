@@ -11,6 +11,7 @@ use SnappyMail\File\Temporary;
 class OpenSSL
 {
 	private string $homedir;
+	private string $certificateDirectory;
 	private array $headers = [];
 	private int $flags = 0;
 	private int $cipher_algo = \OPENSSL_CIPHER_AES_128_CBC; // \OPENSSL_CIPHER_AES_256_CBC
@@ -23,36 +24,48 @@ class OpenSSL
 	function __construct(string $homedir)
 	{
 		$this->homedir = $homedir;
+		// The legacy root mixed message discovery and explicit imports. It has
+		// no trustworthy provenance and must never be promoted implicitly.
+		$this->certificateDirectory = $homedir.'/explicit-v1';
 	}
 
-	public function getCertificate(string $filename)/* : string*/
+	public function getCertificate(string $filename) : string
 	{
-		return \file_get_contents("{$this->homedir}/{$filename}");
+		if (!\preg_match('/^[a-f0-9]{64}\.crt$/D', $filename)) {
+			throw new \RuntimeException('S/MIME recipient certificate unavailable');
+		}
+		$certificate = @\file_get_contents($this->certificateDirectory.'/'.$filename);
+		if (false === $certificate || \openssl_x509_fingerprint($certificate, 'sha256').'.crt' !== $filename) {
+			throw new \RuntimeException('S/MIME recipient certificate unavailable');
+		}
+		return $certificate;
 	}
 
 	public function storeCertificate(string $certificate) : bool
 	{
-		$data = \openssl_x509_parse(\openssl_x509_read($certificate));
-		if (!$data) {
+		$certificate = self::pemData($certificate);
+		if (null === $certificate) {
+			return false;
+		}
+		$parsed = \openssl_x509_read($certificate);
+		$pem = '';
+		$key = $parsed ? \openssl_x509_fingerprint($parsed, 'sha256') : false;
+		if (!$key || !\openssl_x509_export($parsed, $pem)) {
 			\SnappyMail\Log::error('OpenSSL', "parse: " . \openssl_error_string());
 			return false;
 		}
-		$key = \str_replace(':', '', $data['extensions']['subjectKeyIdentifier'] ?? $data['hash']);
-		$filename = "{$this->homedir}/{$key}.crt";
-		if (\file_exists($filename)) {
-			\SnappyMail\Log::debug('OpenSSL', "certificate {$key} already imported");
-		} else {
-			\file_put_contents("{$this->homedir}/{$key}.crt", $certificate);
-//			\unlink("{$this->homedir}/certificates.json");
-			$this->certificates(true);
-			\SnappyMail\Log::debug('OpenSSL', "certificate {$key} imported");
-		}
+		\RainLoop\Utils::saveFile($this->certificateDirectory.'/'.$key.'.crt', $pem);
+		$this->certificates(true);
+		\SnappyMail\Log::debug('OpenSSL', "certificate {$key} explicitly imported");
 		return true;
 	}
 
 	public function certificates(bool $force = false) : array
 	{
-		$cacheFile = "{$this->homedir}/certificates.json";
+		if (!\is_dir($this->certificateDirectory)) {
+			return [];
+		}
+		$cacheFile = $this->certificateDirectory.'/certificates.json';
 		$result = (!$force && \file_exists($cacheFile))
 			? \json_decode(\file_get_contents($cacheFile), true)
 			: null;
@@ -66,14 +79,14 @@ class OpenSSL
 				}
 			}
 			$result = [];
-			foreach (\glob("{$this->homedir}/*.crt") as $file) {
+			foreach (\glob($this->certificateDirectory.'/*.crt') as $file) {
 				$filename = \basename($file);
 				$certificate = \file_get_contents($file);
 				$data = \openssl_x509_parse($certificate);
 				if ($data) {
-					$key = \str_replace(':', '', $data['extensions']['subjectKeyIdentifier'] ?? $data['hash']);
-					if ("{$key}.crt" != $filename && \rename("{$this->homedir}/{$filename}", "{$this->homedir}/{$key}.crt")) {
-						$filename = "{$key}.crt";
+					$key = \openssl_x509_fingerprint($certificate, 'sha256');
+					if ($key.'.crt' !== $filename) {
+						continue;
 					}
 //					Use $data['extensions']['authorityKeyIdentifier'] to bundle parent certificate
 					$short = [
@@ -104,7 +117,7 @@ class OpenSSL
 					\SnappyMail\Log::error('OpenSSL', "parse({$file}): " . \openssl_error_string());
 				}
 			}
-			\file_put_contents($cacheFile, \json_encode($result));
+			\RainLoop\Utils::saveFile($cacheFile, \json_encode($result));
 		}
 
 		return $result;
@@ -120,8 +133,26 @@ class OpenSSL
 		return \defined('PKCS7_DETACHED');
 	}
 
+	// Request-facing loaders accept material in memory, never a filename/stream
+	// locator. Strip optional export metadata so only PEM reaches OpenSSL, which
+	// remains responsible for the actual material and passphrase.
+	public static function pemData($value) : ?string
+	{
+		if (!\is_string($value)
+			|| !\preg_match('/-----BEGIN ([A-Z0-9 -]+)-----\R/', $value, $match, \PREG_OFFSET_CAPTURE)) {
+			return null;
+		}
+		$pem = \substr($value, $match[0][1]);
+		return \str_contains($pem, '-----END '.$match[1][0].'-----') ? $pem : null;
+	}
+
 	public function setCertificate(/*OpenSSLCertificate|string*/$certificate)
 	{
+		$this->certificate = null;
+		if (!($certificate instanceof \OpenSSLCertificate) && !\is_resource($certificate)
+			&& null === ($certificate = self::pemData($certificate))) {
+			throw new \RuntimeException('S/MIME certificate must contain PEM data');
+		}
 		$this->certificate = \openssl_x509_read($certificate);
 		if (!$this->certificate) {
 			throw new \RuntimeException('OpenSSL x509: ' . \openssl_error_string());
@@ -135,6 +166,11 @@ class OpenSSL
 		?\SnappyMail\SensitiveString $passphrase = null
 	) : void
 	{
+		$this->privateKey = null;
+		if (!($privateKey instanceof \OpenSSLAsymmetricKey) && !\is_resource($privateKey)
+			&& null === ($privateKey = self::pemData($privateKey))) {
+			throw new \RuntimeException('S/MIME private key must contain PEM data');
+		}
 		$this->privateKey = \openssl_pkey_get_private($privateKey, $passphrase);
 		if (!$this->privateKey) {
 			throw new \RuntimeException('OpenSSL setPrivateKey: ' . \openssl_error_string());
@@ -150,11 +186,12 @@ class OpenSSL
 			throw new \RuntimeException('OpenSSL exportPrivateKey: key not loaded');
 		}
 		$options = [
+			'config' => __DIR__ . '/openssl.cnf',
 			'encrypt_key' => true,
 			'encrypt_key_cipher' => \OPENSSL_CIPHER_AES_256_CBC
 		];
 		$output = '';
-		if (!\openssl_pkey_export($this->privateKey, $output, $passphrase/*, $options*/)) {
+		if (!\openssl_pkey_export($this->privateKey, $output, $passphrase, $options)) {
 			throw new \RuntimeException('OpenSSL exportPrivateKey: ' . \openssl_error_string());
 		}
 		return $output;
@@ -196,6 +233,14 @@ class OpenSSL
 
 	public function encrypt(/*string|Temporary*/$input, array $certificates) : ?string
 	{
+		foreach ($certificates as $index => $certificate) {
+			if (!($certificate instanceof \OpenSSLCertificate) && !\is_resource($certificate)) {
+				$certificates[$index] = self::pemData($certificate);
+				if (null === $certificates[$index]) {
+					throw new \RuntimeException('S/MIME recipient certificate must contain PEM data');
+				}
+			}
+		}
 		if (\is_string($input)) {
 			$tmp = new Temporary('smimein-');
 			if (!$tmp->putContents($input)) {
@@ -310,8 +355,8 @@ class OpenSSL
 		$output = $opaque ? new Temporary('smimeout-') : null;
 		if (true !== \openssl_pkcs7_verify(
 			$input->filename(),
-//			$flags = 0, // \PKCS7_NOVERIFY | \PKCS7_NOCHAIN | \PKCS7_NOSIGS
-			\PKCS7_NOVERIFY | \PKCS7_NOCHAIN | \PKCS7_NOSIGS,
+			// Skip signer certificate-chain validation while still checking signatures.
+			\PKCS7_NOVERIFY,
 			$signers_certificates_filename ?: null,
 			$ca_info = [],
 			$this->untrusted_certificates_filename,

@@ -3,29 +3,178 @@
 define('ROOT_DIR', dirname(__DIR__));
 chdir(ROOT_DIR);
 
-$options = getopt('', ['aur','docker','plugins','skip-gulp','debian','nextcloud','owncloud','cpanel','sign']);
-
-if (isset($options['plugins'])) {
-	require(ROOT_DIR . '/build/plugins.php');
+function releaseArchiveFailure(string $message): never
+{
+	foreach (['zip_destination', 'tar_destination'] as $destinationName) {
+		if (isset($GLOBALS[$destinationName])) {
+			$destination = $GLOBALS[$destinationName];
+			@unlink($destination);
+			@unlink($destination . '.gz');
+		}
+	}
+	fwrite(STDERR, "Release archive error: {$message}\n");
+	exit(1);
 }
+
+function releaseArchiveTimestamp(): int
+{
+	$sourceDateEpoch = getenv('SOURCE_DATE_EPOCH');
+	if (false === $sourceDateEpoch || '' === $sourceDateEpoch) {
+		$timestampOutput = [];
+		exec('git -C ' . escapeshellarg(ROOT_DIR) . ' log -1 --format=%ct 2>/dev/null', $timestampOutput, $exitCode);
+		if (0 !== $exitCode || !isset($timestampOutput[0])) {
+			releaseArchiveFailure('set SOURCE_DATE_EPOCH or run from a Git checkout to provide a stable archive timestamp');
+		}
+		$sourceDateEpoch = trim($timestampOutput[0]);
+	}
+
+	$timestamp = filter_var($sourceDateEpoch, FILTER_VALIDATE_INT, [
+		'options' => ['min_range' => 315532800, 'max_range' => 4354819198]
+	]);
+	if (false === $timestamp) {
+		releaseArchiveFailure('SOURCE_DATE_EPOCH must be a Unix timestamp supported by the ZIP format');
+	}
+
+	return $timestamp;
+}
+
+function releaseArchiveSourcePath(string $sourcePath): string
+{
+	$sourcePath = str_replace('\\', '/', $sourcePath);
+	if ('' === $sourcePath || str_starts_with($sourcePath, '/') || preg_match('~(?:^|/)\.\.?(/|$)~', $sourcePath)) {
+		releaseArchiveFailure("unsafe release source path: {$sourcePath}");
+	}
+
+	$rootPath = realpath(ROOT_DIR);
+	if (false === $rootPath) {
+		releaseArchiveFailure('unable to resolve the release source root');
+	}
+
+	$path = $rootPath;
+	foreach (explode('/', $sourcePath) as $component) {
+		$path .= DIRECTORY_SEPARATOR . $component;
+		if (is_link($path)) {
+			releaseArchiveFailure("symbolic links are not allowed in release sources: {$sourcePath}");
+		}
+	}
+
+	$resolvedPath = realpath($path);
+	if (false === $resolvedPath || !str_starts_with($resolvedPath, $rootPath . DIRECTORY_SEPARATOR)) {
+		releaseArchiveFailure("release source is missing or outside the source root: {$sourcePath}");
+	}
+
+	return $resolvedPath;
+}
+
+function releaseArchiveEnsureOutputDirectory(string $relativePath): void
+{
+	$relativePath = str_replace('\\', '/', $relativePath);
+	if ('' === $relativePath || str_starts_with($relativePath, '/') || preg_match('~(?:^|/)\.\.?(/|$)~', $relativePath)) {
+		releaseArchiveFailure("unsafe release output path: {$relativePath}");
+	}
+	$relativePath = trim($relativePath, '/');
+
+	$rootPath = realpath(ROOT_DIR);
+	if (false === $rootPath) {
+		releaseArchiveFailure('unable to resolve the release source root');
+	}
+
+	$path = $rootPath;
+	foreach (explode('/', $relativePath) as $component) {
+		$path .= DIRECTORY_SEPARATOR . $component;
+		if (is_link($path)) {
+			releaseArchiveFailure("symbolic links are not allowed in release output paths: {$relativePath}");
+		}
+		if (!is_dir($path) && !@mkdir($path, 0755)) {
+			releaseArchiveFailure("unable to create release output directory: {$relativePath}");
+		}
+		$resolvedPath = realpath($path);
+		if (false === $resolvedPath || !str_starts_with($resolvedPath, $rootPath . DIRECTORY_SEPARATOR)) {
+			releaseArchiveFailure("release output path is outside the source root: {$relativePath}");
+		}
+		$path = $resolvedPath;
+	}
+}
+
+function releaseZipSetMetadata(ZipArchive $zip, string $name, int $type, int $permissions, int $timestamp): void
+{
+	$entryName = (0040000 === $type) ? rtrim($name, '/') . '/' : $name;
+	$externalAttributes = (($type | $permissions) << 16);
+	if (!$zip->setExternalAttributesName($entryName, ZipArchive::OPSYS_UNIX, $externalAttributes)
+		|| !$zip->setMtimeName($entryName, $timestamp)) {
+		releaseArchiveFailure("unable to set canonical metadata for ZIP entry: {$entryName}");
+	}
+}
+
+function releaseZipAddFile(ZipArchive $zip, string $sourcePath, string $name, int $timestamp): void
+{
+	$sourcePath = releaseArchiveSourcePath($sourcePath);
+	if (!is_file($sourcePath)) {
+		releaseArchiveFailure("release source is not a regular file: {$name}");
+	}
+
+	$versionPrefix = 'snappymail/v/' . $GLOBALS['package']->version . '/';
+	$relativePath = str_starts_with($name, $versionPrefix) ? substr($name, strlen($versionPrefix)) : '';
+	static $executablePaths = [
+		'app/libraries/RainLoop/Providers/Identities.php',
+		'app/libraries/RainLoop/Providers/Identities/FileIdentities.php',
+		'app/libraries/RainLoop/Providers/Identities/IIdentities.php',
+		'app/libraries/snappymail/http/csp.php',
+		'imapsync.php',
+	];
+	$permissions = in_array($relativePath, $executablePaths, true) ? 0755 : 0644;
+
+	if (!$zip->addFile($sourcePath, $name)) {
+		releaseArchiveFailure("unable to add ZIP file: {$name}");
+	}
+	releaseZipSetMetadata($zip, $name, 0100000, $permissions, $timestamp);
+}
+
+function releaseZipAddDirectory(ZipArchive $zip, string $sourcePath, string $name, int $timestamp): void
+{
+	$sourcePath = releaseArchiveSourcePath($sourcePath);
+	if (!is_dir($sourcePath)) {
+		releaseArchiveFailure("release source is not a directory: {$name}");
+	}
+
+	if (!$zip->addEmptyDir($name)) {
+		releaseArchiveFailure("unable to add ZIP directory: {$name}");
+	}
+	releaseZipSetMetadata($zip, $name, 0040000, 0755, $timestamp);
+}
+
+function releaseZipAddString(ZipArchive $zip, string $name, string $contents, int $timestamp): void
+{
+	if (!$zip->addFromString($name, $contents)) {
+		releaseArchiveFailure("unable to add generated ZIP file: {$name}");
+	}
+	releaseZipSetMetadata($zip, $name, 0100000, 0644, $timestamp);
+}
+
+$options = getopt('', ['aur','docker','skip-gulp','debian','sign']);
 
 $gulp = trim(`which gulp`);
 if (!$gulp) {
 	exit('gulp not installed, run as root: npm install --global gulp-cli');
 }
 
-$package = json_decode(file_get_contents('package.json'));
+$packageContents = file_get_contents(releaseArchiveSourcePath('package.json'));
+$package = false !== $packageContents ? json_decode($packageContents) : null;
+if (!is_object($package) || !isset($package->version) || !is_string($package->version)
+	|| !preg_match('/\A[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?\z/', $package->version)) {
+	releaseArchiveFailure('package.json must provide a valid SnappyMail version');
+}
 
 /**
  * Update files that contain version
  */
 // cloudron
-$file = ROOT_DIR . '/integrations/cloudron/Dockerfile';
+$file = releaseArchiveSourcePath('integrations/cloudron/Dockerfile');
 file_put_contents($file, preg_replace('/VERSION=[0-9.]+/', "VERSION={$package->version}", file_get_contents($file)));
-$file = ROOT_DIR . '/integrations/cloudron/DESCRIPTION.md';
+$file = releaseArchiveSourcePath('integrations/cloudron/DESCRIPTION.md');
 file_put_contents($file, preg_replace('/<upstream>[^<]*</', "<upstream>{$package->version}<", file_get_contents($file)));
 // virtualmin
-$file = ROOT_DIR . '/integrations/virtualmin/snappymail.pl';
+$file = releaseArchiveSourcePath('integrations/virtualmin/snappymail.pl');
 file_put_contents($file, preg_replace('/return \\( "[0-9]+\\.[0-9]+\\.[0-9]+" \\)/', "return ( \"{$package->version}\" )", file_get_contents($file)));
 
 // Arch User Repository
@@ -42,7 +191,7 @@ if ($options['docker'] && $options['aur']) {
 }
 
 $destPath = "build/dist/releases/webmail/{$package->version}/";
-is_dir($destPath) || mkdir($destPath, 0777, true);
+releaseArchiveEnsureOutputDirectory($destPath);
 
 $zip_destination = "{$destPath}snappymail-{$package->version}.zip";
 $tar_destination = "{$destPath}snappymail-{$package->version}.tar";
@@ -62,10 +211,14 @@ if (!isset($options['skip-gulp'])) {
 
 	if ($gzip = trim(`which gzip`)) {
 		echo "\x1b[33;1m === Gzip *.js and *.css === \x1b[0m\n";
-		passthru("{$gzip} -k --best {$cmddir}/js/*.js");
-		passthru("{$gzip} -k --best {$cmddir}/js/min/*.js");
-		passthru("{$gzip} -k --best {$cmddir}/css/admin*.css");
-		passthru("{$gzip} -k --best {$cmddir}/css/app*.css");
+		passthru("{$gzip} -n -k -f --best {$cmddir}/js/*.js", $return_var);
+		if ($return_var) releaseArchiveFailure("gzip failed with error code {$return_var}\n");
+		passthru("{$gzip} -n -k -f --best {$cmddir}/js/min/*.js", $return_var);
+		if ($return_var) releaseArchiveFailure("gzip failed with error code {$return_var}\n");
+		passthru("{$gzip} -n -k -f --best {$cmddir}/css/admin*.css", $return_var);
+		if ($return_var) releaseArchiveFailure("gzip failed with error code {$return_var}\n");
+		passthru("{$gzip} -n -k -f --best {$cmddir}/css/app*.css", $return_var);
+		if ($return_var) releaseArchiveFailure("gzip failed with error code {$return_var}\n");
 		unlink(ROOT_DIR . '/snappymail/v/0.0.0/static/js/boot.js.gz');
 		unlink(ROOT_DIR . '/snappymail/v/0.0.0/static/js/min/boot.min.js.gz');
 	}
@@ -93,6 +246,10 @@ register_shutdown_function(function(){
 
 echo "\x1b[33;1m === Zip/Tar === \x1b[0m\n";
 
+$zipTimestamp = releaseArchiveTimestamp();
+putenv('TZ=UTC');
+date_default_timezone_set('UTC');
+
 $zip = new ZipArchive();
 if (!$zip->open($zip_destination, ZIPARCHIVE::CREATE)) {
 	exit("Failed to create {$zip_destination}");
@@ -101,16 +258,26 @@ if (!$zip->open($zip_destination, ZIPARCHIVE::CREATE)) {
 $tar = new PharData($tar_destination);
 
 $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('snappymail/v'), RecursiveIteratorIterator::SELF_FIRST);
+$archiveEntries = [];
 foreach ($files as $file) {
-	$file = str_replace('\\', '/', $file);
-	//echo "{$file}\n";
-	// Ignore "." and ".." folders
-	if (!in_array(substr($file, strrpos($file, '/')+1), array('.', '..'))) {
-		if (is_dir($file)) {
-			$zip->addEmptyDir($file);
-		} else if (is_file($file)) {
-			$zip->addFile($file);
-		}
+	if ('.' !== $file->getFilename() && '..' !== $file->getFilename()) {
+		$archiveEntries[] = [
+			'name' => str_replace('\\', '/', $file->getPathname()),
+			'path' => $file->getPathname(),
+			'is_directory' => $file->isDir(),
+			'is_file' => $file->isFile(),
+		];
+	}
+}
+usort($archiveEntries, static fn (array $left, array $right): int => strcmp($left['name'], $right['name']));
+
+foreach ($archiveEntries as $entry) {
+	if ($entry['is_directory']) {
+		releaseZipAddDirectory($zip, $entry['path'], $entry['name'], $zipTimestamp);
+	} elseif ($entry['is_file']) {
+		releaseZipAddFile($zip, $entry['path'], $entry['name'], $zipTimestamp);
+	} else {
+		releaseArchiveFailure("unsupported release source type: {$entry['name']}");
 	}
 }
 
@@ -123,13 +290,13 @@ if ($options['docker']) {
 //$zip->addFile('cli/upgrade.sh');
 //$tar->addFile('cli/upgrade.sh');
 
-$zip->addFile('data/.htaccess');
+releaseZipAddFile($zip, 'data/.htaccess', 'data/.htaccess', $zipTimestamp);
 $tar->addFile('data/.htaccess');
 
-$zip->addFromString('data/VERSION', $package->version);
+releaseZipAddString($zip, 'data/VERSION', $package->version, $zipTimestamp);
 $tar->addFromString('data/VERSION', $package->version);
 
-$zip->addFile('data/README.md');
+releaseZipAddFile($zip, 'data/README.md', 'data/README.md', $zipTimestamp);
 $tar->addFile('data/README.md');
 
 if ($options['aur']) {
@@ -139,47 +306,42 @@ function __get_custom_data_full_path()
 	return \'/var/lib/snappymail\';
 }
 ';
-	$zip->addFromString('include.php', $data);
+	releaseZipAddString($zip, 'include.php', $data, $zipTimestamp);
 	$tar->addFromString('include.php', $data);
 } else {
-	$zip->addFile('_include.php');
+	releaseZipAddFile($zip, '_include.php', '_include.php', $zipTimestamp);
 	$tar->addFile('_include.php');
 }
 
-$zip->addFile('.htaccess');
+releaseZipAddFile($zip, '.htaccess', '.htaccess', $zipTimestamp);
 $tar->addFile('.htaccess');
 
-$index = file_get_contents('index.php');
+$index = file_get_contents(releaseArchiveSourcePath('index.php'));
+if (false === $index) {
+	releaseArchiveFailure('unable to read index.php');
+}
 $index = str_replace('0.0.0', $package->version, $index);
-$zip->addFromString('index.php', $index);
+releaseZipAddString($zip, 'index.php', $index, $zipTimestamp);
 $tar->addFromString('index.php', $index);
 
-$zip->addFile('README.md');
+releaseZipAddFile($zip, 'README.md', 'README.md', $zipTimestamp);
 $tar->addFile('README.md');
 
 // Keep the application license with distributable release archives.
-$zip->addFile('LICENSE');
+releaseZipAddFile($zip, 'LICENSE', 'LICENSE', $zipTimestamp);
 $tar->addFile('LICENSE');
+releaseZipAddFile($zip, 'vendors/lucide/LICENSE', 'LICENSES/lucide.txt', $zipTimestamp);
+$tar->addFile('vendors/lucide/LICENSE', 'LICENSES/lucide.txt');
 
-$zip->close();
+if (!$zip->close()) {
+	releaseArchiveFailure("unable to finish ZIP archive: {$zip_destination}");
+}
 
 $tar->compress(Phar::GZ);
 unlink($tar_destination);
 $tar_destination .= '.gz';
 
 echo "{$zip_destination} created\n{$tar_destination} created\n";
-
-if (isset($options['nextcloud'])) {
-	require(ROOT_DIR . '/build/nextcloud.php');
-}
-
-if (isset($options['owncloud'])) {
-	require(ROOT_DIR . '/build/owncloud.php');
-}
-
-if (isset($options['cpanel'])) {
-	require(ROOT_DIR . '/build/cpanel.php');
-}
 
 rename("snappymail/v/{$package->version}", 'snappymail/v/0.0.0');
 
@@ -258,18 +420,6 @@ if (isset($options['sign'])) {
 	echo "\x1b[33;1m === PGP Sign === \x1b[0m\n";
 	passthru('gpg --local-user 1016E47079145542F8BA133548208BA13290F3EB --armor --detach-sign '.escapeshellarg($tar_destination), $return_var);
 	passthru('gpg --local-user 1016E47079145542F8BA133548208BA13290F3EB --armor --detach-sign '.escapeshellarg($zip_destination), $return_var);
-	if (isset($options['nextcloud'])) {
-		passthru('gpg --local-user 1016E47079145542F8BA133548208BA13290F3EB --armor --detach-sign '
-			.escapeshellarg("{$destPath}snappymail-{$package->version}-nextcloud.tar.gz"), $return_var);
-	}
-	if (isset($options['owncloud'])) {
-		passthru('gpg --local-user 1016E47079145542F8BA133548208BA13290F3EB --armor --detach-sign '
-			.escapeshellarg("{$destPath}snappymail-{$package->version}-owncloud.tar.gz"), $return_var);
-	}
-	if (isset($options['cpanel'])) {
-		passthru('gpg --local-user 1016E47079145542F8BA133548208BA13290F3EB --armor --detach-sign '
-			.escapeshellarg("{$destPath}snappymail-{$package->version}-cpanel.tar.gz"), $return_var);
-	}
 	if (isset($options['debian'])) {
 		passthru('gpg --local-user 1016E47079145542F8BA133548208BA13290F3EB --armor --detach-sign '
 			. escapeshellarg(ROOT_DIR . "/build/dist/releases/webmail/{$package->version}/" . basename(DEB_DEST_DIR.'.deb')), $return_var);

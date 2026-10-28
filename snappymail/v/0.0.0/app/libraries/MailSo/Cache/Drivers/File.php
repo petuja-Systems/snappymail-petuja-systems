@@ -34,9 +34,9 @@ class File implements \MailSo\Cache\DriverInterface
 
 	public function setPrefix(string $sKeyPrefix) : void
 	{
+		$this->sKeyPrefix = '';
 		if (!empty($sKeyPrefix)) {
-			$sKeyPrefix = \str_pad(\preg_replace('/[^a-zA-Z0-9_]/', '_',
-				\rtrim(\trim($sKeyPrefix), '\\/')), 5, '_');
+			$sKeyPrefix = \hash('sha256', "petuja.email/account-cache/v2\0".$sKeyPrefix);
 			$this->sKeyPrefix = '__/'.
 				\substr($sKeyPrefix, 0, 2).'/'.\substr($sKeyPrefix, 2, 2).'/'.
 				$sKeyPrefix.'/';

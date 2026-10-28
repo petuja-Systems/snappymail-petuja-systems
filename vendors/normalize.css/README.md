@@ -88,8 +88,8 @@ showing past searches).
 
 ## Contributing
 
-Please read the [contribution guidelines](CONTRIBUTING.md) in order to make the
-contribution process easy and effective for everyone involved.
+Please read the [contribution guidelines](https://github.com/necolas/normalize.css/blob/8.0.1/CONTRIBUTING.md)
+in order to make the contribution process easy and effective for everyone involved.
 
 
 [changelog-image]: https://img.shields.io/badge/changelog-md-blue.svg?style=flat-square

@@ -10,7 +10,7 @@ export class AdminSettingsSecurity extends AbstractViewSettings {
 	constructor() {
 		super();
 
-		this.addSettings(['proxyExternalImages', 'autoVerifySignatures']);
+		this.addSettings(['proxyExternalImages', 'autoVerifySignatures', 'RequireTwoFactor']);
 
 		this.weakPassword = rl.app.weakPassword;
 

@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Hinzufügen",
 		"CLOSE": "Schließen",
+		"DELETE": "Löschen",
+		"LOGOUT": "Abmelden",
 		"SAVE": "Speichern",
 		"TEST": "Testen",
 		"UPDATE": "Aktualisieren",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Kontakte",
 		"DOMAINS": "Domains",
 		"SECURITY": "Sicherheit",
-		"PACKAGES": "Erweiterungen",
 		"CONFIG": "Konfigurationsdatei",
 		"ABOUT": "Über"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Oberfläche",
 		"LABEL_LANGUAGE": "Sprache",
 		"LABEL_LANGUAGE_ADMIN": "Sprache (Adminpanel)",
-		"LABEL_THEME": "Thema",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Sprachauswahl in den Einstellungen zulassen",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Themenauswahl in den Einstellungen zulassen",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Hintergrundauswahl in den Einstellungen zulassen",
 		"LABEL_SHOW_THUMBNAILS": "Vorschaubilder anzeigen (Anhänge)",
 		"LEGEND_MAIN": "Allgemein",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Größenlimit für Anhänge",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domains",
 		"BUTTON_ADD_DOMAIN": "Domain hinzufügen",
 		"BUTTON_ADD_ALIAS": "Alias hinzufügen",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Sind Sie sicher?",
 		"HTML_DOMAINS_HELPER": "Liste der Domains, die Webmail-Nutzer verwenden dürfen.\n<br>\nKlicken Sie auf den Namen, um die Domain zu konfigurieren."
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Sicherheit",
 		"LABEL_USE_IMAGE_PROXY": "Lokalen Proxy für externe Bilder verwenden",
 		"LABEL_AUTO_VERIFY": "Signaturen automatisch überprüfen",
+		"LABEL_ENFORCE_TWO_FACTOR": "Zwei-Schritt-Verifizierung erzwingen",
 		"LABEL_SHOW_PHP_INFO": "PHP-Informationen anzeigen",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Adminpanel-Zugangsdaten",
 		"LABEL_CURRENT_PASSWORD": "Aktuelles Passwort",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Signiertes SSL-Zertifikat erfordern",
 		"CRYPTO": "Kryptographie",
 		"LABEL_ALLOW_SELF_SIGNED": "Selbst-signiertes Zertifikat akzeptieren"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Erweiterungen aktivieren",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Zur Aktualisierung verfügbar",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Zur Installation verfügbar",
-		"LEGEND_INSTALLED_PACKAGES": "Installierte Erweiterungen",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Momentan kann nicht auf das Repository zugegriffen werden."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Über",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Spam-Header beachten",
 		"VALID_VIRUS_HEADERS": "Virus-Header beachten"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Erweiterung",
-		"DESC_NOTHING_TO_CONFIGURE": "Nichts zu konfigurieren"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Sind Sie sicher, dass Sie dieses Fenster schließen möchten?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Ungültiger Token",
 		"AuthError": "Authentifizierung fehlgeschlagen",
 		"DomainAlreadyExists": "Diese Domain existiert bereits",
-		"CantSavePluginSettings": "Einstellungen können nicht gespeichert werden",
-		"CantInstallPackage": "Fehler beim Installieren der Erweiterung",
-		"CantDeletePackage": "Fehler beim Entfernen der Erweiterung",
-		"InvalidPluginPackage": "Erweiterungspaket ist ungültig",
-		"UnsupportedPluginPackage": "Erweiterungspaket wird nicht unterstützt",
 		"UnknownError": "Unbekannter Fehler"
 	}
 }

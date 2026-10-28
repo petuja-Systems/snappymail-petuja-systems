@@ -1,13 +1,28 @@
 <div class="form-horizontal">
 	<div class="legend" data-i18n="SETTINGS_LABELS/GENERAL"></div>
 	<div class="control-group">
-		<label data-i18n="SETTINGS_GENERAL/IDENTITY"></label>
-		<b class="editMainIdentity" data-bind="click: editMainIdentity, text: identityMainDesc"></b>
+		<label for="appearance" data-i18n="SETTINGS_APPEARANCE/LABEL"></label>
+		<div>
+			<select id="appearance" data-bind="value: appearance">
+				<option value="light" data-i18n="SETTINGS_APPEARANCE/LIGHT"></option>
+				<option value="dark" data-i18n="SETTINGS_APPEARANCE/DARK"></option>
+				<option value="system" data-i18n="SETTINGS_APPEARANCE/SYSTEM"></option>
+			</select>
+			<span data-bind="saveTrigger: appearanceTrigger"></span>
+		</div>
+	</div>
+	<div class="control-group">
+		<label id="settings-identity-label" data-i18n="SETTINGS_GENERAL/IDENTITY"></label>
+		<button type="button" class="editMainIdentity ui-text-action" aria-labelledby="settings-identity-label settings-identity-value" data-bind="click: editMainIdentity">
+			<span id="settings-identity-value" data-bind="text: identityMainDesc"></span>
+		</button>
 	</div>
 	<div class="control-group" data-bind="visible: allowLanguagesOnSettings">
-		<label data-i18n="SETTINGS_GENERAL/LANGUAGE"></label>
+		<label id="settings-language-label" data-i18n="SETTINGS_GENERAL/LANGUAGE"></label>
 		<div>
-			<span class="select" tabindex="0" data-bind="text: languageFullName, click: selectLanguage, onSpace: selectLanguage, onEnter: selectLanguage"></span>
+			<button type="button" class="select ui-text-action" aria-labelledby="settings-language-label settings-language-value" data-bind="click: selectLanguage">
+				<span id="settings-language-value" data-bind="text: languageFullName"></span>
+			</button>
 			<span data-bind="saveTrigger: languageTrigger"></span>
 		</div>
 	</div>
@@ -37,9 +52,9 @@
 		}"></div>
 	</div>
 	<div class="control-group">
-		<label data-i18n="SETTINGS_GENERAL/CHECK_MAIL_INTERVAL"></label>
+		<label for="check-mail-interval" data-i18n="SETTINGS_GENERAL/CHECK_MAIL_INTERVAL"></label>
 		<div>
-			<input type="number" max="60" step="1" class="span1" data-bind="textInput: checkMailInterval, attr:{min:minRefreshInterval}">
+			<select id="check-mail-interval" data-bind="options: checkMailIntervalOptions, value: checkMailInterval, optionsText: 'name', optionsValue: 'id', optionsAfterRender: checkMailIntervalOptionAfterRender, disable: checkMailIntervalDisabled"></select>
 			<span data-i18n="SETTINGS_GENERAL/MINUTES"></span>
 			<span data-bind="saveTrigger: checkMailIntervalTrigger"></span>
 		</div>
@@ -159,13 +174,6 @@
 				params: {
 					label: 'SETTINGS_GENERAL/REMOVE_COLORS',
 					value: removeColors
-				}
-			}"></div>
-			<div data-bind="component: {
-				name: 'Checkbox',
-				params: {
-					label: 'SETTINGS_GENERAL/ALLOW_STYLES',
-					value: allowStyles
 				}
 			}"></div>
 			<div data-bind="component: {
@@ -323,7 +331,7 @@
 				}"></div>
 				&nbsp;
 				<span data-bind="visible: !isDesktopNotificationAllowed()" style="color: #999" data-i18n="SETTINGS_GENERAL/CHROME_NOTIFICATION_DESC_DENIED"></span>
-				<span class="fontastic" data-bind="click: testSystemNotification" style="color:green;cursor:pointer">▶️</span>
+				<button type="button" class="ui-icon ui-icon-only" data-bind="click: testSystemNotification" style="color:green" data-ui-icon="play" data-i18n="[aria-label]GLOBAL/TEST"></button>
 			</div>
 			<div>
 				<div style="display: inline-block;" data-bind="component: {
@@ -336,7 +344,7 @@
 				&nbsp;
 				<select data-bind="options: notificationSounds, value: notificationSound"></select>
 				&nbsp;
-				<span class="fontastic" data-bind="click: testSoundNotification" style="color:green;cursor:pointer">▶️</span>
+				<button type="button" class="ui-icon ui-icon-only" data-bind="click: testSoundNotification" style="color:green" data-ui-icon="play" data-i18n="[aria-label]GLOBAL/TEST"></button>
 			</div>
 		</div>
 	</div>

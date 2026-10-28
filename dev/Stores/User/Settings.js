@@ -12,14 +12,13 @@ export const SettingsUserStore = new class {
 
 		self.messagesPerPage = ko.observable(25).extend({ debounce: 999 });
 		self.checkMailInterval = ko.observable(15).extend({ debounce: 999 });
-		self.messageReadDelay = ko.observable(5).extend({ debounce: 999 });
+		self.messageReadDelay = ko.observable(2).extend({ debounce: 999 });
 
 		addObservablesTo(self, {
 			viewHTML: 1,
 			viewImages: 0,
 			viewImagesWhitelist: '',
 			removeColors: 0,
-			allowStyles: 0,
 			collapseBlockquotes: 1,
 			maxBlockquotesLevel: 0,
 			listInlineAttachments: 0,
@@ -93,7 +92,6 @@ export const SettingsUserStore = new class {
 			'ViewImages',
 			'ViewImagesWhitelist',
 			'RemoveColors',
-			'AllowStyles',
 			'CollapseBlockquotes',
 			'MaxBlockquotesLevel',
 			'ListInlineAttachments',
@@ -136,15 +134,9 @@ export const SettingsUserStore = new class {
 			'Resizer4Width',
 			'Resizer5Width',
 			'Resizer5Height',
-			'fontSansSerif',
-			'fontSerif',
-			'fontMono',
-			'userBackgroundName',
-			'userBackgroundHash',
 			'autoVerifySignatures',
 			'allowLanguagesOnSettings',
 			'attachmentLimit',
-			'Theme',
 			'language',
 			'clientLanguage',
 			'StaticLibsJs',

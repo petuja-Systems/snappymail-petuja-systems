@@ -44,7 +44,7 @@ export const
 		serverRequestRaw('Download', download),
 
 	proxy = url =>
-		BASE + '?/ProxyExternal/'
+		BASE + '?/ProxyExternal/public-v1/'
 //			+ btoa(JSON.stringify([token,url]).replace(/ /g, '%20')).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
 			+ btoa(url.replace(/ /g, '%20')).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
 //			+ b64EncodeJSONSafe(url.replace(/ /g, '%20')),
@@ -54,9 +54,6 @@ export const
 	 * @returns {string}
 	 */
 	serverRequest = type => prefix() + '/' + type + '/' + SUB_QUERY_PREFIX + '/0/',
-
-	// Is '?/Css/0/Admin' needed?
-	cssLink = theme => BASE + '?/Css/0/User/-/' + encodeURI(theme) + '/-/' + Date.now() + '/Hash/-/Json/',
 
 	/**
 	 * @param {string} lang
@@ -73,23 +70,6 @@ export const
 	 * @returns {string}
 	 */
 	staticLink = path => Settings.app('webVersionPath') + 'static/' + path,
-
-	/**
-	 * @param {string} theme
-	 * @returns {string}
-	 */
-	themePreviewLink = theme => {
-		if (theme.endsWith('@nextcloud')) {
-			theme = theme.slice(0, theme.length - 10).trim();
-			return parent.OC.webroot + '/themes/' + encodeURI(theme) + '/snappymail/preview.png';
-		}
-		let path = 'webVersionPath';
-		if (theme.endsWith('@custom')) {
-			theme = theme.slice(0, theme.length - 7).trim();
-			path = 'webPath';
-		}
-		return Settings.app(path) + 'themes/' + encodeURI(theme) + '/images/preview.png';
-	},
 
 	/**
 	 * @param {string} inboxFolderName = 'INBOX'

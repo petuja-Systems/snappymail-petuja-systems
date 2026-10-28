@@ -48,10 +48,15 @@
 		"LABEL_LOGIN": "Anmeldung",
 		"LABEL_SIGN_ME": "Anmeldung merken",
 		"BUTTON_SIGN_IN": "Anmelden",
+		"TAGLINE": "Dein Postfach, überall erreichbar.",
 		"LEGAL_NAVIGATION": "Rechtliche Hinweise",
 		"LEGAL_IMPRINT": "Impressum",
 		"LEGAL_PRIVACY": "Datenschutz",
-		"LEGAL_SOURCE": "Quellcode"
+		"LEGAL_SOURCE": "Quellcode",
+		"TWO_FACTOR_TITLE": "Zwei-Schritt-Verifizierung",
+		"TWO_FACTOR_INSTRUCTION": "Geben Sie einen Code aus Ihrer Authenticator-App oder einen Wiederherstellungscode ein.",
+		"TWO_FACTOR_CODE": "Verifizierungscode",
+		"BUTTON_VERIFY": "Prüfen und anmelden"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Konto hinzufügen"
@@ -443,8 +448,13 @@
 		"FOLDERS": "Ordner",
 		"ACCOUNTS": "Konten",
 		"FILTERS": "Filter",
-		"SECURITY": "Sicherheit",
-		"THEMES": "Themen"
+		"SECURITY": "Sicherheit"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Darstellung",
+		"LIGHT": "Hell",
+		"DARK": "Dunkel",
+		"SYSTEM": "System"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Einfach",
@@ -460,6 +470,28 @@
 		"LEGEND_SECURITY": "Sicherheit",
 		"LABEL_AUTOLOGOUT": "Automatische Abmeldung",
 		"FORGET_KEY_PASS": "Passphrase für privaten Schlüssel vergessen",
+		"TFA_LEGEND": "Zwei-Faktor-Authentifizierung",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Nicht konfiguriert",
+		"TFA_STATUS_DISABLED": "Nicht konfiguriert",
+		"TFA_STATUS_ENABLED": "Konfiguriert",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Neues Geheimnis erstellen",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Geheimnis",
+		"TFA_QR_INSTRUCTIONS": "Importieren Sie diese Information in Ihre Google-Authenticator-Anwendung (oder andere TOTP-Anwendung), indem Sie den unten bereitgestellten QR-Code verwenden oder den Code manuell eingeben.",
+		"TFA_RECOVERY_CODES": "Sicherungscodes",
+		"TFA_RECOVERY_CODES_WARNING": "Sollten Sie keine Codes über den Google Authenticator erhalten, können Sie einen Sicherungscode zur Anmeldung verwenden. Der Sicherungscode wird inaktiv, sobald Sie ihn zur Anmeldung verwendet haben.",
+		"TFA_CODE_LABEL": "Code",
+		"TFA_ENABLE": "Aktivieren",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Nie"
 	},
 	"SETTINGS_GENERAL": {
@@ -517,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Adressbuch-URL",
 		"LABEL_CONTACTS_SYNC_USER": "Benutzer",
 		"SYNC_READ": "Nur lesend"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Themen",
-		"LABEL_BACKGROUND": "Hintergrund",
-		"LABEL_FONTS": "Schriftarten",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Hintergrundbild hochladen (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Datei ist zu groß",
-		"ERROR_FILE_TYPE_ERROR": "Ungültiger Dateityp (nur JPG und PNG)",
-		"ERROR_UNKNOWN": "Ein unbekannter Fehler trat beim Hochladen auf"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Ordnerliste",

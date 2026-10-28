@@ -31,14 +31,12 @@ config.paths.css = {
 	main: {
 		name: 'app.css',
 		src: [
-			'vendors/normalize.css/normalize.css',
-			'vendors/fontastic/styles.css'
+			'vendors/normalize.css/normalize.css'
 		]
 	},
 	admin: {
 		name: 'admin.css',
 		src: [
-			'vendors/fontastic/styles.css',
 			'dev/Styles/@Admin.less'
 		]
 	},

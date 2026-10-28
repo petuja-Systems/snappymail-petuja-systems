@@ -13,6 +13,4 @@ abstract class Capa
 	const IDENTITIES = 'Identities';
 	const OPENPGP = 'OpenPGP';
 	const SIEVE = 'Sieve';
-	const THEMES = 'Themes';
-	const USER_BACKGROUND = 'UserBackground';
 }

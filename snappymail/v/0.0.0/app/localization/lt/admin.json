@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Pridėti",
 		"CLOSE": "Uždaryti",
+		"DELETE": "Naikinti",
+		"LOGOUT": "Atsijungti",
 		"SAVE": "Saugoti",
 		"TEST": "Bandymas",
 		"UPDATE": "Atnaujinti",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Kontaktai",
 		"DOMAINS": "Domenai",
 		"SECURITY": "Sauga",
-		"PACKAGES": "Paketai",
 		"CONFIG": "Config",
 		"ABOUT": "Apie"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Sąsaja",
 		"LABEL_LANGUAGE": "Kalba",
 		"LABEL_LANGUAGE_ADMIN": "Kalba (administravimo pulto)",
-		"LABEL_THEME": "Tema",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Leisti kalbos keitimą nustatymuose",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Leisti temos keitimą nustatymuose",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Leisti keisti foną nustatymuose",
 		"LABEL_SHOW_THUMBNAILS": "Rodyti miniatiūrą (prisegtuko)",
 		"LEGEND_MAIN": "Pagrindinis",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Prisegtukų dydžio limitas",
@@ -74,12 +73,13 @@
 		"ALERT_NOTICE": "Pastaba!",
 		"SUGGESTIONS_LIMIT": "Suggestions limit",
 		"HTML_ALERT_DO_NOT_USE_THIS_DATABASE": "Nenaudokite šio duomenų bazės tipo, jei turite daug aktyvių vartotojų",
-		"HTML_ALERT_DOES_NOT_SUPPORTED": "Jūsų sistema nepalaiko kontaktų sąrašo.\nReikia įdiegti ar įjungti <strong>PDO (SĄLite \/ MySQL \/ PostgreSQL)<\/strong> plėtinius jūsų serveryje.\n"
+		"HTML_ALERT_DOES_NOT_SUPPORTED": "Jūsų sistema nepalaiko kontaktų sąrašo.\n<br>\nReikia įdiegti ar įjungti <strong>PDO (SĄLite \/ MySQL \/ PostgreSQL)<\/strong> plėtinius jūsų serveryje.\n"
 	},
 	"TAB_DOMAINS": {
 		"LEGEND_DOMAINS": "Domenai",
 		"BUTTON_ADD_DOMAIN": "Pridėti Domeną",
 		"BUTTON_ADD_ALIAS": "Pridėti Alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Ar jūs įsitikinę?",
 		"HTML_DOMAINS_HELPER": "Leidžiamų Domenų sąrašas\n<br>\nSpauskite ant pavadinimo norėdami redaguoti.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Sauga",
 		"LABEL_USE_IMAGE_PROXY": "naudoti vietinį šliuzą (proxy) išoriniams paveikslėliams",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Reikalauti patvirtinimo dviem veiksmais",
 		"LABEL_SHOW_PHP_INFO": "Rodyti PHP informaciją",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Valdymo skydo prieigos rekvizitai",
 		"LABEL_CURRENT_PASSWORD": "Dabartinis slaptažodis",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Reikalauti SSL sertifikato",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Leisti pačių sukurtus sertifikatus"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Enable extensions",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Yra galimybė atnaujinti",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Galima diegti",
-		"LEGEND_INSTALLED_PACKAGES": "Įdiegti paketai",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Šiuo momentu negaliu prisijungti prie saugyklos."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Apie",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Įskiepis",
-		"DESC_NOTHING_TO_CONFIGURE": "Nėra ką konfiguruoti"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Ar tikrai norite uždaryti šį langą?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Neteisingas raktas",
 		"AuthError": "Autorizacija nepavyko",
 		"DomainAlreadyExists": "Toks domenas jau yra",
-		"CantSavePluginSettings": "Nepavyksta išsaugoti nustatymų",
-		"CantInstallPackage": "Nepavyksta įdiegti paketo",
-		"CantDeletePackage": "Nepavyksta pašalinti paketo",
-		"InvalidPluginPackage": "Netinkamas įskiepio paketas",
-		"UnsupportedPluginPackage": "Nepalaikomas įskiepio paketas",
 		"UnknownError": "Nežinoma klaida"
 	}
 }

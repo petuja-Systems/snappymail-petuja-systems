@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Toevoegen",
 		"CLOSE": "Sluiten",
+		"DELETE": "Verwijder",
+		"LOGOUT": "Uitloggen",
 		"SAVE": "Opslaan",
 		"TEST": "Test",
 		"UPDATE": "Updaten",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Contactpersonen",
 		"DOMAINS": "Domeinen",
 		"SECURITY": "Beveiliging",
-		"PACKAGES": "Extensies",
 		"CONFIG": "Configuratie",
 		"ABOUT": "Over"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Omgeving",
 		"LABEL_LANGUAGE": "Taal",
 		"LABEL_LANGUAGE_ADMIN": "Taal (admin)",
-		"LABEL_THEME": "Thema",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Sta taalselectie toe in het instellingen scherm",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Sta thema selectie toe in het instellingen scherm",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Sta achtergrond selectie toe in het instellingen scherm",
 		"LABEL_SHOW_THUMBNAILS": "Toon miniaturen (bijlage)",
 		"LEGEND_MAIN": "Diverse",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Maximale bijlage grootte",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domeinen",
 		"BUTTON_ADD_DOMAIN": "Domein toevoegen",
 		"BUTTON_ADD_ALIAS": "Voeg alias toe",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Weet u het zeker?",
 		"HTML_DOMAINS_HELPER": "Lijst van toegestane domeinen.\n<br>\nKlik op de domeinnaam om deze te configureren."
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Beveiliging",
 		"LABEL_USE_IMAGE_PROXY": "Gebruik de server als proxy voor externe afbeeldingen",
 		"LABEL_AUTO_VERIFY": "Ondertekening automatisch verifiëren",
+		"LABEL_ENFORCE_TWO_FACTOR": "Tweestapsverificatie verplichten",
 		"LABEL_SHOW_PHP_INFO": "PHP informatie tonen",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Toegangsgegevens beheer paneel",
 		"LABEL_CURRENT_PASSWORD": "Huidig wachtwoord",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Verificatie van SSL certificaten",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Sta zelf ondertekende certificaten toe"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Extensies inschakelen",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Update beschikbaar",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Gereed voor installatie",
-		"LEGEND_INSTALLED_PACKAGES": "Geïnstalleerde extensies",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "De installatie bron is op het moment niet beschikbaar."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Over",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valide SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valide virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Extensie",
-		"DESC_NOTHING_TO_CONFIGURE": "Niets om te configureren"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Weet u zeker dat u dit venster wilt stuiten?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Onjuiste token",
 		"AuthError": "Authenticatie mislukt",
 		"DomainAlreadyExists": "Domein bestaat al",
-		"CantSavePluginSettings": "Kan instellingen niet opslaan",
-		"CantInstallPackage": "Extensie installeren mislukt",
-		"CantDeletePackage": "Extensie verwijderen mislukt",
-		"InvalidPluginPackage": "Onjuist extensie pakket",
-		"UnsupportedPluginPackage": "Niet ondersteund extensie pakket",
 		"UnknownError": "Onbekende fout"
 	}
 }

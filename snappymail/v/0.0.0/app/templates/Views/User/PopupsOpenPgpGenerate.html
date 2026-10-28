@@ -1,10 +1,10 @@
 <header>
-	<a href="#" class="close" data-bind="click: close">×</a>
+	<a href="#" class="close" data-bind="click: close" data-ui-icon="x" data-i18n="[title]GLOBAL/CLOSE"></a>
 	<h3 data-i18n="OPENPGP/POPUP_GENERATE_TITLE"></h3>
 </header>
 <form id="openpgp-generate" class="modal-body form-horizontal" autocomplete="off" spellcheck="false" data-bind="submit: submitForm">
 	<div class="alert" data-bind="visible: '' !== submitError()">
-		<a href="#" class="close" data-bind="click: hideError">×</a>
+		<a href="#" class="close" data-bind="click: hideError" data-ui-icon="x" data-i18n="[title]GLOBAL/CLOSE"></a>
 		<span data-bind="text: submitError"></span>
 	</div>
 	<!-- Disable stupid browser password autofill -->
@@ -72,7 +72,7 @@
 </form>
 <footer>
 	<button class="btn" form="openpgp-generate">
-		<i class="fontastic" data-bind="css: {'icon-spinner': submitRequest()}">🔑</i>
+		<i class="ui-icon" data-bind="css: {'ui-spinner': submitRequest()}" data-ui-icon="key-round"></i>
 		<span data-i18n="OPENPGP/POPUP_GENERATE_BUTTON"></span>
 	</button>
 </footer>

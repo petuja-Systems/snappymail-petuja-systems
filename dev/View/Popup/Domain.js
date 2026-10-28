@@ -1,7 +1,7 @@
 import { addObservablesTo, addComputablesTo, addSubscribablesTo } from 'External/ko';
 
 import { pInt, forEachObjectEntry } from 'Common/Utils';
-import { i18n, getNotification } from 'Common/Translator';
+import { i18n, i18nHtml, getNotification } from 'Common/Translator';
 
 import Remote from 'Remote/Admin/Fetch';
 
@@ -27,9 +27,7 @@ const
 		imapTimeout: 300,
 		imapShortLogin: false,
 		imapLowerLogin: true,
-		// SSL
-		imapSslVerify_peer: false,
-		imapSslAllow_self_signed: false,
+		imapSslOptions: {},
 		// Options
 		imapExpunge_all_on_delete: false,
 		imapFast_simple_search: true,
@@ -48,6 +46,7 @@ const
 		sieveType: 0,
 		sieveTimeout: 10,
 		sieveAuthLiteral: true,
+		sieveSslOptions: {},
 
 		smtpHost: '',
 		smtpPort: 25,
@@ -55,13 +54,11 @@ const
 		smtpTimeout: 60,
 		smtpShortLogin: false,
 		smtpLowerLogin: true,
+		smtpSslOptions: {},
 		smtpUseAuth: true,
 		smtpSetSender: false,
 		smtpAuthPlainLine: false,
 		smtpUsePhpMail: false,
-		// SSL
-		smtpSslVerify_peer: false,
-		smtpSslAllow_self_signed: false,
 
 		whiteList: '',
 		aliasName: ''
@@ -76,9 +73,10 @@ const
 			shortLogin: !!oDomain.imapShortLogin(),
 			lowerLogin: !!oDomain.imapLowerLogin(),
 			ssl: {
-				verify_peer: !!oDomain.imapSslVerify_peer(),
-				verify_peer_name: !!oDomain.imapSslVerify_peer(),
-				allow_self_signed: !!oDomain.imapSslAllow_self_signed()
+				...oDomain.imapSslOptions(),
+				verify_peer: true,
+				verify_peer_name: true,
+				allow_self_signed: false
 			},
 			disabled_capabilities:  oDomain.imapDisabled_capabilities(),
 			folder_list_limit: pInt(oDomain.imapFolder_list_limit()),
@@ -102,9 +100,10 @@ const
 			shortLogin: !!oDomain.smtpShortLogin(),
 			lowerLogin: !!oDomain.smtpLowerLogin(),
 			ssl: {
-				verify_peer: !!oDomain.smtpSslVerify_peer(),
-				verify_peer_name: !!oDomain.smtpSslVerify_peer(),
-				allow_self_signed: !!oDomain.smtpSslAllow_self_signed()
+				...oDomain.smtpSslOptions(),
+				verify_peer: true,
+				verify_peer_name: true,
+				allow_self_signed: false
 			},
 			setSender: !!oDomain.smtpSetSender(),
 			authPlainLine: !!oDomain.smtpAuthPlainLine(),
@@ -121,9 +120,10 @@ const
 			shortLogin: !!oDomain.imapShortLogin(),
 			lowerLogin: !!oDomain.imapLowerLogin(),
 			ssl: {
-				verify_peer: !!oDomain.imapSslVerify_peer(),
-				verify_peer_name: !!oDomain.imapSslVerify_peer(),
-				allow_self_signed: !!oDomain.imapSslAllow_self_signed()
+				...oDomain.sieveSslOptions(),
+				verify_peer: true,
+				verify_peer_name: true,
+				allow_self_signed: false
 			}
 		},
 		whiteList: oDomain.whiteList
@@ -167,7 +167,7 @@ export class DomainPopupView extends AbstractViewPopup {
 
 			domainDesc: () => {
 				const name = this.name();
-				return !this.edit() && name ? i18n('POPUPS_DOMAIN/NEW_DOMAIN_DESC', { NAME: '*@' + name }) : '';
+				return !this.edit() && name ? i18nHtml('POPUPS_DOMAIN/NEW_DOMAIN_DESC', { NAME: '*@' + name }) : '';
 			},
 
 			domainIsComputed: () => {
@@ -369,9 +369,7 @@ export class DomainPopupView extends AbstractViewPopup {
 					forEachObjectEntry(value, (skey, value) => {
 						skey = capitalize(skey);
 						if ('Ssl' == skey) {
-							forEachObjectEntry(value, (sslkey, value) => {
-								this[key + skey + capitalize(sslkey)]?.(value);
-							});
+							this[key + 'SslOptions'](value);
 						} else {
 							this[key + skey]?.(value);
 						}

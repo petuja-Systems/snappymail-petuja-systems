@@ -56,7 +56,8 @@ trait Pgp
 
 		$homedir = \rtrim($this->StorageProvider()->GenerateFilePath(
 			$oAccount,
-			\RainLoop\Providers\Storage\Enumerations\StorageType::ROOT
+			\RainLoop\Providers\Storage\Enumerations\StorageType::ROOT,
+			true
 		), '/') . '/.gnupg';
 
 		\MailSo\Base\Utils::mkdir($homedir);
@@ -69,31 +70,47 @@ trait Pgp
 		 * BSD 4.4 max length = 104
 		 */
 		if (80 < \strlen($homedir)) {
-			\clearstatcache();
-			// First try a symbolic link
-			$tmpdir = \sys_get_temp_dir() . '/snappymail';
-//			if (\RainLoop\Utils::inOpenBasedir($tmpdir) &&
-			\is_dir($tmpdir) || \mkdir($tmpdir, 0700);
-			if (\is_dir($tmpdir) && \is_writable($tmpdir)) {
-				$link = $tmpdir . '/' . \md5($homedir);
-				if (\is_link($link) || \symlink($homedir, $link)) {
-					$homedir = $link;
-				} else {
-					$this->logWrite("symlink('{$homedir}', '{$link}') failed", \LOG_WARNING, 'GnuPG');
+			// A short alias may name only this exact, already authorized root.
+			// Never adopt an existing HOME hash directory as account-owned data.
+			$home = \is_string($_SERVER['HOME'] ?? null) ? $_SERVER['HOME'] : '';
+			$home = $home ?: \getenv('HOME');
+			$legacyHomes = $home ? [$home] : [];
+			if (!$home) {
+				$owner = \function_exists('posix_getpwuid') && \function_exists('posix_geteuid')
+					? \posix_getpwuid(\posix_geteuid()) : false;
+				$home = $owner['dir'] ?? '';
+				if (!$home) {
+					throw new \RuntimeException('Legacy GnuPG home ownership unresolved');
+				}
+				$legacyHomes[] = $home;
+				$cwd = \getcwd();
+				$cwd && $legacyHomes[] = \dirname($cwd);
+			}
+			foreach (\array_unique($legacyHomes) as $home) {
+				$oldHome = $home.'/.gnupg/'.\sha1($oAccount->Email());
+				if ((\file_exists($oldHome) || \is_link($oldHome))
+					&& (!\is_link($oldHome) || \readlink($oldHome) !== $homedir)) {
+					throw new \RuntimeException('External GnuPG storage ownership unresolved');
 				}
 			}
-			// Else try ~/.gnupg/ + hash(email address)
+			$tmpdir = \sys_get_temp_dir().'/snappymail';
+			if (\is_link($tmpdir) || (!\is_dir($tmpdir) && !@\mkdir($tmpdir, 0700))) {
+				throw new \RuntimeException('GnuPG private alias unavailable');
+			}
+			$stat = \lstat($tmpdir);
+			if (($stat['mode'] & 0077) || !\is_writable($tmpdir)) {
+				throw new \RuntimeException('GnuPG private alias unavailable');
+			}
+			$link = $tmpdir.'/'.\md5($homedir);
+			if (!\file_exists($link) && !\is_link($link)) {
+				@\symlink($homedir, $link);
+			}
+			if (!\is_link($link) || \readlink($link) !== $homedir) {
+				throw new \RuntimeException('GnuPG private alias ownership unresolved');
+			}
+			$homedir = $link;
 			if (80 < \strlen($homedir)) {
-				$tmpdir = ($_SERVER['HOME'] ?: \exec('echo ~') ?: \dirname(\getcwd())) . '/.gnupg/';
-				if ($oAccount instanceof \RainLoop\Model\AdditionalAccount) {
-					$tmpdir .= \sha1($oAccount->ParentEmail());
-				} else {
-					$tmpdir .= \sha1($oAccount->Email());
-				}
-//				if (\RainLoop\Utils::inOpenBasedir($tmpdir) &&
-				if (\is_dir($tmpdir) || \is_link($tmpdir) || \symlink($homedir, $tmpdir) || \mkdir($tmpdir, 0700, true)) {
-					$homedir = $tmpdir;
-				}
+				throw new \RuntimeException('GnuPG private alias exceeds supported socket path');
 			}
 		}
 

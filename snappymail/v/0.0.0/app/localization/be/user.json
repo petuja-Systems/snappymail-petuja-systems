@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Логін",
 		"LABEL_SIGN_ME": "Запомніць мяне",
-		"BUTTON_SIGN_IN": "Увайсці"
+		"BUTTON_SIGN_IN": "Увайсці",
+		"TAGLINE": "Ваша паштовая скрыня, дзе б вы ні былі.",
+		"LEGAL_NAVIGATION": "Юрыдычная інфармацыя",
+		"LEGAL_IMPRINT": "Звесткі пра выдаўца",
+		"LEGAL_PRIVACY": "Прыватнасць",
+		"LEGAL_SOURCE": "Зыходны код",
+		"TWO_FACTOR_TITLE": "Двухэтапная праверка",
+		"TWO_FACTOR_INSTRUCTION": "Увядзіце код з праграмы аўтэнтыфікацыі або код аднаўлення.",
+		"TWO_FACTOR_CODE": "Код праверкі",
+		"BUTTON_VERIFY": "Праверыць і ўвайсці"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Дадаць яшчэ рахунак"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Каталогі",
 		"ACCOUNTS": "Рахункі",
 		"FILTERS": "Фільтры",
-		"SECURITY": "Бяспека",
-		"THEMES": "Тэмы"
+		"SECURITY": "Бяспека"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Знешні выгляд",
+		"LIGHT": "Светлая",
+		"DARK": "Цёмная",
+		"SYSTEM": "Сістэма"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Просты",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Бяспека",
 		"LABEL_AUTOLOGOUT": "Азтаматычны ўваход",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Ніколі"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Адрасная кніга (URL)",
 		"LABEL_CONTACTS_SYNC_USER": "Карыстальнік",
 		"SYNC_READ": "Толькі чытанне"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Тэмы Афармлення",
-		"LABEL_BACKGROUND": "Выява на фоне",
-		"LABEL_FONTS": "Шрыфты",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Запампаваць фонавую выяву (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Файл занадта вялікі",
-		"ERROR_FILE_TYPE_ERROR": "Няправільны тып файлу (толькі JPG ці PNG)",
-		"ERROR_UNKNOWN": "Невядомая памылка пры запампоўцы файлу"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Спіс Каталогаў",

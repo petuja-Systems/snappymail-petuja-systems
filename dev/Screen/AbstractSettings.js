@@ -9,6 +9,20 @@ import { i18nToNodes } from 'Common/Translator';
 
 const VIEW_MODELS = [];
 
+const SETTINGS_MENU_ICONS = {
+	About: 'info',
+	Accounts: 'user-round',
+	Branding: 'palette',
+	Contacts: 'contact-round',
+	Config: 'wrench',
+	Domains: 'globe',
+	Filters: 'filter',
+	Folders: 'folder',
+	General: 'settings',
+	Login: 'key-round',
+	Security: 'shield-check'
+};
+
 export class AbstractSettingsScreen extends AbstractScreen {
 	/**
 	 * @param {Array} viewModels
@@ -144,6 +158,7 @@ export function settingsAddViewModel(SettingsViewModelClass, template, labelName
 		vmc: SettingsViewModelClass,
 		label: labelName || 'SETTINGS_LABELS/' + name.toUpperCase(),
 		route: route || name.toLowerCase(),
+		icon: SETTINGS_MENU_ICONS[name],
 		selected: ko.observable(false),
 		template: template || SettingsViewModelClass.name,
 		isDefault: !!isDefault

@@ -90,7 +90,12 @@ Object.assign(ko.bindingHandlers, {
 			let observable = fValueAccessor(),
 				fn = () => observable(!observable());
 			onEvent(element, 'click', fn);
-			onEvent(element, 'keydown', event => ' ' == event.key && fn());
+			onEvent(element, 'keydown', event => {
+				if (' ' == event.key && !element.matches('button')) {
+					event.preventDefault();
+					fn();
+				}
+			});
 		}
 	},
 

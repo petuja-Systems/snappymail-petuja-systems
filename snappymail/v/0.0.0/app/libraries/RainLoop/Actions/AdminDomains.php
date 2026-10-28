@@ -2,7 +2,6 @@
 
 namespace RainLoop\Actions;
 
-use RainLoop\Enumerations\PluginPropertyType;
 use RainLoop\Exceptions\ClientException;
 
 trait AdminDomains

@@ -232,23 +232,22 @@ export const FileInfo = {
 	 * @returns {string}
 	 */
 	getTypeIconClass: fileType => {
-		let result = 'icon-file';
+		let result = 'file';
 		switch (fileType) {
 			case FileType.Text:
-			case FileType.Eml:
 			case FileType.Pdf:
 			case FileType.Word:
-				return result + '-text';
-			case FileType.Code:
-			case FileType.Image:
-			case FileType.Audio:
-			case FileType.Video:
-			case FileType.Archive:
-			case FileType.Certificate:
-			case FileType.Spreadsheet:
-			case FileType.Presentation:
-			case FileType.Calendar:
-				return result + '-' + fileType;
+				return 'file-text';
+			case FileType.Eml: return 'mail';
+			case FileType.Code: return 'file-code-2';
+			case FileType.Image: return 'image';
+			case FileType.Audio: return 'audio-lines';
+			case FileType.Video: return 'clapperboard';
+			case FileType.Archive: return 'archive';
+			case FileType.Certificate: return 'file-badge';
+			case FileType.Spreadsheet: return 'table-2';
+			case FileType.Presentation: return 'presentation';
+			case FileType.Calendar: return 'calendar-days';
 		}
 		return result;
 	},
@@ -265,9 +264,9 @@ export const FileInfo = {
 				.map(item => item ? FileInfo.getIconClass(FileInfo.getExtension(item.fileName), item.mimeType) : '')
 				.validUnique();
 
-			return (1 === icons?.length && 'icon-file' !== icons[0])
-				 ? icons[0]
-				 : 'icon-attachment';
+			return (1 === icons?.length && 'file' !== icons[0])
+				? icons[0]
+				: 'paperclip';
 		}
 
 		return '';

@@ -1,5 +1,5 @@
 <header>
-	<a href="#" class="close" data-bind="click: close">×</a>
+	<button type="button" class="close ui-icon-only" data-bind="click: close" data-ui-icon="x" data-i18n="[aria-label]GLOBAL/CLOSE"></button>
 	<h3 data-i18n="POPUPS_CREATE_FOLDER/TITLE_CREATE_FOLDER"></h3>
 </header>
 <form id="createfolderform" class="modal-body form-horizontal" autocomplete="off" spellcheck="false" data-bind="submit: submitForm">
@@ -25,7 +25,7 @@
 </form>
 <footer>
 	<button form="createfolderform" class="btn buttonCreate">
-		<i class="icon-folder-add"></i>
+		<i class="ui-icon" data-ui-icon="folder-plus"></i>
 		<span data-i18n="POPUPS_CREATE_FOLDER/BUTTON_CREATE"></span>
 	</button>
 </footer>

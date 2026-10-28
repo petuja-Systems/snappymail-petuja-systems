@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Login",
 		"LABEL_SIGN_ME": "Ricordami",
-		"BUTTON_SIGN_IN": "Accedi"
+		"BUTTON_SIGN_IN": "Accedi",
+		"TAGLINE": "La tua casella di posta, ovunque tu sia.",
+		"LEGAL_NAVIGATION": "Informazioni legali",
+		"LEGAL_IMPRINT": "Note legali",
+		"LEGAL_PRIVACY": "Privacy",
+		"LEGAL_SOURCE": "Codice sorgente",
+		"TWO_FACTOR_TITLE": "Verifica in due passaggi",
+		"TWO_FACTOR_INSTRUCTION": "Inserisci un codice dell’app di autenticazione o un codice di recupero.",
+		"TWO_FACTOR_CODE": "Codice di verifica",
+		"BUTTON_VERIFY": "Verifica e accedi"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Aggiungi account"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Cartelle",
 		"ACCOUNTS": "Account",
 		"FILTERS": "Filtri",
-		"SECURITY": "Sicurezza",
-		"THEMES": "Temi"
+		"SECURITY": "Sicurezza"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Aspetto",
+		"LIGHT": "Chiaro",
+		"DARK": "Scuro",
+		"SYSTEM": "Sistema"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Semplice",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Sicurezza",
 		"LABEL_AUTOLOGOUT": "Disconnessione automatica",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Verifica a 2 Fattori",
+		"TFA_STATUS_LABEL": "Stato",
+		"TFA_STATUS_MISSING": "Non configurato",
+		"TFA_STATUS_DISABLED": "Non configurato",
+		"TFA_STATUS_ENABLED": "Configurato",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Crea la chiave segreta",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Chiave segreta",
+		"TFA_QR_INSTRUCTIONS": "Importa queste informazioni nella tua app Google Authenticator (o un altro programma per l'autenticazione a due fattori) utilizzando il codice QR fornito qui sotto o inserendo il codice manualmente.\n",
+		"TFA_RECOVERY_CODES": "Codici di backup",
+		"TFA_RECOVERY_CODES_WARNING": "Se non riesci a ricevere i codici tramite Google Authenticator (o un altro programma per l'autenticazione a due fattori), puoi utilizzare i codici di backup per accedere. Dopo che hai utilizzato un codice di backup per accedere, diventerà inattivo.\n",
+		"TFA_CODE_LABEL": "Codice",
+		"TFA_ENABLE": "Attiva",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Mai"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Indirizzo della rubrica",
 		"LABEL_CONTACTS_SYNC_USER": "Utente",
 		"SYNC_READ": "Sola lettura"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Temi",
-		"LABEL_BACKGROUND": "Sfondo",
-		"LABEL_FONTS": "Fonts",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Carica immagine di sfondo (.jpg o .png)",
-		"ERROR_FILE_IS_TOO_BIG": "Il file è più grande di 1MB",
-		"ERROR_FILE_TYPE_ERROR": "Tipo di file invalido (solo .jpg o .png)",
-		"ERROR_UNKNOWN": "Si è verificato un errore sconosciuto durante il caricamento del file"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Lista delle cartelle",

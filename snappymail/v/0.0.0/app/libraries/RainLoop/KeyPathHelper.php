@@ -14,14 +14,9 @@ class KeyPathHelper
 		return '/ReadReceipt/'.$sEmail.'/'.$sFolderFullName.'/'.$iUid;
 	}
 
-	static public function LangCache(string $sLanguage, bool $bAdmim, string $sPluginsHash) : string
+	static public function LangCache(string $sLanguage, bool $bAdmim) : string
 	{
-		return '/LangCache/'.$sPluginsHash.'/'.$sLanguage.'/'.($bAdmim ? 'Admin' : 'App').'/'.APP_VERSION.'/';
-	}
-
-	static public function PluginsJsCache(string $sPluginsHash) : string
-	{
-		return '/PluginsJsCache/'.$sPluginsHash.'/'.APP_VERSION.'/';
+		return '/LangCache/'.$sLanguage.'/'.($bAdmim ? 'Admin' : 'App').'/'.APP_VERSION.'/';
 	}
 
 	static public function SessionAdminKey(string $sRand) : string

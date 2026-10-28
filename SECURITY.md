@@ -10,10 +10,11 @@ security fixes.
 
 | Version | Status |
 | --- | --- |
-| 1.0.x | Current development / release line |
+| 1.1.x | Latest released and maintained line |
+| 1.0.x | Not maintained |
 | Earlier versions | Not maintained as petuja.email releases |
 
-petuja.email 1.0.x is the current maintained product release line.
+The latest released version is 1.1.0.
 
 ## Reporting a vulnerability
 

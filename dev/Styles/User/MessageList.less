@@ -16,6 +16,13 @@
 	padding-right: 6px;
 }
 
+#V-MailMessageList .checkboxCheckAll {
+	background: transparent;
+	border: 0;
+	color: inherit;
+	padding: 0;
+}
+
 #V-MailMessageList .btn-toolbar {
 	padding: 10px 1px;
 	white-space: nowrap;
@@ -30,20 +37,28 @@
 	flex-direction: column;
 
 	.groupLabel {
+		appearance: none;
 		background:rgba(128,128,128,0.2);
+		border: 0;
+		color: inherit;
 		cursor: pointer;
+		display: block;
+		font-family: inherit;
 		font-size: 85%;
 		line-height: 2;
+		margin: 0;
 		opacity: 0.6;
+		padding: 0;
 		text-align: center;
 		text-transform: capitalize;
+		width: 100%;
 	}
 
 	.reply::before {
-		content: '↳';
+		.ui-icon-pseudo(reply; 0);
 		line-height: 3;
 		position: absolute;
-		margin-left: -1em;
+		margin-inline-start: -1em;
 	}
 
 	.b-footer {
@@ -97,6 +112,7 @@
 	.checkboxCheckAll {
 		cursor: pointer;
 		margin: 0.45em 0.5em 0 0;
+		--ui-icon-size: var(--ui-icon-size-status);
 	}
 
 	.search-input-wrp {
@@ -120,7 +136,7 @@
 		}
 
 		.listEmptyMessage, .listLoading, .listDragOver, .listError {
-			color: #999;
+			color: var(--appearance-text-muted, #666);
 			text-align: center;
 			padding: 60px 10px;
 			font-size: 171%;
@@ -153,12 +169,20 @@
 		}
 
 		.listThreadUidDesc {
+			appearance: none;
+			border: 0;
+			border-bottom: 1px solid #888;
+			border-radius: 0;
 			font-size: 114%;
+			font-family: inherit;
+			line-height: inherit;
+			margin: 0;
 			padding: 7px 20px 6px 20px;
 			background-color: rgba(128,128,128,0.5);
-			border-bottom: 1px solid #888;
 			color: #fff;
 			cursor: pointer;
+			display: block;
+			width: 100%;
 			text-shadow: 0 1px 0 #000;
 			text-align: center;
 		}
@@ -202,7 +226,7 @@
 	}
 
 	&.priorityHigh .subjectParent::before {
-		content: '! '; /*❗*/
+		.ui-icon-pseudo(triangle-alert; 0.25em);
 		color: red;
 		font-weight: bolder;
 	}
@@ -214,6 +238,7 @@
 	}
 	.checkboxMessage {
 		display: inline;
+		--ui-icon-size: var(--ui-icon-size-status);
 	}
 
 	time, .sizeParent {
@@ -277,7 +302,9 @@
 		}
 	}
 	.threads-len::after {
-		content: ' ›';
+		.ui-icon-pseudo(chevron-right; 0);
+		margin-inline-start: 0.25em;
+		width: 0.8em;
 	}
 
 	.replyFlag, .forwardFlag {
@@ -324,31 +351,19 @@
 	.flagParent {
 		margin: 0 10px 0 5px;
 		min-width: 1em;
+		--ui-icon-size: var(--ui-icon-size-status);
 	}
-	.flagParent::after {
-		content: '☆'; /*⚐*/
-	}
-	&.msgflag-\\flagged .flagParent::after,
-	&.hasFlaggedSubMessage .flagParent::after {
+	&.msgflag-\\flagged .flagParent,
+	&.hasFlaggedSubMessage .flagParent {
 		color: orange;
-		content: '★'; /*⚑*/
 	}
-	&:not(.msgflag-\\flagged):not(.hasFlaggedSubMessage) .flagParent:not(:hover)::after {
+	.flagParent[data-ui-icon="star"] {
 		opacity: 0.5;
 	}
+	.flagParent::before {
+		margin-inline-end: 0;
+	}
 
-	.senderParent::before {
-		font-family: snappymail;
-	}
-	&.msgflag-\\answered .senderParent::before {
-		content: '← ';
-	}
-	&.msgflag-\$forwarded .senderParent::before {
-		content: '→ ';
-	}
-	&.msgflag-\\answered.msgflag-\$forwarded .senderParent::before {
-		content: '←→ ';
-	}
 	&.msgflag-\\deleted {
 		opacity: .7;
 		.subjectParent {

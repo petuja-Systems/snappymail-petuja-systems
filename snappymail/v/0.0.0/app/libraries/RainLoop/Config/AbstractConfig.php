@@ -10,6 +10,8 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 
 	private array $aData;
 
+	private array $aPreservedData = array();
+
 	private bool $bUseApcCache;
 
 	private string $sFileHeader;
@@ -109,9 +111,28 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 		}
 	}
 
+	protected function PreserveForSave(string $sSectionKey, string $sParamKey, $mParamValue) : void
+	{
+		if (\is_scalar($mParamValue)) {
+			$this->aPreservedData[$sSectionKey][$sParamKey] = $mParamValue;
+		}
+	}
+
+	private function dataForSave() : array
+	{
+		$aData = $this->aData;
+		foreach ($this->aPreservedData as $sSectionKey => $aSectionValue) {
+			foreach ($aSectionValue as $sParamKey => $mParamValue) {
+				if (!isset($aData[$sSectionKey][$sParamKey])) {
+					$aData[$sSectionKey][$sParamKey] = array($mParamValue);
+				}
+			}
+		}
+		return $aData;
+	}
+
 	public function getDecrypted(string $sSection, string $sName, $mDefault = null)
 	{
-		// $salt = \basename($this->sFile) not possible due to RainLoop\Plugins\Property
 		if (!empty($this->aData[$sSection][$sName][0])) try {
 			return \SnappyMail\Crypt::DecryptFromJSON($this->aData[$sSection][$sName][0], \APP_SALT);
 		} catch (\Throwable $e) {
@@ -121,7 +142,6 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 
 	public function setEncrypted(string $sSectionKey, string $sParamKey, $mParamValue) : void
 	{
-		// $salt = \basename($this->sFile) not possible due to RainLoop\Plugins\Property
 		$mParamValue = \SnappyMail\Crypt::EncryptToJSON($mParamValue, \APP_SALT);
 		$this->Set($sSectionKey, $sParamKey, $mParamValue);
 	}
@@ -256,7 +276,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 
 		if (\str_ends_with($this->sFile, '.json')) {
 			$this->clearCache();
-			\RainLoop\Utils::saveFile($this->sFile, \json_encode($this, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES));
+			\RainLoop\Utils::saveFile($this->sFile, \json_encode($this->dataForSave(), \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES));
 			// Remove old .ini file
 			$sFile = \str_replace('.json', '.ini', $this->sFile);
 			\file_exists($sFile) && \unlink($sFile);
@@ -267,7 +287,7 @@ abstract class AbstractConfig implements \ArrayAccess, \JsonSerializable
 
 		$aResultLines = array();
 
-		foreach ($this->aData as $sSectionKey => $aSectionValue) {
+		foreach ($this->dataForSave() as $sSectionKey => $aSectionValue) {
 			if (\is_array($aSectionValue)) {
 				$aResultLines[] = '';
 				$aResultLines[] = '['.$sSectionKey.']';

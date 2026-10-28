@@ -1,0 +1,148 @@
+.ui-icon-sizes() {
+	--ui-icon-size-toolbar: 1rem;
+	--ui-icon-size-sidebar: 1rem;
+	--ui-icon-size-status: 0.875rem;
+	--ui-icon-size-large: 1.5rem;
+}
+
+:root {
+	.ui-icon-sizes();
+}
+
+.ui-icon {
+	line-height: 1;
+}
+
+.ui-icon-only {
+	--ui-icon-size: var(--ui-icon-size-toolbar);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	vertical-align: middle;
+}
+
+button.ui-icon-only:not(.btn) {
+	appearance: none;
+	background: transparent;
+	border: 0;
+	color: inherit;
+	cursor: pointer;
+	font: inherit;
+	line-height: 1;
+	margin: 0;
+	padding: 0;
+}
+
+button.ui-text-action {
+	appearance: none;
+	background: transparent;
+	border: 0;
+	color: inherit;
+	cursor: pointer;
+	font: inherit;
+	margin: 0;
+	padding: 0;
+	text-align: inherit;
+}
+
+.btn.ui-icon,
+.btn.ui-icon-only {
+	--ui-icon-size: var(--ui-icon-size-toolbar);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 2em;
+	min-height: 30px;
+}
+
+.btn.ui-icon::before,
+.ui-icon-only::before,
+.btn.ui-icon > [data-ui-icon]::before,
+.ui-icon-only > [data-ui-icon]::before,
+[data-ui-icon].ui-icon-only::before,
+.btn:empty[data-ui-icon]::before {
+	margin-inline-end: 0;
+	vertical-align: middle;
+}
+
+.btn.ui-icon > .sort-field-icon::before {
+	margin-inline-end: 0.125em;
+}
+
+.btn.ui-icon > .ui-spinner,
+.ui-icon-only > .ui-spinner,
+.btn.ui-icon > [data-ui-icon].ui-spinner,
+.ui-icon-only > [data-ui-icon].ui-spinner {
+	box-sizing: border-box;
+	min-width: var(--ui-icon-size-toolbar);
+	width: var(--ui-icon-size-toolbar);
+	height: var(--ui-icon-size-toolbar);
+	margin: 0;
+}
+
+.ui-icon-size-24 {
+	--ui-icon-size: var(--ui-icon-size-large);
+	font-size: 171%;
+}
+
+.ui-spinner + span {
+	margin-inline-start: 0.5em;
+}
+
+.ui-icon-color-green {
+	color: green;
+}
+
+.ui-icon-color-red {
+	color: red;
+}
+
+@keyframes rotation {
+	to { transform: rotate(1turn); }
+}
+
+.ui-spinner {
+	display: inline-block;
+	min-width: 1em;
+	height: 1.2em;
+	width: 1.2em;
+
+	margin: 0 -1px;
+
+	border: 3px solid #aaa;
+	border-top-color: #333;
+	border-radius: 100%;
+
+	vertical-align: text-top;
+
+	.disabled &,
+	.btn[disabled] & {
+		opacity: 0.5;
+	}
+}
+
+.ui-spinner:not(.not-animated),
+.list-loading .ui-spinner.not-animated {
+	border-color: transparent;
+	border-top-color: #999;
+	animation: rotation .8s infinite ease-in-out;
+}
+
+.btn.btn-success .ui-spinner {
+	border-color: transparent;
+	border-top-color: #fff;
+}
+
+.ui-spinner[data-ui-icon]::before,
+.ui-spinner > [data-ui-icon]::before {
+	content: none;
+}
+
+.ui-icon.ui-spinner {
+	text-indent: -5em;
+	overflow: hidden;
+}
+
+.ui-spinner > [data-ui-icon] {
+	display: none;
+}

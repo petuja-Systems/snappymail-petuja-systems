@@ -1,38 +1,10 @@
 :root {
-	--fontSans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	--font-stack-system-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	--appearance-font-ui: var(--font-stack-system-sans);
+	--fontSans: var(--font-stack-system-sans);
 	--fontSerif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 	--fontMono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
 
-#rl-app.fontArial {
-	--fontSans: "Nimbus Sans L", "Liberation sans", "Arial Unicode MS", Arial, Helvetica, Garuda, Utkal, FreeSans, sans-serif;
-}
-#rl-app.fontTahoma {
-	--fontSans: "Luxi Sans", Tahoma, Loma, Geneva, Meera, sans-serif;
-}
-#rl-app.fontTrebuchet {
-	--fontSans: "DejaVu Sans Condensed", Trebuchet, "Trebuchet MS", sans-serif;
-}
-#rl-app.fontLucida {
-	--fontSans: "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", "Bitstream Vera Sans", "DejaVu LGC Sans", sans-serif;
-}
-#rl-app.fontVerdana {
-	--fontSans: "DejaVu Sans", Verdana, Geneva, "Bitstream Vera Sans", "DejaVu LGC Sans", sans-serif;
-}
-#rl-app.fontMonoCourier {
-	--fontMono: "Liberation Mono", "Courier New", FreeMono, Courier, monospace;
-}
-#rl-app.fontMonoLucida {
-	--fontMono: "DejaVu Sans Mono", "DejaVu LGC Sans Mono", "Bitstream Vera Sans Mono", "Lucida Console", Monaco, monospace;
-}
-#rl-app.fontSerifTimes {
-	--fontSerif: "Nimbus Roman No9 L", "Times New Roman", Times, FreeSerif, serif;
-}
-#rl-app.fontSerifPalatino {
-	--fontSerif: "Bitstream Charter", "Palatino Linotype", Palatino, Palladio, "URW Palladio L", "Book Antiqua", Times, serif;
-}
-#rl-app.fontSerifGeorgia {
-	--fontSerif: "URW Palladio L", Georgia, Times, serif;
 }
 
 html, body {
@@ -48,7 +20,7 @@ html, body {
 #rl-app {
 	background-color: var(--main-bg-color, #aaa);
 	color: var(--main-color, #333);
-	font-family: var(--fontSans);
+	font-family: var(--appearance-font-ui);
 
 	-webkit-touch-callout: none;
 	font-size: var(--main-font-size, 14px);
@@ -59,6 +31,36 @@ body#rl-app {
 	height: 100vh;
 	height: 100dvh;
 	width: 100vw;
+}
+
+#rl-app[data-admin="0"] {
+	--petuja-login-bg: #0d141b;
+	--petuja-login-accent: #11c6db;
+	--petuja-login-accent-soft: rgba(17, 198, 219, 0.14);
+	--petuja-login-warm-soft: rgba(240, 119, 16, 0.08);
+	--petuja-login-background-image:
+		radial-gradient(circle at 50% -12%, var(--petuja-login-accent-soft), transparent 42%),
+		radial-gradient(circle at 100% 110%, var(--petuja-login-warm-soft), transparent 34%),
+		linear-gradient(145deg, #0b1117 0%, #111c25 52%, #0b1218 100%);
+}
+
+#rl-app[data-admin="0"] #rl-loading {
+	align-items: center;
+	background-color: var(--petuja-login-bg);
+	background-image: var(--petuja-login-background-image);
+	display: flex;
+	flex-direction: column;
+	inset: 0;
+	justify-content: center;
+	transform: none;
+}
+
+#rl-app[data-admin="0"] #rl-loading[hidden] {
+	display: none;
+}
+
+#rl-app[data-admin="0"] #rl-loading .ui-spinner {
+	border-top-color: var(--petuja-login-accent);
 }
 
 #rl-loading, #rl-loading-error, #rl-BadBrowser, #rl-NoCookie {
@@ -73,7 +75,24 @@ body#rl-app {
 	width: 100%;
 }
 
-#rl-loading .icon-spinner {
+#rl-loading .ui-spinner {
 	height: 1em;
 	width: 1em;
+}
+
+#rl-loading-error-reload {
+	display: inline-block;
+	margin-block-start: 0.75em;
+	padding: 0.35em 0.8em;
+	border: 1px solid currentColor;
+	border-radius: 0.2em;
+	color: inherit;
+	font-size: 60%;
+	text-decoration: underline;
+	text-underline-offset: 0.15em;
+}
+
+#rl-loading-error-reload:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 3px;
 }

@@ -23,7 +23,6 @@
 	margin-left: 0.5em !important;
 
 	&::after {
-		font-family: "snappymail";
 		content: " ";
 		display: block;
 		opacity: 0;
@@ -40,12 +39,12 @@
 	}
 	&.success::after {
 		color: #080;
-		content: "✔";
+		.ui-icon-pseudo(check; 0);
 		opacity: 1;
 	}
 	&.error::after {
 		color: #F00;
-		content: "✖";
+		.ui-icon-pseudo(x; 0);
 		opacity: 1;
 	}
 }

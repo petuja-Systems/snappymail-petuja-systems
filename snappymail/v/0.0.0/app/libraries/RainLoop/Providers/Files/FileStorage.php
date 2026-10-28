@@ -27,21 +27,79 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 
 	public function PutFile(\RainLoop\Model\Account $oAccount, string $sKey, /*resource*/ $rSource) : bool
 	{
-		$bResult = false;
-		if ($rSource) {
-			$rOpenOutput = \fopen($this->generateFullFileName($oAccount, $sKey, true), 'w+b');
-			if ($rOpenOutput) {
-				$bResult = (false !== \MailSo\Base\Utils::WriteStream($rSource, $rOpenOutput));
-				\fclose($rOpenOutput);
+		return (new \SnappyMail\Storage\AccountPath($this->sDataPath))->Atomic(function () use ($oAccount, $sKey, $rSource) {
+			$bResult = false;
+			if ($rSource) {
+				$rOpenOutput = \fopen($this->generateFullFileName($oAccount, $sKey, true), 'w+b');
+				if ($rOpenOutput) {
+					$bResult = (false !== \MailSo\Base\Utils::WriteStream($rSource, $rOpenOutput));
+					\fclose($rOpenOutput);
+				}
 			}
-		}
-		return $bResult;
+			return $bResult;
+		});
 	}
 
 	public function MoveUploadedFile(\RainLoop\Model\Account $oAccount, string $sKey, string $sSource) : bool
 	{
-		return \move_uploaded_file($sSource,
-			$this->generateFullFileName($oAccount, $sKey, true));
+		return (new \SnappyMail\Storage\AccountPath($this->sDataPath))->Atomic(function () use ($oAccount, $sKey, $sSource) {
+			$sFileName = $this->generateFullFileName($oAccount, $sKey, true);
+			if ('Windows' !== PHP_OS_FAMILY) {
+				return \move_uploaded_file($sSource, $sFileName);
+			}
+
+			// Moving a PHP upload temp file can preserve its broader temp-directory
+			// ACL. Create the stored file under the already-verified private parent.
+			if (!\is_uploaded_file($sSource)) {
+				return false;
+			}
+
+			$rSource = \fopen($sSource, 'rb');
+			if (!$rSource) {
+				return false;
+			}
+
+			$rTarget = null;
+			$bCreated = false;
+			$bStored = false;
+			try {
+				$rTarget = \fopen($sFileName, 'x+b');
+				if (!$rTarget) {
+					return false;
+				}
+				$bCreated = true;
+				if (!\chmod($sFileName, 0600)) {
+					return false;
+				}
+
+				$iCopied = \stream_copy_to_stream($rSource, $rTarget);
+				if (false === $iCopied || !\fflush($rTarget)) {
+					return false;
+				}
+
+				\fclose($rSource);
+				$rSource = null;
+				\fclose($rTarget);
+				$rTarget = null;
+				(new \SnappyMail\Storage\AccountPath($this->sDataPath))->CheckFile($sFileName);
+				if (!\unlink($sSource)) {
+					return false;
+				}
+
+				$bStored = true;
+				return true;
+			} finally {
+				if (\is_resource($rSource)) {
+					\fclose($rSource);
+				}
+				if (\is_resource($rTarget)) {
+					\fclose($rTarget);
+				}
+				if (!$bStored && $bCreated && (\file_exists($sFileName) || \is_link($sFileName))) {
+					\unlink($sFileName);
+				}
+			}
+		});
 	}
 
 	/**
@@ -49,21 +107,23 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 	 */
 	public function GetFile(\RainLoop\Model\Account $oAccount, string $sKey, string $sOpenMode = 'rb')
 	{
-		$mResult = false;
-		$bCreate = !!\preg_match('/[wac]/', $sOpenMode);
+		return (new \SnappyMail\Storage\AccountPath($this->sDataPath))->Atomic(function () use ($oAccount, $sKey, $sOpenMode) {
+			$mResult = false;
+			$bCreate = !!\preg_match('/[wac]/', $sOpenMode);
 
-		$sFileName = $this->generateFullFileName($oAccount, $sKey, $bCreate);
-		if ($bCreate || \file_exists($sFileName))
-		{
-			$mResult = \fopen($sFileName, $sOpenMode);
-
-			if (\is_resource($mResult))
+			$sFileName = $this->generateFullFileName($oAccount, $sKey, $bCreate);
+			if ($bCreate || \file_exists($sFileName))
 			{
-				$this->aResources[$sFileName] = $mResult;
-			}
-		}
+				$mResult = \fopen($sFileName, $sOpenMode);
 
-		return $mResult;
+				if (\is_resource($mResult))
+				{
+					$this->aResources[$sFileName] = $mResult;
+				}
+			}
+
+			return $mResult;
+		});
 	}
 
 	public function GetFileName(\RainLoop\Model\Account $oAccount, string $sKey) /*: string|false*/
@@ -74,14 +134,16 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 
 	public function Clear(\RainLoop\Model\Account $oAccount, string $sKey) : bool
 	{
-		$sFileName = $this->generateFullFileName($oAccount, $sKey);
-		if (\file_exists($sFileName)) {
-			if (isset($this->aResources[$sFileName]) && \is_resource($this->aResources[$sFileName])) {
-				\fclose($this->aResources[$sFileName]);
+		return (new \SnappyMail\Storage\AccountPath($this->sDataPath))->Atomic(function () use ($oAccount, $sKey) {
+			$sFileName = $this->generateFullFileName($oAccount, $sKey);
+			if (\file_exists($sFileName)) {
+				if (isset($this->aResources[$sFileName]) && \is_resource($this->aResources[$sFileName])) {
+					\fclose($this->aResources[$sFileName]);
+				}
+				return \unlink($sFileName);
 			}
-			return \unlink($sFileName);
-		}
-		return false;
+			return false;
+		});
 	}
 
 	public function FileSize(\RainLoop\Model\Account $oAccount, string $sKey) /*: int|false*/
@@ -99,14 +161,22 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 	{
 		if (0 < $iTimeToClearInHours) {
 			$iTimeToClear = 3600 * $iTimeToClearInHours;
-			foreach (\glob("{$this->sDataPath}/*", GLOB_ONLYDIR) as $sDomain) {
-				foreach (\glob("{$sDomain}/*", GLOB_ONLYDIR) as $sLocal) {
-					\MailSo\Base\Utils::RecTimeDirRemove("{$sLocal}/.files", $iTimeToClear);
+			$oPaths = new \SnappyMail\Storage\AccountPath($this->sDataPath);
+			$oLocks = new \RainLoop\Providers\Storage\FileStorage($this->sDataPath);
+			foreach ($oPaths->Owned() as $owner) {
+				$mLock = $oLocks->AcquireLock($owner['identity'], \RainLoop\Providers\Storage\Enumerations\StorageType::SIGN_ME, 'files-gc');
+				if (!$mLock) {
+					throw new \RuntimeException('Account files GC lock unavailable');
+				}
+				try {
+					$oPaths->Resolve($owner['identity']);
+					foreach (\array_merge([$owner['path']], $owner['childPaths']) as $sRoot) {
+						$oPaths->Collect($sRoot.'/.files', $iTimeToClear);
+					}
+				} finally {
+					$oLocks->ReleaseLock($mLock);
 				}
 			}
-			// Old
-			\MailSo\Base\Utils::RecTimeDirRemove("{$this->sDataPath}/files", $iTimeToClear);
-
 			return true;
 		}
 
@@ -139,15 +209,10 @@ class FileStorage implements \RainLoop\Providers\Files\IFiles
 			$sSubEmail = '';
 		}
 
-		$aEmail = \explode('@', $sEmail ?: 'nobody@unknown.tld');
-		$sDomain = \trim(1 < \count($aEmail) ? \array_pop($aEmail) : '');
-		$sFilePath = $this->sDataPath
-			.'/'.\MailSo\Base\Utils::SecureFileName($sDomain ?: 'unknown.tld')
-			.'/'.\MailSo\Base\Utils::SecureFileName(\implode('@', $aEmail) ?: '.unknown')
-			.($sSubEmail ? '/'.\MailSo\Base\Utils::SecureFileName($sSubEmail) : '')
-			.'/.files/'.\sha1($sKey);
+		$sFilePath = (new \SnappyMail\Storage\AccountPath($this->sDataPath))->Resolve($sEmail, $sSubEmail, false, $bMkDir)
+			.'.files/'.\sha1($sKey);
 
-		$bMkDir && \MailSo\Base\Utils::mkdir(\dirname($sFilePath));
+		(new \SnappyMail\Storage\AccountPath($this->sDataPath))->CheckFile($sFilePath, $bMkDir);
 
 		return $sFilePath;
 	}

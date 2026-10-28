@@ -1,6 +1,7 @@
 import ko from 'ko';
 
 import { SettingsCapa } from 'Common/Globals';
+import { encodeHtml } from 'Common/HtmlEncoding';
 
 //import { EmailModel } from 'Model/Email';
 //import { OpenPgpKeyModel } from 'Model/OpenPgpKey';
@@ -74,7 +75,7 @@ export const GnuPGUserStore = new class {
 						if (isPrivate) {
 							key.password = async btnTxt => {
 								const pass = await Passphrases.ask(key,
-									'GnuPG key<br>' + key.id + ' ' + key.emails[0],
+									'GnuPG key<br>' + encodeHtml(key.id) + ' ' + encodeHtml(key.emails[0]),
 									btnTxt
 								);
 								pass && pass.remember && Passphrases.handle(key, pass.password);

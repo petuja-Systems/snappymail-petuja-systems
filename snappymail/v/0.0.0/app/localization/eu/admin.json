@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Gehitu",
 		"CLOSE": "Itxi",
+		"DELETE": "Ezabatu",
+		"LOGOUT": "Saioa itxi",
 		"SAVE": "Gorde",
 		"TEST": "Probatu",
 		"UPDATE": "Eguneratu",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Kontaktuak",
 		"DOMAINS": "Domeinuak",
 		"SECURITY": "Segurtasuna",
-		"PACKAGES": "Gehigarriak",
 		"CONFIG": "Ezarpenak",
 		"ABOUT": "Honi buruz"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Interfazea",
 		"LABEL_LANGUAGE": "Hizkuntza",
 		"LABEL_LANGUAGE_ADMIN": "Hizkuntza (admin)",
-		"LABEL_THEME": "Gaia",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Baimendu hizkuntza aukeratzea ezarpenen pantailan",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Baimendu gaia aukeratzea ezarpenen pantailan",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Baimendu atzealdeko irudia aukeratzea ezarpenen pantailan",
 		"LABEL_SHOW_THUMBNAILS": "Erakutsi miniaturak (gehigarriak)",
 		"LEGEND_MAIN": "Nagusia",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Eranskinen tamaina-muga",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domeinuak",
 		"BUTTON_ADD_DOMAIN": "Gehitu Domeinua",
 		"BUTTON_ADD_ALIAS": "gehitu Aliasa",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Ziur zaude?",
 		"HTML_DOMAINS_HELPER": "Webmail-a sartzera baimenduta dagoen domeinu zerrenda.\n<br>\nKlikatu izenean domeinua konfiguratzeko.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Segurtasuna",
 		"LABEL_USE_IMAGE_PROXY": "Erabili proxy lokala kanpoko irudientzat",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Behartu bi urratseko egiaztapena",
 		"LABEL_SHOW_PHP_INFO": "Erakutsi PHP informazioa",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Admin Panelerako Sarbide Kredentzialak",
 		"LABEL_CURRENT_PASSWORD": "Uneko pasahitza",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "SSL ziurtagiriaren baliozkotzea eskatu",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Onartu norberak sinatutako ziurtagiriak"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Onartu gehigarriak",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Eguneratzeko eskuragarri",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Instalatzeko eskuragarri",
-		"LEGEND_INSTALLED_PACKAGES": "Instalatutako Gehigarriak",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Ezin da sartu biltegira une honetan."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Honi buruz",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Gehigarria",
-		"DESC_NOTHING_TO_CONFIGURE": "Ez dago kongiguratzeko ezer"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Ziur zaude leiho hau itxi nahi duzula?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Ez-baliozko tokena",
 		"AuthError": "Autentikazioak huts egin du",
 		"DomainAlreadyExists": "Domeinua jadanik existitzen da",
-		"CantSavePluginSettings": "Ezin dira ezarpenak gorde",
-		"CantInstallPackage": "Akatsa gehigarria instalatzean",
-		"CantDeletePackage": "Akatsa gehigarria kentzean",
-		"InvalidPluginPackage": "Ez-baliozko gehigarri paketea",
-		"UnsupportedPluginPackage": "Gehigarri paketea ez da onartzen",
 		"UnknownError": "Errore ezezaguna"
 	}
 }

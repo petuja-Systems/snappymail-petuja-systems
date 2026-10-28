@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Hozzáad",
 		"CLOSE": "Bezár",
+		"DELETE": "Törlés",
+		"LOGOUT": "Kilépés",
 		"SAVE": "Mentés",
 		"TEST": "Teszt",
 		"UPDATE": "Frissítés",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Névjegyek",
 		"DOMAINS": "Domainek",
 		"SECURITY": "Biztonság",
-		"PACKAGES": "Bővítmények",
 		"CONFIG": "Config",
 		"ABOUT": "Névjegy"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Felület",
 		"LABEL_LANGUAGE": "Nyelv",
 		"LABEL_LANGUAGE_ADMIN": "Nyelv (admin)",
-		"LABEL_THEME": "Téma",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Nyelv választás engedélyezés a beállításoknál",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Téma választás engedélyezés a beállításoknál",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Háttér választás engedélyezés a beállításoknál",
 		"LABEL_SHOW_THUMBNAILS": "Előnézetek megjelenítése (mellékletek)",
 		"LEGEND_MAIN": "Fontos",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Melléklet méret korlát",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domainek",
 		"BUTTON_ADD_DOMAIN": "Domain hozzáadás",
 		"BUTTON_ADD_ALIAS": "Álnév hozzáadás",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Biztos vagy benne?",
 		"HTML_DOMAINS_HELPER": "Hozzáféréshez engedélyezett domainek listája:\n<br>\nA domain beállításához kattints a névre.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Biztonság",
 		"LABEL_USE_IMAGE_PROXY": "Helyi proxy használata a külső képekhez",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Kétlépcsős hitelesítés megkövetelése",
 		"LABEL_SHOW_PHP_INFO": "PHP információ megjelenítése",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Admin panel hozzáférés hitelesítés",
 		"LABEL_CURRENT_PASSWORD": "Jelenlegi jelszó",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "A használt tanúsítvány ellenőrzés megkövetelése",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Saját aláírt tanúsítványok engedélyezése"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Bővítmények engedélyezése",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Frissíthető",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Telepíthető",
-		"LEGEND_INSTALLED_PACKAGES": "Telepített csomagok",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Jelenleg nem lehet csatlakozni a tárolóhoz"
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Névjegy",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Bővítményt",
-		"DESC_NOTHING_TO_CONFIGURE": "Nincs mit beállítani"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Biztos, hogy be akarod zárni ezt az ablakot?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Érvénytelen token",
 		"AuthError": "Sikertelen hitelesítés",
 		"DomainAlreadyExists": "A domain már létezik",
-		"CantSavePluginSettings": "Nem lehet menteni a beállításokat",
-		"CantInstallPackage": "Nem sikerült telepíteni a bővítményt",
-		"CantDeletePackage": "Nem sikerült eltávolítani a bővítményt",
-		"InvalidPluginPackage": "Érvénytelen kiterjesztési csomag",
-		"UnsupportedPluginPackage": "Nem támogatott bővítménycsomag",
 		"UnknownError": "Ismeretlen hiba"
 	}
 }

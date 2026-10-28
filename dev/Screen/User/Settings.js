@@ -1,6 +1,5 @@
 import { ScopeSettings } from 'Common/Enums';
 import { keyScope, SettingsCapa } from 'Common/Globals';
-import { runSettingsViewModelHooks } from 'Common/Plugins';
 import { initOnStartOrLangChange, i18n } from 'Common/Translator';
 
 import { AppUserStore } from 'Stores/User/App';
@@ -14,7 +13,6 @@ import { UserSettingsAccounts } from 'Settings/User/Accounts';
 import { UserSettingsFilters } from 'Settings/User/Filters';
 import { UserSettingsSecurity } from 'Settings/User/Security';
 import { UserSettingsFolders } from 'Settings/User/Folders';
-import { UserSettingsThemes } from 'Settings/User/Themes';
 
 import { SystemDropDownUserView } from 'View/User/SystemDropDown';
 import { SettingsMenuUserView } from 'View/User/Settings/Menu';
@@ -46,18 +44,12 @@ export class SettingsUserScreen extends AbstractSettingsScreen {
 
 		views.push(UserSettingsFolders);
 
-		if (SettingsCapa('Themes')) {
-			views.push(UserSettingsThemes);
-		}
-
 		views.forEach((item, index) =>
 			settingsAddViewModel(item, item.name.replace('User', ''),
 				(item === UserSettingsAccounts && !SettingsCapa('AdditionalAccounts'))
 					? 'SETTINGS_ACCOUNTS/LEGEND_IDENTITIES' : 0,
 				0, 0 === index)
 		);
-
-		runSettingsViewModelHooks(false);
 
 		initOnStartOrLangChange(
 			() => this.sSettingsTitle = i18n('TITLES/SETTINGS'),

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="rl-started-trigger">
+<html class="rl-started-trigger"{{BaseAppearancePreferenceAttribute}}>
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
@@ -8,21 +8,35 @@
 	<meta name="robots" content="noindex,nofollow,noodp">
 	<meta name="theme-color" content="black">
 	<title></title>
+	<script id="appearance-bootstrap" nonce="" type="text/javascript">
+		(() => {
+			const root = document.documentElement,
+				preference = root.getAttribute('data-appearance-preference');
+			root.removeAttribute('data-appearance-scheme');
+			if ('light' === preference) {
+				root.setAttribute('data-appearance-scheme', 'light');
+			} else if ('dark' === preference) {
+				root.setAttribute('data-appearance-scheme', 'dark');
+			} else if ('system' === preference) {
+				const media = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+				root.setAttribute('data-appearance-scheme', media && media.matches ? 'dark' : 'light');
+			}
+		})();
+	</script>
 	<style id="app-boot-css">{{BaseAppBootCss}}</style>
 	<link type="text/css" rel="stylesheet" href="{{BaseAppMainCssLink}}">
 	<link rel="manifest" href="{{BaseAppManifestLink}}">
 	<link rel="icon" href="{{BaseFavIconSvg}}" type="image/svg+xml">
-	<style id="app-theme-style" data-name="{{BaseAppThemeName}}">{{BaseAppThemeCss}}</style>
 	{{BaseAppFaviconPngLinkTag}}
 	{{BaseAppFaviconTouchLinkTag}}
 </head>
 <body id="rl-app" data-admin='{{BaseAppAdmin}}' spellcheck="false">
 	<div id="rl-loading">
 		<div id="rl-loading-desc">{{LoadingDescriptionEsc}}</div>
-		<i class="icon-spinner"></i>
+		<i class="ui-spinner"></i>
 		<noscript><div class="error-desc">{{NO_SCRIPT_DESC}}</div></noscript>
 	</div>
-	<div id="rl-loading-error" hidden="">An error occurred.<br>Please refresh the page and try again.<br></div>
+	<div id="rl-loading-error" hidden="">An error occurred.<br>Please refresh the page and try again.<br><a id="rl-loading-error-reload" href="{{ReloadHref}}">{{ReloadLabelEsc}}</a></div>
 	<div id="rl-BadBrowser" hidden="">
 		<h1>{{BAD_BROWSER_TITLE}}</h1>
 		<div class="error-desc">{{BAD_BROWSER_DESC}}</div>

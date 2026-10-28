@@ -48,7 +48,6 @@ abstract class Keyservers
 	{
 		if (!static::$HTTP) {
 			static::$HTTP = \SnappyMail\HTTP\Request::factory(/*'socket' or 'curl'*/);
-			static::$HTTP->max_response_kb = 0;
 			static::$HTTP->timeout = 15; // timeout in seconds.
 		}
 		return static::$HTTP;

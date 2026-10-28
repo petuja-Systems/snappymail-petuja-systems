@@ -22,8 +22,16 @@
 	}
 
 	.checkboxAttachment {
+		appearance: none;
+		background: transparent;
+		border: 0;
+		color: inherit;
 		bottom: 6px;
 		cursor: pointer;
+		font: inherit;
+		line-height: inherit;
+		margin: 0;
+		padding: 0;
 		position: absolute;
 		right: 6px;
 	}
@@ -91,10 +99,6 @@
 		color: var(--main-color);
 		filter: invert(33%);
 		mix-blend-mode: difference;
-
-		&.icon-none {
-			display: none;
-		}
 	}
 
 /*
@@ -116,7 +120,7 @@
 	}
 
 	.hasPreplay:hover .iconMain::before {
-		content: "▶";
+		.ui-icon-pseudo(play; 0);
 	}
 
 	.hasPreview .showPreview {

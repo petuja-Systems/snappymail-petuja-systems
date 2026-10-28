@@ -474,14 +474,14 @@ export class FolderModel extends AbstractModel {
 			icon: () => {
 				switch (this.type())
 				{
-					case 1: return '📥'; // FolderType.Inbox
-					case 2: return '📧'; // FolderType.Sent icon-paper-plane
-					case 3: return '🗎'; // FolderType.Drafts
-					case 4: return '⚠'; // FolderType.Junk
-					case 5: return '🗑'; // FolderType.Trash
-					case 6: return '🗄'; // FolderType.Archive
+					case 1: return 'inbox'; // FolderType.Inbox
+					case 2: return 'send'; // FolderType.Sent
+					case 3: return 'file-text'; // FolderType.Drafts
+					case 4: return 'flame'; // FolderType.Junk
+					case 5: return 'trash-2'; // FolderType.Trash
+					case 6: return 'archive'; // FolderType.Archive
 				}
-				return null;
+				return '';
 			},
 
 			hasUnreadInSub: () =>
@@ -489,7 +489,7 @@ export class FolderModel extends AbstractModel {
 					folder => folder.unreadEmails() | folder.hasUnreadInSub()
 				),
 
-			href: () => this.canBeSelected() && mailBox(this.fullNameHash)
+			href: () => this.selectable() && mailBox(this.fullNameHash)
 		});
 	}
 
@@ -538,10 +538,9 @@ export class FolderModel extends AbstractModel {
 	/**
 	 * @returns {string}
 	 */
-	collapsedCss() {
-		return 'e-collapsed-sign ' + (this.hasVisibleSubfolders()
-			? (this.collapsed() ? 'icon-right-mini' : 'icon-down-mini')
-			: 'icon-none'
-		);
+	collapsedIcon() {
+		return this.hasVisibleSubfolders()
+			? (this.collapsed() ? 'chevron-right' : 'chevron-down')
+			: '';
 	}
 }

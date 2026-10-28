@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Lisää",
 		"CLOSE": "Sulje",
+		"DELETE": "Poista",
+		"LOGOUT": "Kirjaudu ulos",
 		"SAVE": "Tallenna",
 		"TEST": "Testi",
 		"UPDATE": "Päivitä",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Yhteystiedot",
 		"DOMAINS": "Verkkotunnutkset",
 		"SECURITY": "Turvallisuus",
-		"PACKAGES": "Paketit",
 		"CONFIG": "Config",
 		"ABOUT": "Tietoja"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Käyttöliittymä",
 		"LABEL_LANGUAGE": "Kieli",
 		"LABEL_LANGUAGE_ADMIN": "Kieli (admin)",
-		"LABEL_THEME": "Teema",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Salli kielivalinta asetuksissa",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Salli teemavalinta asetuksissa",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Salli taustavalinta asetuksissa",
 		"LABEL_SHOW_THUMBNAILS": "Näytä kuvakkeet (liitteet)",
 		"LEGEND_MAIN": "Yleiset",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Liitetiedoston kokorajoitus",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domainit",
 		"BUTTON_ADD_DOMAIN": "Lisää domain",
 		"BUTTON_ADD_ALIAS": "Lisää alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Oletko varma?",
 		"HTML_DOMAINS_HELPER": "Lista domaineista joilla webmaililla on pääsy.\n<br>\nKlikkaa nimeä konfiguroidaksesi domain.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Tietoturva",
 		"LABEL_USE_IMAGE_PROXY": "Käytä paikallista proxya ulkoisille kuville.",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Pakota kaksivaiheinen vahvistus",
 		"LABEL_SHOW_PHP_INFO": "Näytä PHP tiedot",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Hallintapaneeli kirjautumistiedot",
 		"LABEL_CURRENT_PASSWORD": "Nykyinen salasana",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Vaadi SSL sertifikaatin varmistus",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Salli itse-allekirjoitetut sertifikaatit"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Enable extensions",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Voidaan päivittää",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Voidaan asentaa",
-		"LEGEND_INSTALLED_PACKAGES": "Aennetut pakkaukset",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Pääsy varastoon ei toimi tällä hetkellä."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Tietoja",
@@ -142,14 +136,10 @@
 		"LABEL_AUTH_PLAIN_LINE": "Force single command AUTH PLAIN login",
 		"LABEL_USE_PHP_MAIL": "Käytä php mail() funktiota",
 		"BUTTON_WHITE_LIST": "Sallitut Lista",
-		"NEW_DOMAIN_DESC": "Tämän verkkotunnuksen asetukset sallivat käyttää  <strong>%NAME%<strong> säkhöpostiosoitteita.",
+		"NEW_DOMAIN_DESC": "Tämän verkkotunnuksen asetukset sallivat käyttää  <strong>%NAME%<\/strong> säkhöpostiosoitteita.",
 		"WHITE_LIST_ALERT": "Lista domain käyttäjistä joihin webmaililla on oikeus.\nErottele välilyönnillä.\n",
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
-	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Lisäosa",
-		"DESC_NOTHING_TO_CONFIGURE": "Ei mitään asetettavaa"
 	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Haluatko varmasti sulkea tämän ikkunan?"
@@ -172,11 +162,6 @@
 		"InvalidToken": "Väärä token",
 		"AuthError": "Tunnistautuminen epäonnistui",
 		"DomainAlreadyExists": "Verkkotunnus on jo olemassa",
-		"CantSavePluginSettings": "Asetuksia ei voida tallentaa",
-		"CantInstallPackage": "Paketin asennus epäonnistui",
-		"CantDeletePackage": "Paketin poisto epäonnistui",
-		"InvalidPluginPackage": "Virheellinen lisäosa-paketti",
-		"UnsupportedPluginPackage": "Ei tuettu lisäosa-paketti",
 		"UnknownError": "Tuntematon virhe"
 	}
 }

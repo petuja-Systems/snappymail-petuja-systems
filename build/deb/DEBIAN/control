@@ -9,6 +9,6 @@ Homepage: https://snappymail.eu
 Vcs-Browser: https://github.com/the-djmaze/snappymail
 Vcs-Git: https://github.com/the-djmaze/snappymail.git
 Description: SnappyMail is a PHP-based simple, modern, lightweight & fast web-based email client with no database requirements.
- It supports IMAP, SMTP and Sieve protocols, multiple accounts and identities, an admin panel for configuration.
- Plugins can be installed to further extend functionality.
+ It supports multiple accounts and identities, plus a configurable admin panel.
+ Mail remains on the configured IMAP, SMTP and Sieve services; no database is required.
  Emails are not stored locally, but are accessed through IMAP.

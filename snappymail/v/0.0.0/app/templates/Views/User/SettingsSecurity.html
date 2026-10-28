@@ -1,4 +1,70 @@
 <div class="form-horizontal">
+	<div class="legend" data-i18n="SETTINGS_SECURITY/TFA_LEGEND"></div>
+	<div class="control-group">
+		<label data-i18n="SETTINGS_SECURITY/TFA_STATUS_LABEL"></label>
+		<div class="controls" style="padding-top: 5px;">
+			<strong data-bind="visible: twoFactorState() === 'missing'" data-i18n="SETTINGS_SECURITY/TFA_STATUS_MISSING"></strong>
+			<strong data-bind="visible: twoFactorIncomplete" data-i18n="SETTINGS_SECURITY/TFA_STATUS_DISABLED"></strong>
+			<strong data-bind="visible: twoFactorEnabled" data-i18n="SETTINGS_SECURITY/TFA_STATUS_ENABLED"></strong>
+		</div>
+	</div>
+	<div class="control-group" data-bind="visible: forcedEnrollment">
+		<div class="controls" data-i18n="SETTINGS_SECURITY/TFA_REQUIRED"></div>
+	</div>
+	<div class="control-group" data-bind="visible: twoFactorError">
+		<div class="controls text-error" role="alert" data-bind="text: twoFactorError"></div>
+	</div>
+	<div class="control-group" data-bind="visible: twoFactorState() === 'missing'">
+		<div class="controls">
+			<button type="button" class="btn" data-bind="click: startTwoFactorSetup, disable: twoFactorBusy" data-i18n="SETTINGS_SECURITY/TFA_START"></button>
+		</div>
+	</div>
+	<div class="control-group" data-bind="visible: twoFactorIncomplete() && !twoFactorSecret()">
+		<div class="controls">
+			<button type="button" class="btn" data-bind="click: startTwoFactorSetup, disable: twoFactorBusy" data-i18n="SETTINGS_SECURITY/TFA_RESUME"></button>
+		</div>
+	</div>
+	<div class="control-group" data-bind="visible: twoFactorIncomplete() && twoFactorSecret()">
+		<label data-i18n="SETTINGS_SECURITY/TFA_SECRET"></label>
+		<div class="controls" style="padding-top: 5px;">
+			<strong data-bind="text: twoFactorSecret" style="user-select:text"></strong>
+			<pre data-bind="text: twoFactorQrCode" style="line-height:1.1;letter-spacing:-1px;font-family:monospace;overflow-x:auto"></pre>
+			<p class="muted" data-i18n="SETTINGS_SECURITY/TFA_QR_INSTRUCTIONS"></p>
+		</div>
+	</div>
+	<div class="control-group" data-bind="visible: twoFactorRecoveryCodes()">
+		<label data-i18n="SETTINGS_SECURITY/TFA_RECOVERY_CODES"></label>
+		<div class="controls" style="padding-top: 5px;">
+			<pre data-bind="text: twoFactorRecoveryCodes" style="user-select:text;white-space:pre-wrap"></pre>
+			<p class="muted" data-i18n="SETTINGS_SECURITY/TFA_RECOVERY_CODES_WARNING"></p>
+		</div>
+	</div>
+	<div class="control-group" data-bind="visible: twoFactorIncomplete() && twoFactorSecret()">
+		<label for="two-factor-enrollment-code" data-i18n="SETTINGS_SECURITY/TFA_CODE_LABEL"></label>
+		<div class="controls">
+			<input id="two-factor-enrollment-code" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" autocorrect="off" autocapitalize="none" maxlength="6" data-bind="textInput: twoFactorCode, disable: twoFactorBusy">
+			<button type="button" class="btn" data-bind="click: verifyAndEnableTwoFactor, disable: twoFactorBusy() || !twoFactorCode()" data-i18n="SETTINGS_SECURITY/TFA_ENABLE"></button>
+		</div>
+	</div>
+	<div class="control-group" data-bind="visible: twoFactorIncomplete">
+		<div class="controls">
+			<button type="button" class="btn" data-bind="click: confirmTwoFactorRestart, disable: twoFactorBusy" data-i18n="SETTINGS_SECURITY/TFA_RESTART"></button>
+		</div>
+	</div>
+	<div class="control-group" data-bind="visible: twoFactorCanDisable">
+		<div class="controls">
+			<button type="button" class="btn" data-bind="click: confirmTwoFactorDisable, disable: twoFactorBusy" data-i18n="SETTINGS_SECURITY/TFA_DISABLE"></button>
+		</div>
+	</div>
+	<div class="control-group" data-bind="visible: (twoFactorEnabled() || twoFactorIncomplete()) && !forcedEnrollment">
+		<div class="controls">
+			<button type="button" class="btn btn-danger" data-bind="click: confirmTwoFactorClear, disable: twoFactorBusy" data-i18n="SETTINGS_SECURITY/TFA_CLEAR"></button>
+		</div>
+	</div>
+</div>
+
+<div data-bind="ifnot: forcedEnrollment">
+<div class="form-horizontal">
 	<div class="legend" data-i18n="SETTINGS_SECURITY/LEGEND_SECURITY"></div>
 	<div class="control-group">
 		<label data-i18n="SETTINGS_SECURITY/LABEL_AUTOLOGOUT"></label>
@@ -29,10 +95,10 @@
 </div>
 
 <div class="legend">OpenPGP</div>
-<button class="btn" data-bind="click: addOpenPgpKey" data-icon="✚" data-i18n="SETTINGS_OPENPGP/BUTTON_IMPORT_KEY"></button>
+<button type="button" class="btn" data-bind="click: addOpenPgpKey" data-ui-icon="plus" data-i18n="SETTINGS_OPENPGP/BUTTON_IMPORT_KEY"></button>
 <!-- ko if: canOpenPGP || canGnuPG -->
 &nbsp;&nbsp;
-<button class="btn" data-bind="click: generateOpenPgpKey" data-icon="🔑" data-i18n="SETTINGS_OPENPGP/BUTTON_GENERATE_KEY_PAIR"></button>
+<button type="button" class="btn" data-bind="click: generateOpenPgpKey" data-ui-icon="key-round" data-i18n="SETTINGS_OPENPGP/BUTTON_GENERATE_KEY_PAIR"></button>
 <!-- /ko -->
 
 <!-- ko if: canGnuPG -->
@@ -42,40 +108,42 @@
 	<tbody><tr><th colspan="4" data-i18n="SETTINGS_OPENPGP/TITLE_PRIVATE">Private keys</th></tr></tbody>
 	<tbody data-bind="foreach: gnupgPrivateKeys, i18nUpdate: gnupgPrivateKeys">
 		<tr>
-			<td data-bind="click: view">
-				<span data-bind="visible: can_sign" class="fontastic" data-i18n="[title]CRYPTO/SIGN">✍</span>
-				<span data-bind="visible: can_decrypt" class="fontastic" data-i18n="[title]CRYPTO/DECRYPT">🔓</span>
+			<td><button type="button" class="key-view ui-text-action" data-bind="click: view">
+				<span data-bind="visible: can_sign" class="ui-icon" data-i18n="[title]CRYPTO/SIGN" data-ui-icon="pen-line"></span>
+				<span data-bind="visible: can_decrypt" class="ui-icon" data-i18n="[title]CRYPTO/DECRYPT" data-ui-icon="key-round"></span>
 				<span class="key-id" data-bind="text: id"></span>
 				<!-- ko foreach: emails -->
 				<span class="key-user" data-bind="text: $data"></span>
 				<!-- /ko -->
+				</button>
 			</td>
 			<td>
-				<a class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, click: remove"
-					data-i18n="GLOBAL/ARE_YOU_SURE"></a>
+				<button type="button" class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, hasfocus: askDelete, click: remove"
+					data-i18n="GLOBAL/ARE_YOU_SURE"></button>
 			</td>
 			<td>
-				<span class="delete-key fontastic" data-bind="visible: !askDelete(), click: openForDeletion">🗑</span>
+				<button type="button" class="delete-key ui-icon ui-icon-only" data-bind="visible: !askDelete(), click: openForDeletion" data-ui-icon="trash-2" data-i18n="[aria-label]GLOBAL/DELETE"></button>
 			</td>
 		</tr>
 	</tbody>
 	<tbody><tr><th colspan="4" data-i18n="SETTINGS_OPENPGP/TITLE_PUBLIC">Public keys</th></tr></tbody>
 	<tbody data-bind="foreach: gnupgPublicKeys, i18nUpdate: gnupgPublicKeys">
 		<tr>
-			<td data-bind="click: view">
-				<span data-bind="visible: can_verify" class="fontastic" data-i18n="[title]CRYPTO/VERIFY">✔</span>
-				<span data-bind="visible: can_encrypt" class="fontastic" data-i18n="[title]CRYPTO/ENCRYPT">🔒</span>
+			<td><button type="button" class="key-view ui-text-action" data-bind="click: view">
+				<span data-bind="visible: can_verify" class="ui-icon" data-i18n="[title]CRYPTO/VERIFY" data-ui-icon="check"></span>
+				<span data-bind="visible: can_encrypt" class="ui-icon" data-i18n="[title]CRYPTO/ENCRYPT" data-ui-icon="lock-keyhole"></span>
 				<span class="key-id" data-bind="text: id"></span>
 				<!-- ko foreach: emails -->
 				<span class="key-user" data-bind="text: $data"></span>
 				<!-- /ko -->
+				</button>
 			</td>
 			<td>
-				<a class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, click: remove"
-					data-i18n="GLOBAL/ARE_YOU_SURE"></a>
+				<button type="button" class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, hasfocus: askDelete, click: remove"
+					data-i18n="GLOBAL/ARE_YOU_SURE"></button>
 			</td>
 			<td>
-				<span class="delete-key fontastic" data-bind="visible: !askDelete(), click: openForDeletion">🗑</span>
+				<button type="button" class="delete-key ui-icon ui-icon-only" data-bind="visible: !askDelete(), click: openForDeletion" data-ui-icon="trash-2" data-i18n="[aria-label]GLOBAL/DELETE"></button>
 			</td>
 		</tr>
 	</tbody>
@@ -90,43 +158,45 @@
 	<tbody><tr><th colspan="4" data-i18n="SETTINGS_OPENPGP/TITLE_PRIVATE">Private keys</th></tr></tbody>
 	<tbody data-bind="foreach: openpgpkeysPrivate, i18nUpdate: openpgpkeysPrivate">
 		<tr>
-			<td data-bind="click: view">
-				<span class="fontastic" data-i18n="[title]SETTINGS_OPENPGP/TITLE_PRIVATE">🔒</span>
+			<td><button type="button" class="key-view ui-text-action" data-bind="click: view">
+				<span class="ui-icon" data-i18n="[title]SETTINGS_OPENPGP/TITLE_PRIVATE" data-ui-icon="lock-keyhole"></span>
 				<span class="key-id" data-bind="text: id"></span>
 				<!-- ko foreach: emails -->
 				<span class="key-user" data-bind="text: $data"></span>
 				<!-- /ko -->
+				</button>
 			</td>
 			<td>
-				<a class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, click: remove"
-					data-i18n="GLOBAL/ARE_YOU_SURE"></a>
+				<button type="button" class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, hasfocus: askDelete, click: remove"
+					data-i18n="GLOBAL/ARE_YOU_SURE"></button>
 			</td>
 			<td>
-				<span class="delete-key fontastic" data-bind="visible: !askDelete(), click: openForDeletion">🗑</span>
+				<button type="button" class="delete-key ui-icon ui-icon-only" data-bind="visible: !askDelete(), click: openForDeletion" data-ui-icon="trash-2" data-i18n="[aria-label]GLOBAL/DELETE"></button>
 			</td>
 		</tr>
 	</tbody>
 	<tbody><tr><th colspan="4" data-i18n="SETTINGS_OPENPGP/TITLE_PUBLIC">Public keys</th></tr></tbody>
 	<tbody data-bind="foreach: openpgpkeysPublic, i18nUpdate: openpgpkeysPublic">
 		<tr>
-			<td data-bind="click: view">
-				<span class="fontastic" data-i18n="[title]SETTINGS_OPENPGP/TITLE_PUBLIC">🔑</span>
+			<td><button type="button" class="key-view ui-text-action" data-bind="click: view">
+				<span class="ui-icon" data-i18n="[title]SETTINGS_OPENPGP/TITLE_PUBLIC" data-ui-icon="key-round"></span>
 				<span class="key-id" data-bind="text: id"></span>
 				<!-- ko foreach: emails -->
 				<span class="key-user" data-bind="text: $data"></span>
 				<!-- /ko -->
+				</button>
 			</td>
 			<td>
-				<a class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, click: remove"
-					data-i18n="GLOBAL/ARE_YOU_SURE"></a>
+				<button type="button" class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, hasfocus: askDelete, click: remove"
+					data-i18n="GLOBAL/ARE_YOU_SURE"></button>
 			</td>
 			<td>
-				<span class="delete-key fontastic" data-bind="visible: !askDelete(), click: openForDeletion">🗑</span>
+				<button type="button" class="delete-key ui-icon ui-icon-only" data-bind="visible: !askDelete(), click: openForDeletion" data-ui-icon="trash-2" data-i18n="[aria-label]GLOBAL/DELETE"></button>
 			</td>
 		</tr>
 	</tbody>
 </table>
-<button class="btn" data-bind="click: importToOpenPGP" data-i18n="SETTINGS_OPENPGP/IMPORT_FROM_SERVER"></button>
+<button type="button" class="btn" data-bind="click: importToOpenPGP" data-i18n="SETTINGS_OPENPGP/IMPORT_FROM_SERVER"></button>
 </details>
 <!-- /ko -->
 
@@ -138,14 +208,14 @@
 
 <details>
 <summary class="legend" data-i18n="SMIME/CERTIFICATES"></summary>
-<button class="btn" data-bind="click: importToSMime" data-icon="✚" data-i18n="OPENPGP/POPUP_IMPORT_BUTTON"></button>
+<button type="button" class="btn" data-bind="click: importToSMime" data-ui-icon="plus" data-i18n="OPENPGP/POPUP_IMPORT_BUTTON"></button>
 
 <table class="table table-hover list-table">
 	<tbody data-bind="foreach: smimeCertificates, i18nUpdate: smimeCertificates">
 		<tr>
 			<td>
-				<span data-bind="visible: smimesign" class="fontastic" data-i18n="[title]CRYPTO/VERIFY">✔</span>
-				<span data-bind="visible: smimeencrypt" class="fontastic" data-i18n="[title]CRYPTO/ENCRYPT">🔒</span>
+				<span data-bind="visible: smimesign" class="ui-icon" data-i18n="[title]CRYPTO/VERIFY" data-ui-icon="check"></span>
+				<span data-bind="visible: smimeencrypt" class="ui-icon" data-i18n="[title]CRYPTO/ENCRYPT" data-ui-icon="lock-keyhole"></span>
 				<span class="key-name" data-bind="text: CN"></span>
 				<span class="key-user" data-bind="text: emailAddress"></span>
 				<br/>
@@ -158,10 +228,11 @@
 					data-i18n="GLOBAL/ARE_YOU_SURE"></a>
 			</td>
 			<td>
-				<span class="delete-key fontastic" data-bind="visible: !askDelete(), click: openForDeletion">🗑</span>
+				<span class="delete-key ui-icon" data-bind="visible: !askDelete(), click: openForDeletion" data-ui-icon="trash-2"></span>
 			</td>
 -->
 		</tr>
 	</tbody>
 </table>
 </details>
+</div>

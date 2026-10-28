@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Логін",
 		"LABEL_SIGN_ME": "Запам'ятати мене",
-		"BUTTON_SIGN_IN": "Увійти"
+		"BUTTON_SIGN_IN": "Увійти",
+		"TAGLINE": "Ваша поштова скринька, де б ви не були.",
+		"LEGAL_NAVIGATION": "Юридична інформація",
+		"LEGAL_IMPRINT": "Відомості про видавця",
+		"LEGAL_PRIVACY": "Конфіденційність",
+		"LEGAL_SOURCE": "Вихідний код",
+		"TWO_FACTOR_TITLE": "Двоетапна перевірка",
+		"TWO_FACTOR_INSTRUCTION": "Введіть код із програми автентифікації або код відновлення.",
+		"TWO_FACTOR_CODE": "Код перевірки",
+		"BUTTON_VERIFY": "Перевірити й увійти"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Додати ще акаунт"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Теки",
 		"ACCOUNTS": "Акаунти",
 		"FILTERS": "Фильтры",
-		"SECURITY": "Безпека",
-		"THEMES": "Теми"
+		"SECURITY": "Безпека"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Зовнішній вигляд",
+		"LIGHT": "Світла",
+		"DARK": "Темна",
+		"SYSTEM": "Система"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Simple",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Безпека",
 		"LABEL_AUTOLOGOUT": "Автовихід",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Ніколи"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Адресна книга (URL)",
 		"LABEL_CONTACTS_SYNC_USER": "Користувач",
 		"SYNC_READ": "Read only"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Теми Оформлення",
-		"LABEL_BACKGROUND": "Картинка на фоні",
-		"LABEL_FONTS": "Fonts",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Завантажити фонову картинку (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Файл надто великий",
-		"ERROR_FILE_TYPE_ERROR": "Невірний тип файлу (тільки JPG и PNG)",
-		"ERROR_UNKNOWN": "Помилка завантаження файлу"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Список Тек",

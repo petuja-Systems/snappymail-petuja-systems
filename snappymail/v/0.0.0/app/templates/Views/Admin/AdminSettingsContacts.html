@@ -105,10 +105,10 @@
 	<div data-bind="visible: contactsPdoType">
 		<div class="control-group">
 			<label></label>
-			<a class="btn" data-bind="command: testContactsCommand, css: { 'btn-success': testContactsSuccess, 'btn-danger': testContactsError }">
-				<i class="fontastic" data-bind="css: {'icon-spinner': testing()}">ℹ</i>
+			<button type="button" class="btn" data-bind="command: testContactsCommand, css: { 'btn-success': testContactsSuccess, 'btn-danger': testContactsError }">
+				<i class="ui-icon" data-bind="css: {'ui-spinner': testing()}" data-ui-icon="info"></i>
 				<span data-i18n="GLOBAL/TEST"></span>
-			</a>
+			</button>
 		</div>
 	</div>
 	<div class="alert span8" data-bind="text: testContactsErrorMessage, visible: '' !== testContactsErrorMessage()"></div>

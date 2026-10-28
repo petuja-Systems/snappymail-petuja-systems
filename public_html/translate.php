@@ -41,7 +41,7 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
 	exit;
 }
 
-// /home/rainloop/public_html/snappymail/v/0.0.0/static/js
+// Resolve the local demo entry point without exposing deployment paths.
 $_ENV['SNAPPYMAIL_INCLUDE_AS_API'] = true;
 require 'demo/index.php';
 

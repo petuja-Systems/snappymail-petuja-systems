@@ -50,7 +50,7 @@ class Suggestions extends \RainLoop\Providers\AbstractProvider
 			$this->logException($oException);
 		}
 
-		// Extensions/Plugins
+		// Additional suggestion drivers
 		foreach ($this->aDrivers as $oDriver) {
 			if ($oDriver) try {
 				$aSuggestions = $oDriver->Process($oAccount, $sQuery, $iLimit);

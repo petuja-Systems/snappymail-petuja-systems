@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Логин",
 		"LABEL_SIGN_ME": "Запомнить меня",
-		"BUTTON_SIGN_IN": "Войти"
+		"BUTTON_SIGN_IN": "Войти",
+		"TAGLINE": "Ваша почта, где бы вы ни находились.",
+		"LEGAL_NAVIGATION": "Юридическая информация",
+		"LEGAL_IMPRINT": "Сведения об издателе",
+		"LEGAL_PRIVACY": "Конфиденциальность",
+		"LEGAL_SOURCE": "Исходный код",
+		"TWO_FACTOR_TITLE": "Двухэтапная проверка",
+		"TWO_FACTOR_INSTRUCTION": "Введите код из приложения для аутентификации или код восстановления.",
+		"TWO_FACTOR_CODE": "Код подтверждения",
+		"BUTTON_VERIFY": "Подтвердить и войти"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Добавить ещё аккаунт"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Папки",
 		"ACCOUNTS": "Аккаунты",
 		"FILTERS": "Фильтры",
-		"SECURITY": "Безопасность",
-		"THEMES": "Темы"
+		"SECURITY": "Безопасность"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Внешний вид",
+		"LIGHT": "Светлая",
+		"DARK": "Тёмная",
+		"SYSTEM": "Система"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Простой",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Безопасность",
 		"LABEL_AUTOLOGOUT": "Автоматический выход",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Никогда"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Адресная книга (URL)",
 		"LABEL_CONTACTS_SYNC_USER": "Пользователь",
 		"SYNC_READ": "Только чтение"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Темы Оформления",
-		"LABEL_BACKGROUND": "Картинка на фоне",
-		"LABEL_FONTS": "Шрифты",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Загрузить фоновую картинку (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Файл слишком большой",
-		"ERROR_FILE_TYPE_ERROR": "Неверный тип файла (только JPG и PNG)",
-		"ERROR_UNKNOWN": "Ошибка загрузки файла"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Список Папок",

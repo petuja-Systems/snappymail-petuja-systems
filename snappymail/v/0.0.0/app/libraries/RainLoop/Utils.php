@@ -66,6 +66,13 @@ class Utils
 		return \sha1('Session'.APP_SALT.$sToken.'Token'.APP_SALT);
 	}
 
+	public static function RegenerateSessionToken() : string
+	{
+		$sToken = \MailSo\Base\Utils::Sha1Rand(APP_SALT);
+		\SnappyMail\Cookies::set(self::SESSION_TOKEN, $sToken);
+		return \sha1('Session'.APP_SALT.$sToken.'Token'.APP_SALT);
+	}
+
 	public static function GetConnectionToken() : string
 	{
 		$oActions = \RainLoop\Api::Actions();

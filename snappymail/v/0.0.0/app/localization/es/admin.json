@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Agregar",
 		"CLOSE": "Cerrar",
+		"DELETE": "Eliminar",
+		"LOGOUT": "Cerrar sesión",
 		"SAVE": "Guardar",
 		"TEST": "Probar",
 		"UPDATE": "Actualizar",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Contactos",
 		"DOMAINS": "Dominios",
 		"SECURITY": "Seguridad",
-		"PACKAGES": "Extensiones",
 		"CONFIG": "Config",
 		"ABOUT": "Acerca"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Interfaz",
 		"LABEL_LANGUAGE": "Idioma",
 		"LABEL_LANGUAGE_ADMIN": "Idioma (Panel de Control)",
-		"LABEL_THEME": "Temas",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Permitir selección del idioma",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Permitir personalización de la interfaz",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Permitir cambiar el fondo de pantalla",
 		"LABEL_SHOW_THUMBNAILS": "Mostrar previsualización (adjuntos)",
 		"LEGEND_MAIN": "Principal",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Tamaño máximo para adjuntos",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Dominios",
 		"BUTTON_ADD_DOMAIN": "Agregar dominio",
 		"BUTTON_ADD_ALIAS": "Agregar alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "¿Estás seguro?",
 		"HTML_DOMAINS_HELPER": "Lista de los dominios de correo al que se permite ingresar.\n<br>\nHaz click en el nombre de un dominio para modificarlo.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Seguridad",
 		"LABEL_USE_IMAGE_PROXY": "Utilizar un proxy local para mostrar imágenes externas",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Exigir verificación en dos pasos",
 		"LABEL_SHOW_PHP_INFO": "Mostrar información de PHP",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Credenciales de Acceso al panel de control",
 		"LABEL_CURRENT_PASSWORD": "Contraseña actual",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Requerir verificación del certificado SSL",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Permitir certificados auto-firmados"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Habilitar extensiones",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Actualización disponible",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Instalación disponible",
-		"LEGEND_INSTALLED_PACKAGES": "Extensiones instaladas",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "No se puede acceder al repositorio en estos momentos."
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Acerca",
@@ -122,7 +116,7 @@
 	"POPUPS_DOMAIN": {
 		"TITLE_ADD_DOMAIN": "Agregar dominio",
 		"TITLE_ADD_DOMAIN_WITH_NAME": "Agregar \"%NAME%\" como dominio",
-		"TITLE_EDIT_DOMAIN": "Editar \"&NAME&\"",
+		"TITLE_EDIT_DOMAIN": "Editar \"%NAME%\"",
 		"LABEL_NAME": "Nombre",
 		"NAME_HELPER": "wildcards soportados",
 		"LABEL_SERVER": "Servidor",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Extensión",
-		"DESC_NOTHING_TO_CONFIGURE": "Nada para configurar"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "¿Estás seguro de que deseas cerrar esta ventana?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Token inválido",
 		"AuthError": "Autenticación fallida",
 		"DomainAlreadyExists": "El Dominio ya existe",
-		"CantSavePluginSettings": "No se pudieron guardar las configuraciones",
-		"CantInstallPackage": "No se ha podido instalar el extensión",
-		"CantDeletePackage": "No se ha podido eliminar el extensión",
-		"InvalidPluginPackage": "El paquete de extensión no válido",
-		"UnsupportedPluginPackage": "El paquete del extensión es incompatible",
 		"UnknownError": "Error desconocido"
 	}
 }

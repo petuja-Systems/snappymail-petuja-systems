@@ -22,13 +22,6 @@ abstract class L10n
 				$aList[] = \basename($dir);
 			}
 		}
-/*
-		foreach (\glob(APP_PLUGINS_PATH . 'language-*', GLOB_ONLYDIR) as $dir) {
-			if (\is_file($dir . ($bAdmin ? '/admin' : '/user') . '.json')) {
-				$aList[] = \substr(\basename($dir), 9);
-			}
-		}
-*/
 		\sort($aList);
 		$aCache[$bAdmin] = $aList;
 		return $aCache[$bAdmin];
@@ -60,13 +53,6 @@ abstract class L10n
 			if (\is_file($file)) {
 				$aLang = \array_replace_recursive($aLang, \json_decode(\file_get_contents($file), true));
 			}
-/*			else {
-				$file = APP_PLUGINS_PATH."language-{$sLanguage}/{$sFile}.json";
-				if (\is_file($file)) {
-					$aLang = \array_replace_recursive($aLang, \json_decode(\file_get_contents($file), true));
-				}
-			}
-*/
 		}
 		return $aLang;
 	}

@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "Tambah",
 		"CLOSE": "Tutup",
+		"DELETE": "Hapus",
+		"LOGOUT": "Keluar",
 		"SAVE": "Simpan",
 		"TEST": "Ujicoba",
 		"UPDATE": "Pembaruan",
@@ -27,7 +30,6 @@
 		"CONTACTS": "Kontak",
 		"DOMAINS": "Domain",
 		"SECURITY": "Keamanan",
-		"PACKAGES": "Paket",
 		"CONFIG": "Config",
 		"ABOUT": "Tentang"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "Antarmuka",
 		"LABEL_LANGUAGE": "Bahasa",
 		"LABEL_LANGUAGE_ADMIN": "Bahasa (admin)",
-		"LABEL_THEME": "Tema",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "Izinkan pemilihan bahasa pada laman pengaturan",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "Izinkan pemilihan tema di laman pengaturan",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "Izinkan pemilihan gambar latar di laman pengaturan",
 		"LABEL_SHOW_THUMBNAILS": "Tampikankan gambar kecil (lampiran)",
 		"LEGEND_MAIN": "Utama",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "Batas ukuran lampiran",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "Domain",
 		"BUTTON_ADD_DOMAIN": "Tambah domain",
 		"BUTTON_ADD_ALIAS": "Tambah alias",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "Anda yakin?",
 		"HTML_DOMAINS_HELPER": "Daftar domain webmail yang diizinkan mengakses.\n<br>\nKlik pada nama domain untuk mengatur domain.\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "Keamanan",
 		"LABEL_USE_IMAGE_PROXY": "Gunakan proxy lokal untuk gambar dari luar",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "Wajibkan verifikasi dua langkah",
 		"LABEL_SHOW_PHP_INFO": "Tampilkan informasi PHP",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "Hak Akses Panel Admin",
 		"LABEL_CURRENT_PASSWORD": "Passphrase saat ini",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "Diperlukan verifikasi sertifikat SSL dengan",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "Izinkan sertifikat yang dibuat sendiri"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "Enable extensions",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "Tersedia untuk Pembaruan",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "Tersedia untuk Instalasi",
-		"LEGEND_INSTALLED_PACKAGES": "Paket Terinstal",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "Tidak bisa menjangkau repositori saat ini"
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "Tentang",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "Plugin",
-		"DESC_NOTHING_TO_CONFIGURE": "Tidak ada yang dikonfigurasi"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "Anda yakin menutup jendela ini?"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "Token invalid",
 		"AuthError": "Otentikasi gagal",
 		"DomainAlreadyExists": "Domain sudah ada",
-		"CantSavePluginSettings": "Tidak bisa menyimpan pengaturan",
-		"CantInstallPackage": "Gagal memasang paket",
-		"CantDeletePackage": "Gagal menghapus paket",
-		"InvalidPluginPackage": "Paket plugin tidak sah",
-		"UnsupportedPluginPackage": "Paket plugin tidak didukung",
 		"UnknownError": "Kesalahan tidak diketahui"
 	}
 }

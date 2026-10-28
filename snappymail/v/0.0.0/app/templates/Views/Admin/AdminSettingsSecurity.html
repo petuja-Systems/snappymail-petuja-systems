@@ -4,6 +4,15 @@
 		<div data-bind="component: {
 			name: 'Checkbox',
 			params: {
+				label: 'TAB_SECURITY/LABEL_ENFORCE_TWO_FACTOR',
+				value: requireTwoFactor
+			}
+		}"></div>
+	</div>
+	<div class="control-group">
+		<div data-bind="component: {
+			name: 'Checkbox',
+			params: {
 				label: 'TAB_SECURITY/LABEL_USE_IMAGE_PROXY',
 				value: proxyExternalImages
 			}
@@ -73,7 +82,7 @@
 	</div>
 	<div class="control-group">
 		<label></label>
-		<a class="btn" data-bind="command: saveAdminUserCommand, css: { 'btn-success': saveSuccess, 'btn-danger': saveError }"
-			data-icon="🔑" data-i18n="GLOBAL/SAVE"></a>
+		<button type="button" class="btn" data-bind="command: saveAdminUserCommand, css: { 'btn-success': saveSuccess, 'btn-danger': saveError }"
+			data-ui-icon="key-round" data-i18n="GLOBAL/SAVE"></button>
 	</div>
 </form>

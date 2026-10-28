@@ -1,20 +1,19 @@
 <div class="b-folders g-ui-user-select-none">
 	<div class="b-toolbar btn-toolbar">
-		<a class="btn buttonCompose" data-bind="click: composeClick, css: {'btn-warning': composeInEdit, 'btn-success': !composeInEdit()}" data-i18n="[title]FOLDER_LIST/BUTTON_NEW_MESSAGE">
-			<i class="icon-paper-plane"></i>
+		<button type="button" class="btn buttonCompose" data-bind="click: composeClick, css: {'btn-warning': composeInEdit, 'btn-success': !composeInEdit()}" data-i18n="[title]FOLDER_LIST/BUTTON_NEW_MESSAGE">
+			<i class="" data-ui-icon="send"></i>
 			<span class="buttonComposeText" data-i18n="FOLDER_LIST/BUTTON_NEW_MESSAGE"></span>
-		</a>
-		<a class="btn buttonContacts fontastic" data-bind="visible: allowContacts, click: contactsClick" data-i18n="[title]GLOBAL/CONTACTS">📇</a>
+		</button>
 	</div>
 	<div class="b-content">
 		<ul class="b-folders-system" data-bind="foreach: systemFolders">
 			<li>
 				<a data-bind="dropmessages: $data,
 					css: { 'selected': selected, 'selectable': selectable, 'anim-action-class': actionBlink, 'is-flagged': isFlagged },
-					attr: { 'data-icon': icon, 'data-unread': unreadCount }">
+					attr: { 'data-ui-icon': icon, 'data-unread': unreadCount, href: href }">
 					<!-- ko text: localName --><!-- /ko -->
 					<!-- ko if: isInbox -->
-					<span class="flag-icon fontastic"></span>
+					<span class="flag-icon" data-bind="attr: {'data-ui-icon': isFlagged() ? 'star-filled' : 'star'}"></span>
 					<!-- /ko -->
 				</a>
 			</li>
@@ -22,22 +21,22 @@
 		<hr>
 		<div class="search-input-wrp" data-bind="visible: foldersFilterVisible">
 			<input type="search" id="folderSearchInput" data-bind="textInput: foldersFilter" data-i18n="[placeholder]GLOBAL/SEARCH">
-			<a data-bind="click: clearFolderSearch, visible: foldersFilter">✕</a>
+		<button type="button" data-bind="click: clearFolderSearch, visible: foldersFilter" data-ui-icon="x" data-i18n="[title]GLOBAL/CLEAR"></button>
 		</div>
-		<div class="e-checkbox" tabindex="0" data-bind="toggle: filterUnseen">
-			<i role="checkbox" class="fontastic" data-bind="text: filterUnseen() ? '☑' : '☐'"></i>
+		<button type="button" class="e-checkbox" role="checkbox" data-bind="toggle: filterUnseen, attr: {'aria-checked': filterUnseen() ? 'true' : 'false'}">
+			<i aria-hidden="true" data-bind="attr: {'data-ui-icon': filterUnseen() ? 'square-check' : 'square'}"></i>
 			<span data-i18n="SEARCH/UNSEEN"></span>
-		</div>
+		</button>
 		<ul class="b-folders-user" data-bind="css: {unreadOnly: filterUnseen}, template: { name: 'MailFolderListItem', foreach: folderListVisible }"></ul>
 		<div class="move-action-content-wrapper" data-bind="visible: moveAction"></div>
 	</div>
 	<div class="b-footer btn-toolbar">
 		<div class="btn-group">
-			<a class="btn fontastic toggleLeft" data-bind="click: toggleLeftPanel"></a>
+			<button type="button" class="btn ui-icon toggleLeft" data-bind="click: toggleLeftPanel" data-ui-icon="spacer" data-i18n="[title]SETTINGS_LABELS/FOLDERS"></button>
 		</div>
 		<div class="btn-group hide-on-panel-disabled">
-			<a class="btn icon-folder-add" data-bind="click: createFolder" data-i18n="[title]POPUPS_CREATE_FOLDER/TITLE_CREATE_FOLDER"></a>
-			<a class="btn fontastic" data-bind="click: configureFolders" data-i18n="[title]SETTINGS_LABELS/FOLDERS">⚙</a>
+			<button type="button" class="btn ui-icon" data-bind="click: createFolder" data-i18n="[title]POPUPS_CREATE_FOLDER/TITLE_CREATE_FOLDER" data-ui-icon="folder-plus"></button>
+			<button type="button" class="btn ui-icon" data-bind="click: configureFolders" data-i18n="[title]SETTINGS_LABELS/FOLDERS" data-ui-icon="settings"></button>
 		</div>
 	</div>
 </div>

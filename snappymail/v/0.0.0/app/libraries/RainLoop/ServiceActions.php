@@ -23,11 +23,6 @@ class ServiceActions
 		return $this->oActions->Logger();
 	}
 
-	private function Plugins() : Plugins\Manager
-	{
-		return $this->oActions->Plugins();
-	}
-
 	private function Config() : Config\Application
 	{
 		return $this->oActions->Config();
@@ -85,6 +80,7 @@ class ServiceActions
 		if (empty($sAction) && $this->oHttp->IsGet() && !empty($this->aPaths[2])) {
 			$sAction = $this->aPaths[2];
 		}
+		$bSensitiveTwoFactorAction = \is_string($sAction) && 0 === \strncasecmp($sAction, 'TwoFactor', 9);
 
 		$this->oActions->SetIsJson(true);
 
@@ -93,21 +89,36 @@ class ServiceActions
 			if (empty($sAction)) {
 				throw new Exceptions\ClientException(Notifications::InvalidInputArgument, null, 'Action unknown');
 			}
+			// Preserve cached mailbox reads; every other JSON action requires POST.
+			if (!$this->oHttp->IsPost() && (!$this->oHttp->IsGet() || !\is_string($sAction)
+				|| !\in_array(\strtolower($sAction), ['message', 'messagelist'], true))) {
+				throw new Exceptions\ClientException(Notifications::AuthError);
+			}
+			if (!$this->oActions->isTwoFactorJsonActionAllowed(
+				$sAction,
+				$this->oActions instanceof ActionsAdmin
+			)) {
+				throw new Exceptions\ClientException(Notifications::AuthError, null, 'Two-factor enrollment is required');
+			}
 
 			if ('Logout' !== $sAction) {
 				$token = Utils::GetCsrfToken();
 				if (isset($_SERVER['HTTP_X_SM_TOKEN'])) {
 					if ($_SERVER['HTTP_X_SM_TOKEN'] !== $token) {
-						$oAccount = $this->oActions->getAccountFromToken(false);
-						$sEmail = $oAccount ? $oAccount->Email() : 'guest';
-						$this->oActions->logWrite("{$_SERVER['HTTP_X_SM_TOKEN']} !== {$token} for {$sEmail}", \LOG_ERR, 'Token');
+						if ($bSensitiveTwoFactorAction) {
+							$this->oActions->logWrite('Sensitive two-factor action rejected: CSRF token mismatch', \LOG_ERR, 'Token');
+						} else {
+							$this->oActions->logWrite('JSON action rejected: CSRF token mismatch', \LOG_ERR, 'Token');
+						}
 						throw new Exceptions\ClientException(Notifications::InvalidToken, null, 'HTTP Token mismatch');
 					}
 				} else if ($this->oHttp->IsPost()) {
 					if (empty($_POST['XToken']) || $_POST['XToken'] !== $token) {
-						$oAccount = $this->oActions->getAccountFromToken(false);
-						$sEmail = $oAccount ? $oAccount->Email() : 'guest';
-						$this->oActions->logWrite("{$_POST['XToken']} !== {$token} for {$sEmail}", \LOG_ERR, 'XToken');
+						if ($bSensitiveTwoFactorAction) {
+							$this->oActions->logWrite('Sensitive two-factor action rejected: CSRF token mismatch', \LOG_ERR, 'XToken');
+						} else {
+							$this->oActions->logWrite('JSON action rejected: CSRF token mismatch', \LOG_ERR, 'XToken');
+						}
 						throw new Exceptions\ClientException(Notifications::InvalidToken, null, 'XToken mismatch');
 					}
 				}
@@ -123,15 +134,11 @@ class ServiceActions
 
 			if ($_POST) {
 				$this->oActions->SetActionParams($_POST, $sMethodName);
-				$aPost = $_POST;
-				foreach ($aPost as $key => $value) {
-					// password & passphrase
-					if (false !== \stripos($key, 'pass')) {
-						$aPost[$key] = '*******';
-//						$this->oActions->logMask($value);
-					}
+				if ($bSensitiveTwoFactorAction) {
+					$this->oActions->logWrite('[two-factor request body omitted]', \LOG_INFO, 'POST');
+				} else {
+					$this->oActions->logWrite('[request body omitted]', \LOG_INFO, 'POST');
 				}
-				$this->oActions->logWrite(Utils::jsonEncode($aPost), \LOG_INFO, 'POST');
 			} else if (3 < \count($this->aPaths) && $this->oHttp->IsGet()) {
 				$this->oActions->SetActionParams(array(
 					'RawKey' => empty($this->aPaths[3]) ? '' : $this->aPaths[3]
@@ -139,17 +146,12 @@ class ServiceActions
 			}
 
 			if (\method_exists($this->oActions, $sMethodName) && \is_callable(array($this->oActions, $sMethodName))) {
-				$this->Plugins()->RunHook("json.before-{$sAction}");
 				$aResponse = $this->oActions->{$sMethodName}();
-			} else if ($this->Plugins()->HasAdditionalJson($sMethodName)) {
-				$this->Plugins()->RunHook("json.before-{$sAction}");
-				$aResponse = $this->Plugins()->RunAdditionalJson($sMethodName);
 			}
 
 			if (\is_array($aResponse)) {
 				// Everything must converted to array
 				$aResponse = \json_decode(Utils::jsonEncode($aResponse), true);
-				$this->Plugins()->RunHook("json.after-{$sAction}", array(&$aResponse));
 			}
 
 			if (!\is_array($aResponse)) {
@@ -158,9 +160,13 @@ class ServiceActions
 		}
 		catch (\Throwable $oException)
 		{
-			\SnappyMail\Log::warning('SERVICE', "{$oException}");
-			if ($e = $oException->getPrevious()) {
-				\SnappyMail\Log::warning('SERVICE', "- {$e}");
+			if ($bSensitiveTwoFactorAction) {
+				\SnappyMail\Log::warning('SERVICE', 'Sensitive two-factor action failed');
+			} else {
+				\SnappyMail\Log::warning('SERVICE', "{$oException}");
+				if ($e = $oException->getPrevious()) {
+					\SnappyMail\Log::warning('SERVICE', "- {$e}");
+				}
 			}
 
 			$aResponse = $this->oActions->ExceptionResponse($oException);
@@ -185,16 +191,20 @@ class ServiceActions
 
 		if ($this->Logger()->IsEnabled()) {
 			if (\strlen($sObResult)) {
-				$this->oActions->logWrite($sObResult, \LOG_ERR, 'OB-DATA');
+				$this->oActions->logWrite('[unexpected output omitted]', \LOG_ERR, 'OB-DATA');
 			}
 
-			if ($oException) {
+			if ($oException && $bSensitiveTwoFactorAction) {
+				$this->oActions->logWrite('Sensitive two-factor action failed', \LOG_ERR, 'JSON');
+			} else if ($oException) {
 				$this->oActions->logException($oException, \LOG_ERR);
 			}
 
-			$iLimit = (int) $this->Config()->Get('logs', 'json_response_write_limit', 0);
-			$this->oActions->logWrite(0 < $iLimit && $iLimit < \strlen($sResult)
-					? \substr($sResult, 0, $iLimit).'...' : $sResult, \LOG_INFO, 'JSON');
+			if ($bSensitiveTwoFactorAction) {
+				$this->oActions->logWrite('[two-factor response body omitted]', \LOG_INFO, 'JSON');
+			} else {
+				$this->oActions->logWrite('[response body omitted]', \LOG_INFO, 'JSON');
+			}
 		}
 
 		return $sResult;
@@ -208,6 +218,14 @@ class ServiceActions
 		$aResponse = null;
 		try
 		{
+			if (!$this->oHttp->IsPost()) {
+				throw new Exceptions\ClientException(Notifications::AuthError);
+			}
+			// Match JSON's header precedence and current account token semantics.
+			if (($_SERVER['HTTP_X_SM_TOKEN'] ?? ($_POST['XToken'] ?? null)) !== Utils::GetCsrfToken()) {
+				throw new Exceptions\ClientException(Notifications::InvalidToken);
+			}
+
 			$aFile = null;
 			$sInputName = 'uploader';
 			$iSizeLimit = (0 < $iSizeLimit ? $iSizeLimit : ((int) $oConfig->Get('webmail', 'attachment_size_limit', 0))) * 1024 * 1024;
@@ -238,7 +256,6 @@ class ServiceActions
 				throw new Exceptions\ClientException(Notifications::UnknownError);
 			}
 
-			$this->Plugins()->RunHook('filter.upload-response', array(&$aResponse));
 		}
 		catch (\Throwable $oException)
 		{
@@ -253,10 +270,10 @@ class ServiceActions
 
 		$sObResult = \ob_get_clean();
 		if (\strlen($sObResult)) {
-			$this->oActions->logWrite($sObResult, \LOG_ERR, 'OB-DATA');
+			$this->oActions->logWrite('[unexpected output omitted]', \LOG_ERR, 'OB-DATA');
 		}
 
-		$this->oActions->logWrite($sResult, \LOG_INFO, 'UPLOAD');
+		$this->oActions->logWrite('[upload response body omitted]', \LOG_INFO, 'UPLOAD');
 
 		return $sResult;
 	}
@@ -271,46 +288,47 @@ class ServiceActions
 		return $this->privateUpload('UploadContacts', 5);
 	}
 
-	public function ServiceUploadBackground() : string
-	{
-		return $this->privateUpload('UploadBackground', 1);
-	}
-
 	public function ServiceProxyExternal() : string
 	{
-		$sData = empty($this->aPaths[1]) ? '' : $this->aPaths[1];
+		// New URLs cannot reuse cache provenance from the former unrestricted proxy.
+		$sData = 'public-v1' === ($this->aPaths[1] ?? '') ? ($this->aPaths[2] ?? '') : '';
 		if ($sData
 			&& $this->Config()->Get('labs', 'use_local_proxy_for_external_images', false)
 			&& $this->oActions->getAccountFromToken()
 		) {
-			$this->oActions->verifyCacheByKey($sData);
-			$sUrl = \MailSo\Base\Utils::UrlSafeBase64Decode($sData);
-			if (!empty($sUrl)) {
-				\header('X-Content-Location: '.$sUrl);
-				$tmp = \tmpfile();
-				$HTTP = \SnappyMail\HTTP\Request::factory();
-				$HTTP->max_redirects = 2;
-				$HTTP->streamBodyTo($tmp);
-				$oResponse = $HTTP->doRequest('GET', $sUrl);
-				if ($oResponse) {
-					$sContentType = \SnappyMail\File\MimeType::fromStream($tmp) ?: $oResponse->getHeader('content-type');
-					if (200 === $oResponse->status && \str_starts_with($sContentType, 'image/')) {
-						try {
-							$this->oActions->cacheByKey($sData);
+			$tmp = null;
+			try {
+				$sUrl = \MailSo\Base\Utils::UrlSafeBase64Decode($sData);
+				if (!empty($sUrl)) {
+					$tmp = \tmpfile();
+					$HTTP = \SnappyMail\HTTP\Request::factory();
+					$HTTP->requirePublicDestination();
+					$HTTP->max_redirects = 2;
+					$HTTP->streamBodyTo($tmp);
+					$oResponse = $HTTP->doRequest('GET', $sUrl);
+					if ($oResponse) {
+						$sContentType = \SnappyMail\File\MimeType::fromStream($tmp) ?: $oResponse->getHeader('content-type');
+						if (200 === $oResponse->status && \str_starts_with($sContentType, 'image/')) {
+							// Conditional 304 checks happen only after the entire fetch passed policy.
+							$cacheKey = 'external-image-public-v1:' . $sData;
+							$this->oActions->verifyCacheByKey($cacheKey);
+							$this->oActions->cacheByKey($cacheKey);
 							\header('Content-Type: ' . $sContentType);
 							\header('Cache-Control: public');
 							\header('Expires: '.\gmdate('D, j M Y H:i:s', 2592000 + \time()).' UTC');
+							\header('X-Content-Location: '.$oResponse->request_uri);
 							\header('X-Content-Redirect-Location: '.$oResponse->final_uri);
 							\rewind($tmp);
 							\fpassthru($tmp);
 							exit;
-						} catch (\Throwable $e) {
-							\header("X-Content-Error: {$e->getMessage()}");
-							\SnappyMail\Log::error('Proxy', \get_class($HTTP) . ': ' . $e->getMessage());
 						}
-					} else {
-						\header("X-Content-Error: {$oResponse->status} {$sContentType}");
 					}
+				}
+			} catch (\Throwable $e) {
+				// Sender URLs and remote errors are not reflected in response headers or logs.
+			} finally {
+				if (\is_resource($tmp)) {
+					\fclose($tmp);
 				}
 			}
 		}
@@ -338,8 +356,10 @@ class ServiceActions
 				try {
 					$sMethodName = 'Raw'.$sAction;
 					if (\method_exists($this->oActions, $sMethodName)) {
+						$this->oActions->logWrite('Action: '.$sMethodName, \LOG_INFO, 'RAW');
 						\header('X-Raw-Action: '.$sMethodName);
-						\header('Content-Security-Policy: script-src \'none\'; child-src \'none\'');
+						// Keep the site policy, including operator-configured frame-ancestors.
+						\header('Content-Security-Policy: default-src \'none\'; script-src \'none\'; child-src \'none\'; object-src \'none\'; base-uri \'none\'; form-action \'none\'', false);
 
 						$sRawError = '';
 						$this->oActions->SetActionParams(array(
@@ -351,11 +371,11 @@ class ServiceActions
 							$sRawError = 'False result';
 						}
 					} else {
-						$sRawError = 'Unknown action "'.$sAction.'"';
+						$sRawError = 'Unknown action';
 					}
 				} catch (\Throwable $e) {
 //					error_log(print_r($e,1));
-					$sRawError = $e->getMessage();
+					$sRawError = 'Exception as result';
 				}
 			} else {
 				$sRawError = 'Empty action';
@@ -374,7 +394,6 @@ class ServiceActions
 
 		if (\strlen($sRawError)) {
 			$this->oActions->logWrite($sRawError, \LOG_ERR);
-			$this->Logger()->WriteDump($this->aPaths, \LOG_ERR, 'PATHS');
 		}
 
 		if ($oException) {
@@ -396,7 +415,7 @@ class ServiceActions
 			$bCacheEnabled = $this->Config()->Get('cache', 'system_data', true);
 			$sCacheFileName = '';
 			if ($bCacheEnabled) {
-				$sCacheFileName = KeyPathHelper::LangCache($sLanguage, $bAdmin, $this->oActions->Plugins()->Hash());
+				$sCacheFileName = KeyPathHelper::LangCache($sLanguage, $bAdmin);
 				$this->oActions->verifyCacheByKey(\md5($sCacheFileName));
 				$sResult = $this->Cacher()->Get($sCacheFileName);
 			}
@@ -414,87 +433,6 @@ class ServiceActions
 		}
 
 		return $sResult;
-	}
-
-	public function ServicePlugins() : string
-	{
-		$sResult = '';
-		$bAdmin = !empty($this->aPaths[2]) && 'Admin' === $this->aPaths[2];
-
-		\header('Content-Type: application/javascript; charset=utf-8');
-
-		$bAppDebug = $this->Config()->Get('debug', 'enable', false);
-		$sMinify = ($bAppDebug || $this->Config()->Get('debug', 'javascript', false)) ? '' : 'min';
-
-		$bCacheEnabled = !$bAppDebug && $this->Config()->Get('cache', 'system_data', true);
-		$sCacheFileName = '';
-		if ($bCacheEnabled) {
-			$sCacheFileName = KeyPathHelper::PluginsJsCache($this->oActions->Plugins()->Hash()) . $sMinify;
-			$this->oActions->verifyCacheByKey(\md5($sCacheFileName));
-			$sResult = $this->Cacher()->Get($sCacheFileName);
-		}
-
-		if (!$sResult) {
-			$sResult = $this->Plugins()->CompileJs($bAdmin, !!$sMinify);
-			if ($sCacheFileName) {
-				$this->Cacher()->Set($sCacheFileName, $sResult);
-			}
-		}
-
-		if ($sCacheFileName) {
-			$this->oActions->cacheByKey(\md5($sCacheFileName));
-		}
-
-		return $sResult;
-	}
-
-	public function ServiceCss() : string
-	{
-		$sResult = '';
-		$bAdmin = !empty($this->aPaths[2]) && 'Admin' === $this->aPaths[2];
-		$bJson = !empty($this->aPaths[9]) && 'Json' === $this->aPaths[9];
-
-		if ($bJson) {
-			\header('Content-Type: application/json; charset=utf-8');
-		} else {
-			\header('Content-Type: text/css; charset=utf-8');
-		}
-
-		$sTheme = '';
-		if (!empty($this->aPaths[4])) {
-			$sTheme = $this->oActions->ValidateTheme($this->aPaths[4]);
-
-			$bAppDebug = $this->Config()->Get('debug', 'enable', false);
-			$sMinify = ($bAppDebug || $this->Config()->Get('debug', 'css', false)) ? '' : 'min';
-
-			$bCacheEnabled = !$bAppDebug && $this->Config()->Get('cache', 'system_data', true);
-			$sCacheFileName = '';
-			if ($bCacheEnabled) {
-				$sCacheFileName = '/CssCache/'.$this->oActions->Plugins()->Hash().'/'.$sTheme.'/'.APP_VERSION.'/' . $sMinify;
-				$this->oActions->verifyCacheByKey(\md5($sCacheFileName . ($bJson ? 1 : 0)));
-				$sResult = $this->Cacher()->Get($sCacheFileName);
-			}
-
-			if (!$sResult) {
-				try
-				{
-					$sResult = $this->oActions->compileCss($sTheme, $bAdmin);
-					if ($sCacheFileName) {
-						$this->Cacher()->Set($sCacheFileName, $sResult);
-					}
-				}
-				catch (\Throwable $oException)
-				{
-					$this->oActions->logException($oException, \LOG_ERR, 'LESS');
-				}
-			}
-
-			if ($sCacheFileName) {
-				$this->oActions->cacheByKey(\md5($sCacheFileName . ($bJson ? 1 : 0 )));
-			}
-		}
-
-		return $bJson ? Utils::jsonEncode(array($sTheme, $sResult)) : $sResult;
 	}
 
 	public function ServiceAppData() : string
@@ -648,8 +586,6 @@ class ServiceActions
 				$aTemplates[$sTemplateName] = $file;
 			}
 		}
-
-		$this->oActions->Plugins()->CompileTemplate($aTemplates, $bAdmin);
 
 		$sHtml = '';
 		foreach ($aTemplates as $sName => $sFile) {

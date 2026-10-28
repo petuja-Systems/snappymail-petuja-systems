@@ -1,5 +1,6 @@
 import { FilterAction } from 'Sieve/Model/Filter';
 import { FilterConditionField, FilterConditionType } from 'Sieve/Model/FilterCondition';
+import { AbstractViewPopup } from 'Knoin/AbstractViews';
 /*
 import { SettingsUserStore } from 'Stores/User/Settings';
 */
@@ -54,7 +55,7 @@ const
 		return aResult;
 	};
 
-export class FilterPopupView extends rl.pluginPopupView {
+export class FilterPopupView extends AbstractViewPopup {
 	constructor() {
 		super('Filter');
 

@@ -1,7 +1,10 @@
 {
+	"LANG_DIR": "ltr",
 	"GLOBAL": {
 		"ADD": "追加",
 		"CLOSE": "閉じる",
+		"DELETE": "削除",
+		"LOGOUT": "ログアウト",
 		"SAVE": "保存",
 		"TEST": "テスト",
 		"UPDATE": "更新",
@@ -27,7 +30,6 @@
 		"CONTACTS": "連絡先",
 		"DOMAINS": "ドメイン",
 		"SECURITY": "セキュリティ",
-		"PACKAGES": "パッケージ",
 		"CONFIG": "詳細",
 		"ABOUT": "SnappyMailについて"
 	},
@@ -35,10 +37,7 @@
 		"LEGEND_INTERFACE": "インターフェース",
 		"LABEL_LANGUAGE": "言語",
 		"LABEL_LANGUAGE_ADMIN": "言語(管理画面)",
-		"LABEL_THEME": "テーマ",
 		"LABEL_ALLOW_LANGUAGES_ON_SETTINGS": "設定画面で言語選択を使用する",
-		"LABEL_ALLOW_THEMES_ON_SETTINGS": "設定画面でテーマ選択を使用する",
-		"LABEL_ALLOW_BACKGROUND_ON_SETTINGS": "設定画面で背景選択を使用する",
 		"LABEL_SHOW_THUMBNAILS": "サムネイルを表示(添付ファイル)",
 		"LEGEND_MAIN": "メイン",
 		"LABEL_ATTACHMENT_SIZE_LIMIT": "添付サイズ制限",
@@ -80,6 +79,7 @@
 		"LEGEND_DOMAINS": "ドメイン",
 		"BUTTON_ADD_DOMAIN": "ドメインを追加",
 		"BUTTON_ADD_ALIAS": "エイリアスを追加",
+		"LABEL_TOGGLE_DOMAIN_ENABLED": "Enable or disable domain %NAME%",
 		"DELETE_ARE_YOU_SURE": "よろしいですか？",
 		"HTML_DOMAINS_HELPER": "ドメインの一覧は、Webメールのアクセスを許可されています。\n<br>\nドメインを設定するには、名前をクリックしてください。\n"
 	},
@@ -87,6 +87,7 @@
 		"LEGEND_SECURITY": "セキュリティ",
 		"LABEL_USE_IMAGE_PROXY": "外部イメージにローカルProxyを使う",
 		"LABEL_AUTO_VERIFY": "Verify signatures automatically",
+		"LABEL_ENFORCE_TWO_FACTOR": "2 段階認証を必須にする",
 		"LABEL_SHOW_PHP_INFO": "PHP情報を表示",
 		"LEGEND_ADMIN_PANEL_ACCESS_CREDENTIALS": "管理画面アクセス情報",
 		"LABEL_CURRENT_PASSWORD": "現在のパスワード",
@@ -95,13 +96,6 @@
 		"LABEL_REQUIRE_VERIFICATION": "のSSL証明書の検証を有効にする",
 		"CRYPTO": "Crypto",
 		"LABEL_ALLOW_SELF_SIGNED": "自己署名証明書を使う"
-	},
-	"TAB_PACKAGES": {
-		"LABEL_ENABLE_PLUGINS": "プラグインを有効化",
-		"LEGEND_AVAILABLE_FOR_UPDATE": "更新があります",
-		"LEGEND_AVAILABLE_FOR_INSTALLATION": "インストール可能なパッケージ",
-		"LEGEND_INSTALLED_PACKAGES": "インストールされたパッケージ",
-		"ALERT_CANNOT_ACCESS_REPOSITORY": "現時点でリポジトリにアクセスすることはできません。"
 	},
 	"TAB_ABOUT": {
 		"LEGEND_ABOUT": "SnappyMailについて",
@@ -147,10 +141,6 @@
 		"VALID_SPAM_HEADERS": "Valid SPAM headers",
 		"VALID_VIRUS_HEADERS": "Valid virus headers"
 	},
-	"POPUPS_PLUGIN": {
-		"TITLE_PLUGIN": "プラグイン",
-		"DESC_NOTHING_TO_CONFIGURE": "何も設定されていません"
-	},
 	"POPUPS_ASK": {
 		"DESC_WANT_CLOSE_THIS_WINDOW": "このウィンドウを閉じてもよろしいですか？"
 	},
@@ -172,11 +162,6 @@
 		"InvalidToken": "無効なトークン",
 		"AuthError": "認証に失敗しました",
 		"DomainAlreadyExists": "ドメインが既に存在しています",
-		"CantSavePluginSettings": "設定が保存できません",
-		"CantInstallPackage": "パッケージのインストールに失敗しました",
-		"CantDeletePackage": "パッケージの削除に失敗しました",
-		"InvalidPluginPackage": "無効なプラグインパッケージ",
-		"UnsupportedPluginPackage": "サポートされていないプラグインパッケージ",
 		"UnknownError": "不明なエラー"
 	}
 }

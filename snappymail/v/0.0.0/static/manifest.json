@@ -1,13 +1,13 @@
 {
-	"name": "SnappyMail Webmail",
-	"short_name": "SnappyMail",
+	"name": "petuja.email",
+	"short_name": "petuja.email",
 	"description": "Simple, modern & fast web-based email client",
 	"display": "standalone",
 	"background_color": "white",
 	"theme_color": "black",
 	"icons": [{
 		"src": "apple-touch-icon.png",
-		"sizes": "64x64",
+		"sizes": "180x180",
 		"type": "image/png"
 	}, {
 		"src": "android-icon.png",

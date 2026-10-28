@@ -1,6 +1,6 @@
 <div class="legend">
 	<span data-i18n="TAB_DOMAINS/LEGEND_DOMAINS"></span>
-	<i class="icon-spinner" style="margin: 5px" data-bind="visible: domains.loading"></i>
+	<i class="ui-spinner" style="margin: 5px" data-bind="visible: domains.loading"></i>
 </div>
 
 <p data-i18n="[html]TAB_DOMAINS/HTML_DOMAINS_HELPER"></p>
@@ -14,29 +14,33 @@
 	<tbody data-bind="foreach: domains">
 		<tr data-bind="css: {'disabled': disabled }">
 			<td class="e-action">
-				<span class="domain-name" data-bind="text: name"></span>
-				<span class="domain-alias" data-bind="if: alias">(alias)</span>
+				<button type="button" class="domain-name ui-text-action">
+					<span data-bind="text: name"></span>
+					<span class="domain-alias" data-bind="if: alias">(alias)</span>
+				</button>
 			</td>
 			<td>
-				<a class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, click: function(oDomain) { $root.deleteDomain(oDomain); }"
-					data-i18n="TAB_DOMAINS/DELETE_ARE_YOU_SURE"></a>
+				<button type="button" class="btn btn-small btn-danger button-confirm-delete" data-bind="css: {'delete-access': askDelete()}, hasfocus: askDelete, click: function(oDomain) { $root.deleteDomain(oDomain); }"
+					data-i18n="TAB_DOMAINS/DELETE_ARE_YOU_SURE"></button>
 			</td>
 			<td>
-				<span class="delete-domain fontastic" data-bind="visible: !askDelete(), click: function (oDomain) { $root.domainForDeletion(oDomain); }">🗑</span>
+				<button type="button" class="delete-domain ui-icon ui-icon-only" data-bind="visible: !askDelete(), click: function (oDomain) { $root.domainForDeletion(oDomain); }" data-ui-icon="trash-2" data-i18n="[aria-label]GLOBAL/DELETE"></button>
 			</td>
-			<td class="disabled-domain fontastic" data-bind="click: function (oDomain) { $root.disableDomain(oDomain); }, text: disabled() ? '☐' : '☑'"></td>
+			<td>
+				<button type="button" class="disabled-domain ui-icon-only" data-bind="click: function (oDomain) { $root.disableDomain(oDomain); }, attr: {'aria-label': rl.i18n('TAB_DOMAINS/LABEL_TOGGLE_DOMAIN_ENABLED', { NAME: name }), 'aria-pressed': !disabled(), 'data-ui-icon': disabled() ? 'square' : 'square-check'}"></button>
+			</td>
 		</tr>
 	</tbody>
 	<tfoot>
 		<tr><td colspan="4" style="text-align:right">
-			<a class="btn" data-bind="click: createDomain" data-icon="✚" data-i18n="TAB_DOMAINS/BUTTON_ADD_DOMAIN"></a>
+			<button type="button" class="btn" data-bind="click: createDomain" data-ui-icon="plus" data-i18n="TAB_DOMAINS/BUTTON_ADD_DOMAIN"></button>
 			&nbsp;&nbsp;
-			<a class="btn" data-bind="click: createDomainAlias" data-icon="✚" data-i18n="TAB_DOMAINS/BUTTON_ADD_ALIAS"></a>
+			<button type="button" class="btn" data-bind="click: createDomainAlias" data-ui-icon="plus" data-i18n="TAB_DOMAINS/BUTTON_ADD_ALIAS"></button>
 		</td></tr>
 	</tfoot>
 </table>
 
 <div>
 	<input data-i18n="[placeholder]GLOBAL/USERNAME" data-bind="textInput: username">
-	<button class="btn" data-i18n="GLOBAL/TEST" data-bind="click: testUsername"></button>
+	<button type="button" class="btn" data-i18n="GLOBAL/TEST" data-bind="click: testUsername"></button>
 </div>

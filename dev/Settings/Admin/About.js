@@ -3,7 +3,7 @@ import { Settings } from 'Common/Globals';
 import { addObservablesTo } from 'External/ko';
 import Remote from 'Remote/Admin/Fetch';
 
-import { i18n, translateTrigger } from 'Common/Translator';
+import { i18nHtml, translateTrigger } from 'Common/Translator';
 
 export class AdminSettingsAbout /*extends AbstractViewSettings*/ {
 	constructor() {
@@ -27,7 +27,7 @@ export class AdminSettingsAbout /*extends AbstractViewSettings*/ {
 
 		this.coreVersionHtmlDesc = ko.computed(() => {
 			translateTrigger();
-			return i18n('TAB_ABOUT/HTML_NEW_VERSION', { 'VERSION': this.coreVersion() });
+			return i18nHtml('TAB_ABOUT/HTML_NEW_VERSION', { 'VERSION': this.coreVersion() });
 		});
 
 		this.statusType = ko.computed(() => {

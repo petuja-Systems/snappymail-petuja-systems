@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Логин",
 		"LABEL_SIGN_ME": "Впиши ме",
-		"BUTTON_SIGN_IN": "Вход"
+		"BUTTON_SIGN_IN": "Вход",
+		"TAGLINE": "Вашата поща, където и да сте.",
+		"LEGAL_NAVIGATION": "Правна информация",
+		"LEGAL_IMPRINT": "Издателски данни",
+		"LEGAL_PRIVACY": "Поверителност",
+		"LEGAL_SOURCE": "Изходен код",
+		"TWO_FACTOR_TITLE": "Потвърждение в две стъпки",
+		"TWO_FACTOR_INSTRUCTION": "Въведете код от приложението за удостоверяване или код за възстановяване.",
+		"TWO_FACTOR_CODE": "Код за потвърждение",
+		"BUTTON_VERIFY": "Потвърди и влез"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Добави акаунт"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Папки",
 		"ACCOUNTS": "Акаунти",
 		"FILTERS": "Филтри",
-		"SECURITY": "Сигурност",
-		"THEMES": "Теми"
+		"SECURITY": "Сигурност"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Външен вид",
+		"LIGHT": "Светъл",
+		"DARK": "Тъмен",
+		"SYSTEM": "Система"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Simple",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Сигурност",
 		"LABEL_AUTOLOGOUT": "Автоматично излизане",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Никога"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "URL на адресната книга",
 		"LABEL_CONTACTS_SYNC_USER": "Потребител",
 		"SYNC_READ": "Read only"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Теми",
-		"LABEL_BACKGROUND": "Фон",
-		"LABEL_FONTS": "Fonts",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Качи снимка за фон (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Файла е прекалено голям",
-		"ERROR_FILE_TYPE_ERROR": "Невалиден тип (Само JPG или PNG)",
-		"ERROR_UNKNOWN": "Възникна неизвестна грешка при качването на файла"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Списък с папки",

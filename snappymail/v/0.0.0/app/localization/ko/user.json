@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "아이디",
 		"LABEL_SIGN_ME": "아이디 기억",
-		"BUTTON_SIGN_IN": "로그인"
+		"BUTTON_SIGN_IN": "로그인",
+		"TAGLINE": "어디서나 이용할 수 있는 받은편지함.",
+		"LEGAL_NAVIGATION": "법률 정보",
+		"LEGAL_IMPRINT": "발행자 정보",
+		"LEGAL_PRIVACY": "개인정보 보호",
+		"LEGAL_SOURCE": "소스 코드",
+		"TWO_FACTOR_TITLE": "2단계 인증",
+		"TWO_FACTOR_INSTRUCTION": "인증 앱의 코드 또는 복구 코드를 입력하세요.",
+		"TWO_FACTOR_CODE": "인증 코드",
+		"BUTTON_VERIFY": "확인 후 로그인"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "계정 추가"
@@ -127,7 +136,7 @@
 		"TODAY_AT": "오늘 %TIME%",
 		"YESTERDAY_AT": "어제 %TIME%",
 		"NEW_MESSAGE_NOTIFICATION": "%COUNT% 개의 새 메시지가 있습니다!",
-		"QUOTA_SIZE": "총 <strong>%LIMIT%<\/strong> 중 <strong>%PROC%%<\/strong>을(를) 사용 중입니다.",
+		"QUOTA_SIZE": "총 <strong>%LIMIT%<\/strong> 중 <strong>%SIZE% (%PROC%%)<\/strong>을(를) 사용 중입니다.",
 		"SORT": "Sort",
 		"NO_SORT": "Mail server does not support sorting",
 		"SORT_DATE_ASC": "Date ascending",
@@ -439,8 +448,13 @@
 		"FOLDERS": "폴더",
 		"ACCOUNTS": "계정",
 		"FILTERS": "필터",
-		"SECURITY": "보안",
-		"THEMES": "테마"
+		"SECURITY": "보안"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "모양",
+		"LIGHT": "밝게",
+		"DARK": "어둡게",
+		"SYSTEM": "시스템"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Simple",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "보안",
 		"LABEL_AUTOLOGOUT": "자동 로그아웃",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "설정하지 않음"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "주소록 URL",
 		"LABEL_CONTACTS_SYNC_USER": "사용자",
 		"SYNC_READ": "Read only"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "테마",
-		"LABEL_BACKGROUND": "배경",
-		"LABEL_FONTS": "Fonts",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "배경 이미지 업로드 (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "파일이 너무 큽니다",
-		"ERROR_FILE_TYPE_ERROR": "유효하지 않은 파일 형식 (JPG 또는 PNG만 가능)",
-		"ERROR_UNKNOWN": "알 수 없는 파일 업로드 오류가 발생했습니다."
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "폴더 목록",

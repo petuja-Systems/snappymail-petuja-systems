@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "ورود",
 		"LABEL_SIGN_ME": "مرا به خاطر بسپار",
-		"BUTTON_SIGN_IN": "ورود"
+		"BUTTON_SIGN_IN": "ورود",
+		"TAGLINE": "صندوق ورودی شما، هر جا که باشید.",
+		"LEGAL_NAVIGATION": "اطلاعات حقوقی",
+		"LEGAL_IMPRINT": "اطلاعات ناشر",
+		"LEGAL_PRIVACY": "حریم خصوصی",
+		"LEGAL_SOURCE": "کد منبع",
+		"TWO_FACTOR_TITLE": "تأیید دومرحله‌ای",
+		"TWO_FACTOR_INSTRUCTION": "کدی از برنامه احراز هویت یا یک کد بازیابی وارد کنید.",
+		"TWO_FACTOR_CODE": "کد تأیید",
+		"BUTTON_VERIFY": "تأیید و ورود"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "ساخت کاربر"
@@ -439,8 +448,13 @@
 		"FOLDERS": "پوشه‌ها",
 		"ACCOUNTS": "حساب‌های کاربری",
 		"FILTERS": "فیلترها",
-		"SECURITY": "امنیت",
-		"THEMES": "پوسته‌ها"
+		"SECURITY": "امنیت"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "ظاهر",
+		"LIGHT": "روشن",
+		"DARK": "تاریک",
+		"SYSTEM": "سیستم"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Simple",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "امنیت",
 		"LABEL_AUTOLOGOUT": "خروج خودکار",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "هرگز"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "تارنمای آدرس‌بوک",
 		"LABEL_CONTACTS_SYNC_USER": "کاربر",
 		"SYNC_READ": "Read only"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "پوسته‌ها",
-		"LABEL_BACKGROUND": "پشت زمینه",
-		"LABEL_FONTS": "Fonts",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "بارگذاری تصاویر پشت زمینه (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "اندازه فایل بیش از حد بزرگ است",
-		"ERROR_FILE_TYPE_ERROR": "نوع فایل نامعتبر (فقط PNG و JPG)",
-		"ERROR_UNKNOWN": "یک خطای نامشخص در بارگذاری فایل روی داده است"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "لیست پوشه‌ها",

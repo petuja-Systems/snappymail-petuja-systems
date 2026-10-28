@@ -1,6 +1,7 @@
 import { doc, createElement, addEventsListeners } from 'Common/Globals';
 import { EmailModel } from 'Model/Email';
 import { addressparser } from 'Mime/Address';
+import { i18n } from 'Common/Translator';
 
 const contentType = 'snappymail/emailaddress',
 	getAddressKey = li => li?.emailaddress?.key,
@@ -306,7 +307,9 @@ export class EmailAddressesComponent {
 				li.append(el);
 
 				el = createElement('a',{href:'#', class:'ficon'});
-				el.append('✖');
+				el.dataset.uiIcon = 'x';
+				el.title = i18n('GLOBAL/DELETE');
+				el.setAttribute('aria-label', el.title);
 				addEventsListeners(el, {
 					click: e => self._removeTag(e, li),
 					focus: () => li.className = 'emailaddresses-selected',

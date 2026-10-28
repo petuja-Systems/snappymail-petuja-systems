@@ -3,6 +3,16 @@ if (defined('APP_VERSION_ROOT_PATH')) {
 	return;
 }
 
+// Arguments are captured when an exception is created, before any logger runs.
+if (is_callable('ini_get') && '1' !== ini_get('zend.exception_ignore_args') && is_callable('ini_set')) {
+	ini_set('zend.exception_ignore_args', '1');
+}
+if (!is_callable('ini_get') || '1' !== ini_get('zend.exception_ignore_args')) {
+	http_response_code(500);
+	echo 'Required PHP security configuration is unavailable.';
+	exit(1);
+}
+
 // PHP 8
 if (PHP_VERSION_ID < 80000) {
 	require __DIR__ . '/app/libraries/polyfill/php8.php';
@@ -69,7 +79,6 @@ unset($sCustomConfiguration);
 //$sData = is_file(APP_DATA_FOLDER_PATH.'DATA.php') ? file_get_contents(APP_DATA_FOLDER_PATH.'DATA.php') : '';
 //define('APP_PRIVATE_DATA', APP_DATA_FOLDER_PATH.'_data_'.($sData ? md5($sData) : '').'/'.APP_PRIVATE_DATA_NAME.'/');
 define('APP_PRIVATE_DATA', APP_DATA_FOLDER_PATH.'_data_/'.APP_PRIVATE_DATA_NAME.'/');
-define('APP_PLUGINS_PATH', APP_PRIVATE_DATA.'plugins/');
 
 ini_set('default_charset', 'UTF-8');
 ini_set('internal_encoding', 'UTF-8');
@@ -101,6 +110,17 @@ if (APP_VERSION !== (is_file(APP_DATA_FOLDER_PATH.'INSTALLED') ? file_get_conten
 	include __DIR__ . '/setup.php';
 }
 
+require_once __DIR__ . '/app/libraries/snappymail/integrity.php';
+$sPhpVersionError = \SnappyMail\Integrity::phpVersion();
+if ($sPhpVersionError) {
+	http_response_code(503);
+	if (!headers_sent()) {
+		header('Content-Type: text/plain; charset=utf-8');
+	}
+	echo $sPhpVersionError;
+	exit(1);
+}
+
 mb_internal_encoding('UTF-8');
 mb_language('uni');
 
@@ -118,19 +138,13 @@ if (!isset($_SERVER['HTTP_USER_AGENT'])) {
 	$_SERVER['HTTP_USER_AGENT'] = '';
 }
 
-if (empty($_SERVER['HTTPS']) || 'off' === $_SERVER['HTTPS']) {
-	unset($_SERVER['HTTPS']);
-}
-if (isset($_SERVER['REQUEST_SCHEME']) && 'https' === $_SERVER['REQUEST_SCHEME']) {
+if (MailSo\Base\Http::SingletonInstance()->IsSecure()) {
 	$_SERVER['HTTPS'] = 'on';
+} else {
+	unset($_SERVER['HTTPS']);
 }
 if (isset($_SERVER['HTTPS']) && !headers_sent()) {
 	header('Strict-Transport-Security: max-age=31536000');
-}
-
-// cPanel https://github.com/the-djmaze/snappymail/issues/697
-if (!empty($_ENV['CPANEL']) && !is_dir(APP_PLUGINS_PATH.'login-remote')) {
-	require __DIR__ . '/cpanel.php';
 }
 
 if (empty($_ENV['SNAPPYMAIL_INCLUDE_AS_API'])) {

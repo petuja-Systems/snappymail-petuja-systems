@@ -6,7 +6,7 @@ import { i18nToNodes, initOnStartOrLangChange } from 'Common/Translator';
 import { arePopupsVisible } from 'Knoin/Knoin';
 
 import { LanguageStore } from 'Stores/Language';
-import { initThemes } from 'Stores/Theme';
+import { initResponsiveState } from 'Stores/Theme';
 
 import { SelectComponent } from 'Component/Select';
 import { CheckboxComponent } from 'Component/Checkbox';
@@ -49,7 +49,7 @@ export class AbstractApp {
 		initOnStartOrLangChange();
 
 		LanguageStore.populate();
-		initThemes();
+		initResponsiveState();
 
 		this.start();
 	}

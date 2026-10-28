@@ -3,7 +3,7 @@ import ko from 'ko';
 import { RFC822 } from 'Common/File';
 import { HtmlEditor } from 'Common/HtmlEditor';
 import { timeToNode } from 'Common/Translator';
-import { doc, elementById, addEventsListeners, dropdowns, leftPanelDisabled } from 'Common/Globals';
+import { doc, elementById, addEventsListeners, dropdowns, dropdownVisibility, leftPanelDisabled } from 'Common/Globals';
 import { EmailAddressesComponent } from 'Component/EmailAddresses';
 import { ThemeStore } from 'Stores/Theme';
 import { dropFilesInFolder } from 'Common/Folders';
@@ -17,6 +17,7 @@ const rlContentType = 'snappymail/action',
 	// In Chrome Mobile dataTransfer.types.includes(rlContentType) fails, only text/plain is set
 	dragMessages = () => 'messages' === dragData?.action,
 	dragSortable = () => 'sortable' === dragData?.action,
+	syncDropdownVisibility = () => dropdownVisibility(!!dropdowns.find(item => item.classList.contains('show'))),
 	setDragAction = (e, action, effect, data, img) => {
 		dragData = {
 			action: action,
@@ -241,7 +242,30 @@ Object.assign(ko.bindingHandlers, {
 	registerBootstrapDropdown: {
 		init: element => {
 			dropdowns.push(element);
-			element.ddBtn = new BSN.Dropdown(element.querySelector('.dropdown-toggle'));
+			const toggleButton = element.querySelector('.dropdown-toggle');
+			element.ddBtn = new BSN.Dropdown(toggleButton);
+			const closeOnEscape = event => {
+				if (toggleButton.open && 'Escape' === event.key) {
+					event.preventDefault();
+					event.stopPropagation();
+					element.ddBtn.hide();
+					syncDropdownVisibility();
+				}
+			};
+			const closeOnFocusLeave = event => {
+				const nextTarget = event.target;
+				if (toggleButton.open && nextTarget?.nodeType === 1 && !element.contains(nextTarget)) {
+					element.ddBtn.hide();
+					syncDropdownVisibility();
+					nextTarget.focus?.();
+				}
+			};
+			element.addEventListener('keydown', closeOnEscape);
+			doc.addEventListener('focusin', closeOnFocusLeave);
+			ko.utils.domNodeDisposal.addDisposeCallback(element, () => {
+				element.removeEventListener('keydown', closeOnEscape);
+				doc.removeEventListener('focusin', closeOnFocusLeave);
+			});
 		}
 	}
 });

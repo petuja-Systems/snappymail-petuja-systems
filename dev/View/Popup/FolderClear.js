@@ -1,5 +1,5 @@
 import { addObservablesTo, addComputablesTo } from 'External/ko';
-import { i18n, getNotification } from 'Common/Translator';
+import { i18nHtml, getNotification } from 'Common/Translator';
 
 import { MessageUserStore } from 'Stores/User/Message';
 import { MessagelistUserStore } from 'Stores/User/Messagelist';
@@ -22,7 +22,7 @@ export class FolderClearPopupView extends AbstractViewPopup {
 			dangerDescHtml: () => {
 //				const folder = this.folder();
 //				return i18n('POPUPS_CLEAR_FOLDER/DANGER_DESC_HTML_1', { FOLDER: folder.fullName.replace(folder.delimiter, ' / ') });
-				return i18n('POPUPS_CLEAR_FOLDER/DANGER_DESC_HTML_1', { FOLDER: this.folder()?.localName() });
+				return i18nHtml('POPUPS_CLEAR_FOLDER/DANGER_DESC_HTML_1', { FOLDER: this.folder()?.localName() });
 			}
 		});
 

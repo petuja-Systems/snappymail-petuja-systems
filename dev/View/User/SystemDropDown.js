@@ -12,12 +12,21 @@ import { KeyboardShortcutsHelpPopupView } from 'View/Popup/KeyboardShortcutsHelp
 import { AccountPopupView } from 'View/Popup/Account';
 import { ContactsPopupView } from 'View/Popup/Contacts';
 
-import { fireEvent, stopEvent, SettingsCapa, registerShortcut } from 'Common/Globals';
+import {
+	dropdownVisibility,
+	elementById,
+	fireEvent,
+	keyScope,
+	stopEvent,
+	SettingsCapa,
+	registerShortcut
+} from 'Common/Globals';
 
 import Remote from 'Remote/User/Fetch';
 import { getNotification } from 'Common/Translator';
 //import { koComputable } from 'External/ko';
 import { addObservablesTo } from 'External/ko';
+import { AppearanceStore } from 'Stores/Appearance';
 
 export class SystemDropDownUserView extends AbstractViewRight {
 	constructor() {
@@ -26,6 +35,7 @@ export class SystemDropDownUserView extends AbstractViewRight {
 		this.allowAccounts = SettingsCapa('AdditionalAccounts');
 
 		this.accountEmail = AccountUserStore.email;
+		this.appearancePreference = AppearanceStore.preference;
 
 		this.accounts = AccountUserStore;
 		this.accountsLoading = AccountUserStore.loading;
@@ -111,7 +121,7 @@ export class SystemDropDownUserView extends AbstractViewRight {
 		rl.app.logout();
 	}
 
-	onBuild() {
+	onBuild(dom) {
 		registerShortcut('m', '', [ScopeMessageList, ScopeMessageView, ScopeSettings], () => {
 			if (!this.viewModelDom.hidden) {
 //				exitFullscreen();
@@ -125,6 +135,14 @@ export class SystemDropDownUserView extends AbstractViewRight {
 			if (!this.viewModelDom.hidden) {
 				showScreenPopup(KeyboardShortcutsHelpPopupView);
 				return false;
+			}
+		});
+
+		const folderList = elementById('V-MailFolderList');
+		dom.addEventListener('focusin', event => {
+			if (folderList && !folderList.hidden && !event.target.closest('.dropdown-menu') && !dropdownVisibility()) {
+				AppUserStore.focusedState('none');
+				keyScope('all');
 			}
 		});
 	}

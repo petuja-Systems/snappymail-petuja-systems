@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Uživatelské jméno",
 		"LABEL_SIGN_ME": "Zapamatovat",
-		"BUTTON_SIGN_IN": "Přihlásit"
+		"BUTTON_SIGN_IN": "Přihlásit",
+		"TAGLINE": "Vaše schránka, ať jste kdekoli.",
+		"LEGAL_NAVIGATION": "Právní informace",
+		"LEGAL_IMPRINT": "Údaje o vydavateli",
+		"LEGAL_PRIVACY": "Soukromí",
+		"LEGAL_SOURCE": "Zdrojový kód",
+		"TWO_FACTOR_TITLE": "Dvoufázové ověření",
+		"TWO_FACTOR_INSTRUCTION": "Zadejte kód z ověřovací aplikace nebo kód pro obnovení.",
+		"TWO_FACTOR_CODE": "Ověřovací kód",
+		"BUTTON_VERIFY": "Ověřit a přihlásit se"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Přidat účet"
@@ -439,8 +448,13 @@
 		"FOLDERS": "Složky",
 		"ACCOUNTS": "Účty",
 		"FILTERS": "Filtry",
-		"SECURITY": "Zabezpečení",
-		"THEMES": "Motivy"
+		"SECURITY": "Zabezpečení"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Vzhled",
+		"LIGHT": "Světlý",
+		"DARK": "Tmavý",
+		"SYSTEM": "Systém"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Simple",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Zabezpečení",
 		"LABEL_AUTOLOGOUT": "Automatické odhlášení",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Dvoufázové ověření",
+		"TFA_STATUS_LABEL": "Stav",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not configured",
+		"TFA_STATUS_ENABLED": "Configured",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Create a secret",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Tajný klíč",
+		"TFA_QR_INSTRUCTIONS": "Import this info into your Google Authenticator client (or other TOTP client) using the provided QR code below or by entering the code manually.\n",
+		"TFA_RECOVERY_CODES": "Backup codes",
+		"TFA_RECOVERY_CODES_WARNING": "If you can't receive codes via Google Authenticator (or other TOTP client), you can use backup codes to sign in. After you’ve used a backup code to sign in, it will become inactive.\n",
+		"TFA_CODE_LABEL": "Code",
+		"TFA_ENABLE": "Activate",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Nikdy"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "URL adresáře",
 		"LABEL_CONTACTS_SYNC_USER": "Uživatel",
 		"SYNC_READ": "Read only"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Motivy",
-		"LABEL_BACKGROUND": "Pozadí",
-		"LABEL_FONTS": "Fonts",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Nahrát obrázek pozadí (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Soubor je příliš velký",
-		"ERROR_FILE_TYPE_ERROR": "Nesprávný typ souboru (povolené jsou pouze JPG a PNG)",
-		"ERROR_UNKNOWN": "Nastala neznámá chyba při nahrávání souboru"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Seznam složek",

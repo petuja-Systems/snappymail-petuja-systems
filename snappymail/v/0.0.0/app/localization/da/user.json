@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "Brugernavn",
 		"LABEL_SIGN_ME": "Husk mig",
-		"BUTTON_SIGN_IN": "Log ind"
+		"BUTTON_SIGN_IN": "Log ind",
+		"TAGLINE": "Din indbakke, uanset hvor du er.",
+		"LEGAL_NAVIGATION": "Juridiske oplysninger",
+		"LEGAL_IMPRINT": "Kolofon",
+		"LEGAL_PRIVACY": "Privatliv",
+		"LEGAL_SOURCE": "Kildekode",
+		"TWO_FACTOR_TITLE": "To-trinsbekræftelse",
+		"TWO_FACTOR_INSTRUCTION": "Indtast en kode fra din godkendelsesapp eller en gendannelseskode.",
+		"TWO_FACTOR_CODE": "Bekræftelseskode",
+		"BUTTON_VERIFY": "Bekræft og log ind"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "Tilføj konto"
@@ -299,7 +308,7 @@
 		"ENCRYPT": "Krypter",
 		"DECRYPT": "Dekrypter",
 		"VERIFY": "Verify",
-		"GOOD_SIGNATURE": "Accepteret signatur for %USER\"",
+		"GOOD_SIGNATURE": "Accepteret signatur for %USER%",
 		"ERROR": "%TYPE% fejl: %ERROR%",
 		"CREATE_SELF_SIGNED": "Create self-signed",
 		"VALID_UNTIL": "Valid until",
@@ -439,8 +448,13 @@
 		"FOLDERS": "Mapper",
 		"ACCOUNTS": "Kontoer",
 		"FILTERS": "Filtre",
-		"SECURITY": "Sikkerhed",
-		"THEMES": "Temaer"
+		"SECURITY": "Sikkerhed"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "Udseende",
+		"LIGHT": "Lys",
+		"DARK": "Mørk",
+		"SYSTEM": "System"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "Simple",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "Sikkerhed",
 		"LABEL_AUTOLOGOUT": "Automatisk log ud",
 		"FORGET_KEY_PASS": "Forget private key passphrase",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "Aldrig"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "Adressebogs URL",
 		"LABEL_CONTACTS_SYNC_USER": "Bruger",
 		"SYNC_READ": "Read only"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "Temaer",
-		"LABEL_BACKGROUND": "Baggrund",
-		"LABEL_FONTS": "Fonts",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "Upload baggrundsbillede (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "Fil for stor",
-		"ERROR_FILE_TYPE_ERROR": "Forkert filtype (kun JPG og PNG )",
-		"ERROR_UNKNOWN": "Ukendt upload fejl"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "Mappeoversigt",

@@ -23,9 +23,7 @@ trait Localization
 				$sLanguage = $this->ValidateLanguage($this->detectClientLanguage($bAdmin), $sLanguage, false);
 			}
 		}
-		$sHookLanguage = $sLanguage = $this->ValidateLanguage($sLanguage, '', $bAdmin) ?: 'en';
-		$this->Plugins()->RunHook('filter.language', array(&$sHookLanguage, $bAdmin));
-		return $this->ValidateLanguage($sHookLanguage, $sLanguage, $bAdmin);
+		return $this->ValidateLanguage($sLanguage, '', $bAdmin) ?: 'en';
 	}
 
 	public function ValidateLanguage(string $sLanguage, string $sDefault = '', bool $bAdmin = false, bool $bAllowEmptyResult = false): string
@@ -77,7 +75,6 @@ trait Localization
 		if (null === $aLang) {
 			$sLang = $this->ValidateLanguage($sLang, 'en');
 			$aLang = \SnappyMail\L10n::load($sLang, 'static');
-			$this->Plugins()->ReadLang($sLang, $aLang);
 		}
 
 		return $aLang[$sKey] ?? $sKey;
@@ -96,8 +93,6 @@ trait Localization
 			$aResultLang,
 			\SnappyMail\L10n::load($sLanguage, ($bAdmin ? 'admin' : 'user'))
 		);
-
-		$this->Plugins()->ReadLang($sLanguage, $aResultLang);
 
 		$sResult = \json_encode($aResultLang, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
 

@@ -6,15 +6,33 @@ abstract class TOTP
 {
 	public static function Verify(string $sSecret, string $sCode) : bool
 	{
+		return null !== static::MatchingCounter($sSecret, $sCode);
+	}
+
+	/**
+	 * Return the matched counter so callers can atomically prevent replay.
+	 * The optional timestamp keeps the clock-window calculation testable.
+	 */
+	public static function MatchingCounter(string $sSecret, string $sCode, ?int $iTimestamp = null) : ?int
+	{
+		if (6 !== \strlen($sCode) || 1 !== \preg_match('/\A[0-9]{6}\z/D', $sCode)) {
+			return null;
+		}
+
 		$key = static::Base32Decode($sSecret);
 		$algo = 'SHA1'; // Google Authenticator doesn't support SHA256
 		$digits = 6; // Google Authenticator doesn't support 8
 		$modulo = \pow(10, $digits);
-		$timeSlice = \floor(\time() / 30);
+		$timeSlice = \intdiv($iTimestamp ?? \time(), 30);
 		$discrepancy = 1;
+		$iMatchedCounter = null;
 		for ($i = -$discrepancy; $i <= $discrepancy; ++$i) {
+			$iCounter = $timeSlice + $i;
+			if (0 > $iCounter) {
+				continue;
+			}
 			// Pack time into binary string
-			$counter = \str_pad(\pack('N*', $timeSlice + $i), 8, "\x00", STR_PAD_LEFT);
+			$counter = \str_pad(\pack('N*', $iCounter), 8, "\x00", STR_PAD_LEFT);
 			// Hash it with users secret key
 			$hm = \hash_hmac($algo, $counter, $key, true);
 			// Unpak 4 bytes of the result, use last nipple of result as index/offset
@@ -22,11 +40,12 @@ abstract class TOTP
 			// Only 32 bits
 			$value = $value[1] & 0x7FFFFFFF;
 			$value = \str_pad($value % $modulo, $digits, '0', STR_PAD_LEFT);
-			if (\hash_equals($value, $sCode)) {
-				return true;
+			if (\hash_equals($value, $sCode)
+				&& (null === $iMatchedCounter || $iCounter > $iMatchedCounter)) {
+				$iMatchedCounter = $iCounter;
 			}
 		}
-		return false;
+		return $iMatchedCounter;
 	}
 
 	public static function CreateSecret() : string

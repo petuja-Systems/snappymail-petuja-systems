@@ -47,7 +47,16 @@
 	"LOGIN": {
 		"LABEL_LOGIN": "登入",
 		"LABEL_SIGN_ME": "記住我",
-		"BUTTON_SIGN_IN": "登入"
+		"BUTTON_SIGN_IN": "登入",
+		"TAGLINE": "無論身在何處，都能查看收件匣。",
+		"LEGAL_NAVIGATION": "法律資訊",
+		"LEGAL_IMPRINT": "出版資訊",
+		"LEGAL_PRIVACY": "隱私",
+		"LEGAL_SOURCE": "原始碼",
+		"TWO_FACTOR_TITLE": "兩步驟驗證",
+		"TWO_FACTOR_INSTRUCTION": "輸入驗證器應用程式中的代碼或復原代碼。",
+		"TWO_FACTOR_CODE": "驗證碼",
+		"BUTTON_VERIFY": "驗證並登入"
 	},
 	"TOP_TOOLBAR": {
 		"BUTTON_ADD_ACCOUNT": "新增帳戶"
@@ -439,8 +448,13 @@
 		"FOLDERS": "資料夾",
 		"ACCOUNTS": "帳戶",
 		"FILTERS": "篩選器",
-		"SECURITY": "安全性",
-		"THEMES": "佈景主題"
+		"SECURITY": "安全性"
+	},
+	"SETTINGS_APPEARANCE": {
+		"LABEL": "外觀",
+		"LIGHT": "淺色",
+		"DARK": "深色",
+		"SYSTEM": "系統"
 	},
 	"SETTINGS_FILTERS": {
 		"SIMPLE": "簡易",
@@ -456,6 +470,28 @@
 		"LEGEND_SECURITY": "安全性",
 		"LABEL_AUTOLOGOUT": "自動登出",
 		"FORGET_KEY_PASS": "忘記私鑰密碼",
+		"TFA_LEGEND": "Two-factor authentication",
+		"TFA_STATUS_LABEL": "Status",
+		"TFA_STATUS_MISSING": "Not configured",
+		"TFA_STATUS_DISABLED": "Not enabled",
+		"TFA_STATUS_ENABLED": "Enabled",
+		"TFA_REQUIRED": "Two-factor authentication is required for this account.",
+		"TFA_ERROR": "Unable to load or update two-factor authentication settings.",
+		"TFA_START": "Set up two-factor authentication",
+		"TFA_RESUME": "Continue setup",
+		"TFA_SECRET": "Setup key and QR code",
+		"TFA_QR_INSTRUCTIONS": "Scan this code with an authenticator app, or enter the setup key manually.",
+		"TFA_RECOVERY_CODES": "Recovery codes",
+		"TFA_RECOVERY_CODES_WARNING": "Save these codes somewhere secure. Each code can be used once. They are shown only while completing setup.",
+		"TFA_CODE_LABEL": "Authenticator code",
+		"TFA_ENABLE": "Verify and enable",
+		"TFA_CODE_REJECTED": "That code was not accepted. Check the code and try again.",
+		"TFA_RESTART": "Restart setup",
+		"TFA_RESTART_CONFIRM": "Restarting setup replaces the pending authenticator key and recovery codes. Continue?",
+		"TFA_DISABLE": "Disable two-factor authentication",
+		"TFA_DISABLE_CONFIRM": "Disable two-factor authentication for this account?",
+		"TFA_CLEAR": "Remove two-factor configuration",
+		"TFA_CLEAR_CONFIRM": "Remove the authenticator key and recovery codes from this account?",
 		"NEVER": "永不"
 	},
 	"SETTINGS_GENERAL": {
@@ -513,15 +549,6 @@
 		"LABEL_CONTACTS_SYNC_AB_URL": "通訊錄 URL",
 		"LABEL_CONTACTS_SYNC_USER": "使用者名稱",
 		"SYNC_READ": "唯讀"
-	},
-	"SETTINGS_THEMES": {
-		"LEGEND_THEMES": "佈景主題",
-		"LABEL_BACKGROUND": "背景",
-		"LABEL_FONTS": "字型",
-		"BUTTON_UPLOAD_BACKGROUND_IMAGE": "上傳背景圖片 (JPG, PNG)",
-		"ERROR_FILE_IS_TOO_BIG": "檔案太大",
-		"ERROR_FILE_TYPE_ERROR": "類型無效 (僅支援 JPG 和 PNG)",
-		"ERROR_UNKNOWN": "發生未知的檔案上傳錯誤"
 	},
 	"SETTINGS_FOLDERS": {
 		"LEGEND_FOLDERS": "資料夾清單",

@@ -51,8 +51,6 @@ abstract class Api
 			$CSP->add('script-src', "'nonce-{$sScriptNonce}'");
 		}
 
-		static::Actions()->Plugins()->RunHook('main.content-security-policy', array($CSP));
-
 		return $CSP;
 	}
 
@@ -106,9 +104,10 @@ abstract class Api
 		if (\strlen($sEmail)) {
 			$sEmail = \SnappyMail\IDN::emailToAscii($sEmail);
 
+			$bStorageDeleted = true;
 			$oStorageProvider = static::Actions()->StorageProvider();
 			if ($oStorageProvider && $oStorageProvider->IsActive()) {
-				$oStorageProvider->DeleteStorage($sEmail);
+				$bStorageDeleted = $oStorageProvider->DeleteStorage($sEmail);
 			}
 
 			$oConfig = static::Config();
@@ -120,7 +119,7 @@ abstract class Api
 				$oConfig->Set('contacts', 'sqlite_global', !!$sqlite_global);
 			}
 
-			return true;
+			return $bStorageDeleted;
 		}
 
 		return false;
@@ -128,7 +127,12 @@ abstract class Api
 
 	public static function LogoutCurrentLogginedUser() : bool
 	{
-		static::Actions()->Logout(true);
-		return true;
+		try {
+			static::Actions()->DoLogout();
+			return true;
+		} catch (\Throwable $oException) {
+			\SnappyMail\Log::warning('TOKENS', 'Unable to complete API logout: '.$oException->getMessage());
+			return false;
+		}
 	}
 }

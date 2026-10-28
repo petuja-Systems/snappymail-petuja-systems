@@ -9,33 +9,7 @@ abstract class Upgrade
 
 	public static function FileStorage(string $sDataPath)
 	{
-		// /cfg/ex/example@example.com
-		foreach (\glob("{$sDataPath}/cfg/*", GLOB_ONLYDIR) as $sOldDir) {
-			foreach (\glob("{$sOldDir}/*", GLOB_ONLYDIR) as $sDomainDir) {
-				$aEmail = \explode('@', \basename($sDomainDir));
-				$sDomain = \trim(1 < \count($aEmail) ? \array_pop($aEmail) : '');
-				$sNewDir = $sDataPath
-					.'/'.\MailSo\Base\Utils::SecureFileName($sDomain ?: 'unknown.tld')
-					.'/'.\MailSo\Base\Utils::SecureFileName(\implode('@', $aEmail) ?: '.unknown');
-//				\MailSo\Base\Utils::mkdir($sNewDir)
-				if (\is_dir($sNewDir) || \mkdir($sNewDir, 0700, true)) {
-					foreach (\glob("{$sDomainDir}/*") as $sItem) {
-						$sName = \basename($sItem);
-						if ('sign_me' === $sName) {
-							// Security issue
-							// https://github.com/RainLoop/rainloop-webmail/issues/2133
-							\unlink($sItem);
-						} else {
-							\rename($sItem, "{$sNewDir}/{$sName}");
-						}
-					}
-					\MailSo\Base\Utils::RecRmDir($sDomainDir);
-				}
-			}
-		}
-		\MailSo\Base\Utils::RecRmDir("{$sDataPath}/cfg");
-		\MailSo\Base\Utils::RecRmDir("{$sDataPath}/data");
-		\MailSo\Base\Utils::RecRmDir("{$sDataPath}/files");
+		throw new \RuntimeException('Legacy account storage requires an offline authoritative ownership map');
 	}
 
 	/**
@@ -186,48 +160,6 @@ abstract class Upgrade
 		return $tar_destination . '.gz';
 	}
 
-	public static function core() : bool
-	{
-		$bResult = false;
-		if (Repository::canUpdateCore()) {
-			$sTmp = null;
-			try {
-				static::backup();
-
-				$sTmp = Repository::downloadCore();
-				if (!$sTmp) {
-					throw new \Exception('Failed to download latest SnappyMail');
-				}
-
-				if (\class_exists('PharData')) {
-					$oArchive = new \PharData($sTmp, 0, null, \Phar::GZ);
-				} else {
-					$oArchive = new \SnappyMail\TAR($sTmp);
-				}
-
-				$target = \rtrim(APP_INDEX_ROOT_PATH, '\\/');
-				\umask(0022);
-				\error_log('Extract to ' . $target);
-//				$bResult = $oArchive->extractTo($target, null, true);
-				$bResult = $oArchive->extractTo($target, 'snappymail/')
-					&& $oArchive->extractTo($target, 'index.php', true);
-				if (!$bResult) {
-					throw new \Exception('Extract core files failed');
-				}
-
-				static::fixPermissions();
-
-				\error_log('Update success');
-				// opcache_reset is a terrible solution
-//				\is_callable('opcache_reset') && \opcache_reset();
-				\is_callable('opcache_invalidate') && \opcache_invalidate($target.'/index.php', true);
-			} finally {
-				$sTmp && \unlink($sTmp);
-			}
-		}
-		return $bResult;
-	}
-
 	// Prevents Apache access error due to directories being 0700
 	public static function fixPermissions($mode = 0755) : void
 	{
@@ -238,9 +170,13 @@ abstract class Upgrade
 		foreach (\glob("{$target}/snappymail/v/*", \GLOB_ONLYDIR) as $dir) {
 			\chmod($dir, 0755);
 			foreach (['static','themes'] as $folder) {
-				\chmod("{$dir}/{$folder}", 0755);
+				$path = "{$dir}/{$folder}";
+				if (!\is_dir($path)) {
+					continue;
+				}
+				\chmod($path, 0755);
 				$iterator = new \RecursiveIteratorIterator(
-					new \RecursiveDirectoryIterator("{$dir}/{$folder}", \FilesystemIterator::SKIP_DOTS),
+					new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
 					\RecursiveIteratorIterator::SELF_FIRST
 				);
 				foreach ($iterator as $item) {

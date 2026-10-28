@@ -4,11 +4,40 @@ html.list-loading body {
 	cursor: progress;
 }
 
-.toggleLeft::before {
-	content: '❮';
-}
-html.rl-left-panel-disabled .toggleLeft::before {
-	content: '❯';
+/* Fixed base values retained from Default for public Login and Admin surfaces. */
+:root {
+	color-scheme: light;
+	--main-color: #333;
+	--main-bg-color: #48525C;
+	--main-bg-image: url("../../images/background.jpg");
+	--loading-color: #ddd;
+	--loading-text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.5);
+	--login-color: #eee;
+	--login-bg-color: rgba(0,0,0,0.5);
+	--login-box-shadow: 0px 2px 10px rgba(0,0,0,0.5);
+	--login-border: none;
+	--login-border-radius: 7px;
+	--dropdown-menu-color: #333;
+	--dropdown-menu-bg-color: #fff;
+	--dropdown-menu-hover-bg-color: #48525C;
+	--dropdown-menu-hover-color: #eee;
+	--dropdown-menu-disable-color: #999;
+	--folders-color: #fff;
+	--folders-disabled-color: #aaa;
+	--folders-selected-color: #fff;
+	--folders-selected-bg-color: rgba(0,0,0,0.5);
+	--folders-focused-color: #fff;
+	--folders-focused-bg-color: rgba(0,0,0,0.7);
+	--folders-hover-color: #fff;
+	--folders-hover-bg-color: rgba(0,0,0,0.5);
+	--folders-drop-color: #fff;
+	--folders-drop-bg-color: rgba(0,0,0,0.5);
+	--settings-menu-color: #fff;
+	--settings-menu-selected-color: #fff;
+	--settings-menu-selected-bg-color: rgba(0,0,0,0.5);
+	--settings-menu-hover-color: #fff;
+	--settings-menu-hover-bg-color: rgba(0,0,0,0.5);
+	--message-list-toolbar-bg-color: #eee;
 }
 
 @media screen and (min-width: @maxMobileWidth + 1px) {
@@ -24,8 +53,7 @@ option:disabled {
 	cursor: not-allowed;
 }
 
-*, select:focus {
-	outline: none;
+* {
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
