@@ -14,7 +14,7 @@ const { config } = require('./config');
 const { del } = require('./common');
 
 const cleanCss = require('gulp-clean-css');
-const cssClean = () => del(config.paths.staticCSS + '/*.css');
+const cssClean = () => del(config.paths.staticCSS + '/*.{css,gz,br}');
 
 const cssBootBuild = () => {
 	const

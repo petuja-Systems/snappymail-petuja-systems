@@ -1,0 +1,283 @@
+import { isWin, notWS } from './Constants';
+import { createElement, detach } from './node/Node';
+import { getStartBlockOfRange, getEndBlockOfRange } from './range/Block';
+import { createRange, deleteContentsOfRange } from './range/InsertDelete';
+import {
+    moveRangeBoundariesDownTree,
+    moveRangeBoundariesUpTree,
+} from './range/Boundaries';
+
+import type { Squire } from './Editor';
+import { getTextContentsOfRange } from './range/Contents';
+
+// ---
+
+const indexOf = Array.prototype.indexOf;
+
+const extractRangeToClipboard = (
+    event: ClipboardEvent,
+    range: Range,
+    root: HTMLElement,
+    removeRangeFromDocument: boolean,
+    toCleanHTML: null | ((html: string) => string),
+    toPlainText: null | ((html: string) => string),
+    plainTextOnly: boolean,
+): boolean => {
+    // Edge only seems to support setting plain text as of 2016-03-11.
+    const clipboardData = event.clipboardData;
+    if (!clipboardData) {
+        return false;
+    }
+    // First get the plain text version from the range (unless we have a custom
+    // HTML -> Text conversion fn)
+    let text = toPlainText ? '' : getTextContentsOfRange(range);
+
+    // Clipboard content should include all parents within block, or all
+    // parents up to root if selection across blocks
+    const startBlock = getStartBlockOfRange(range, root);
+    const endBlock = getEndBlockOfRange(range, root);
+    let copyRoot = root;
+
+    // If the content is not in well-formed blocks, the start and end block
+    // may be the same, but actually the range goes outside it. Must check!
+    if (
+        startBlock === endBlock &&
+        startBlock?.contains(range.commonAncestorContainer)
+    ) {
+        copyRoot = startBlock;
+    }
+
+    // Extract the contents
+    let contents: Node;
+    if (removeRangeFromDocument) {
+        contents = deleteContentsOfRange(range, root);
+    } else {
+        // Clone range to mutate, then move up as high as possible without
+        // passing the copy root node.
+        range = range.cloneRange();
+        moveRangeBoundariesDownTree(range);
+        moveRangeBoundariesUpTree(range, copyRoot, copyRoot, root);
+        contents = range.cloneContents();
+    }
+
+    // Add any other parents not in extracted content, up to copy root
+    let parent = range.commonAncestorContainer;
+    if (parent instanceof Text) {
+        parent = parent.parentNode!;
+    }
+    while (parent && parent !== copyRoot) {
+        const newContents = parent.cloneNode(false);
+        newContents.append(contents);
+        contents = newContents;
+        parent = parent.parentNode!;
+    }
+
+    // Get HTML version of data
+    let html: string | undefined;
+    if (
+        contents.childNodes.length === 1 &&
+        contents.childNodes[0] instanceof Text
+    ) {
+        // Replace nbsp with regular space;
+        // eslint-disable-next-line no-irregular-whitespace
+        text = contents.childNodes[0].data.replace(/ /g, ' ');
+        plainTextOnly = true;
+    } else {
+        const node = createElement('DIV') as HTMLDivElement;
+        node.append(contents);
+        html = node.innerHTML;
+        if (toCleanHTML) {
+            html = toCleanHTML(html);
+        }
+    }
+
+    // Get Text version of data if converting from HTML
+    if (toPlainText && html !== undefined) {
+        text = toPlainText(html);
+    }
+
+    // Firefox (and others?) returns unix line endings (\n) even on Windows.
+    // If on Windows, normalise to \r\n, since Notepad and some other crappy
+    // apps do not understand just \n.
+    if (isWin) {
+        text = text.replace(/\r?\n/g, '\r\n');
+    }
+
+    // Set clipboard data
+    if (!plainTextOnly && html && text !== html) {
+        html = '<!-- squire -->' + html;
+        clipboardData.setData('text/html', html);
+    }
+    clipboardData.setData('text/plain', text);
+    event.preventDefault();
+
+    return true;
+};
+
+// ---
+
+const _onCut = function (this: Squire, event: ClipboardEvent): void {
+    const range: Range = this.getSelection();
+    const root: HTMLElement = this._root;
+
+    // Nothing to do
+    if (range.collapsed) {
+        event.preventDefault();
+        return;
+    }
+
+    // Save undo checkpoint
+    this.saveUndoState(range);
+
+    const handled = extractRangeToClipboard(
+        event,
+        range,
+        root,
+        true,
+        this._config.willCutCopy,
+        this._config.toPlainText,
+        false,
+    );
+    if (!handled) {
+        setTimeout(() => {
+            try {
+                // If all content removed, ensure div at start of root.
+                this._ensureBottomLine();
+            } catch (error) {
+                this._config.didError(error);
+            }
+        }, 0);
+    }
+
+    this.setSelection(range);
+};
+
+const _onCopy = function (this: Squire, event: ClipboardEvent): void {
+    extractRangeToClipboard(
+        event,
+        this.getSelection(),
+        this._root,
+        false,
+        this._config.willCutCopy,
+        this._config.toPlainText,
+        false,
+    );
+};
+
+// Need to monitor for shift key like this, as event.shiftKey is not available
+// in paste event.
+const _monitorShiftKey = function (this: Squire, event: KeyboardEvent): void {
+    this._isShiftDown = event.shiftKey;
+};
+
+const _onPaste = function (this: Squire, event: ClipboardEvent): void {
+    const clipboardData = event.clipboardData;
+    const items = clipboardData.items;
+    const choosePlain: boolean | undefined = this._isShiftDown;
+    let hasRTF = false;
+    let hasImage = false;
+    let plainItem: null | DataTransferItem = null;
+    let htmlItem: null | DataTransferItem = null;
+
+    // Current HTML5 Clipboard interface
+    // ---------------------------------
+    // https://html.spec.whatwg.org/multipage/interaction.html
+        let l = items.length;
+        while (l--) {
+            const item = items[l];
+            const type = item.type;
+            if (type === 'text/html') {
+                htmlItem = item;
+                // iOS copy URL gives you type text/uri-list which is just a list
+                // of 1 or more URLs separated by new lines. Can just treat as
+                // plain text.
+            } else if (type === 'text/plain' || type === 'text/uri-list') {
+                plainItem = item;
+            } else if (type === 'text/rtf') {
+                hasRTF = true;
+            } else if (/^image\/.*/.test(type)) {
+                hasImage = true;
+            }
+        }
+
+        // Treat image paste as a drop of an image file. When you copy
+        // an image in Chrome/Firefox (at least), it copies the image data
+        // but also an HTML version (referencing the original URL of the image)
+        // and a plain text version.
+        //
+        // However, when you copy in Excel, you get html, rtf, text, image;
+        // in this instance you want the html version! So let's try using
+        // the presence of text/rtf as an indicator to choose the html version
+        // over the image.
+        if (hasImage && !(hasRTF && htmlItem)) {
+            event.preventDefault();
+            this.fireEvent('pasteImage', {
+                clipboardData,
+            });
+            return;
+        }
+
+            event.preventDefault();
+            if (htmlItem && (!choosePlain || !plainItem)) {
+                htmlItem.getAsString((html) => {
+                    this.insertHTML(html, true);
+                });
+            } else if (plainItem) {
+                plainItem.getAsString((text) => {
+                    // If we have a selection and text is solely a URL,
+                    // just make the text a link.
+                    let isLink = false;
+                    const range = this.getSelection();
+                    if (!range.collapsed && notWS.test(range.toString())) {
+                        const match = this.linkRegExp.exec(text);
+                        isLink = !!match && match[0].length === text.length;
+                    }
+                    if (isLink) {
+                        this.makeLink(text);
+                    } else {
+                        this.insertPlainText(text, true);
+                    }
+                });
+            }
+
+};
+
+// On Windows you can drag an drop text. We can't handle this ourselves, because
+// as far as I can see, there's no way to get the drop insertion point. So just
+// save an undo state and hope for the best.
+const _onDrop = function (this: Squire, event: DragEvent): void {
+    // it's possible for dataTransfer to be null, let's avoid it.
+    if (!event.dataTransfer) {
+        return;
+    }
+    const types = event.dataTransfer.types;
+    let l = types.length;
+    let hasPlain = false;
+    let hasHTML = false;
+    while (l--) {
+        switch (types[l]) {
+            case 'text/plain':
+                hasPlain = true;
+                break;
+            case 'text/html':
+                hasHTML = true;
+                break;
+            default:
+                return;
+        }
+    }
+    if (hasHTML || (hasPlain && this.saveUndoState)) {
+        this.saveUndoState();
+    }
+};
+
+// ---
+
+export {
+    extractRangeToClipboard,
+    _onCut,
+    _onCopy,
+    _monitorShiftKey,
+    _onPaste,
+    _onDrop,
+};

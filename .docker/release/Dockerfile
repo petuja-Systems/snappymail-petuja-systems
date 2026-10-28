@@ -1,13 +1,14 @@
 # syntax=docker/dockerfile:1
 
 FROM php:8.2-cli-alpine AS builder
+ARG SOURCE_DATE_EPOCH=315532800
 RUN php -r 'if (version_compare(PHP_VERSION, "8.2.35", "<")) { fwrite(STDERR, "petuja.email requires PHP 8.2.35 or newer; found " . PHP_VERSION . PHP_EOL); exit(1); }'
 RUN set -eux; \
     apk add --no-cache libzip; \
     apk add --no-cache --virtual .build-dependencies $PHPIZE_DEPS libzip-dev; \
     docker-php-ext-install zip; \
     apk del .build-dependencies
-RUN apk add --no-cache npm
+RUN apk add --no-cache npm python3
 RUN npm install -g gulp yarn
 WORKDIR /source
 COPY package.json yarn.lock ./

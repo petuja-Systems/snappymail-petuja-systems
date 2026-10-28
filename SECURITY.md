@@ -14,7 +14,7 @@ security fixes.
 | 1.0.x | Not maintained |
 | Earlier versions | Not maintained as petuja.email releases |
 
-The latest released version is 1.1.0.
+The 1.1.0 rollout failed; the 1.1.1 stabilization release is being prepared.
 
 ## Reporting a vulnerability
 

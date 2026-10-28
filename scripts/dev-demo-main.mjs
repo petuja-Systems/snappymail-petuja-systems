@@ -152,6 +152,7 @@ async function writeDemoConfiguration({ imapPort, smtpPort, contactsAvailability
 	const markerContents = await readFile(path.join(workspace.root, demoRootMarkerName));
 	const bootstrap = [
 		'<?php',
+		"if (defined('PETUJA_LOCAL_DEMO_ROOT')) return;",
 		"define('APP_DATA_FOLDER_PATH', __DIR__ . DIRECTORY_SEPARATOR);",
 		"define('PETUJA_LOCAL_DEMO_ROOT', __DIR__);",
 		"define('PETUJA_LOCAL_DEMO_MARKER_CONTENTS', hex2bin('" + markerContents.toString('hex') + "'));",
@@ -287,11 +288,14 @@ async function verifyApplication(baseUrl, contactsAvailability) {
 	const page = await fetch(baseUrl + '/', { signal: AbortSignal.timeout(10000) });
 	assertHttp(page, 'Application shell');
 	const markup = await page.text();
-	if (!markup.includes('snappymail/v/0.0.0/static/')) {
+	const metadata = JSON.parse(await readFile(path.join(repositoryRoot, 'snappymail/v/0.0.0/app/petuja-product.json'), 'utf8'));
+	const staticPrefix = 'snappymail/v/0.0.0/static/petuja-email-' + metadata.version + '/';
+	if (!markup.includes(staticPrefix)) {
 		throw new Error('Application shell does not reference the local SnappyMail assets.');
 	}
 	for (const asset of requiredAssets) {
-		const response = await fetch(baseUrl + '/' + asset, { signal: AbortSignal.timeout(10000) });
+		const publicAsset = asset.replace('snappymail/v/0.0.0/static/', staticPrefix);
+		const response = await fetch(baseUrl + '/' + publicAsset, { signal: AbortSignal.timeout(10000) });
 		assertHttp(response, 'Required asset ' + asset);
 		if (!(await response.arrayBuffer()).byteLength) {
 			throw new Error('Required asset is empty: ' + asset);
@@ -301,6 +305,10 @@ async function verifyApplication(baseUrl, contactsAvailability) {
 	const jar = createCookieJar();
 	const guest = await request(baseUrl, '/?/AppData', { jar });
 	assertHttp(guest.response, 'Guest AppData self-check', guest.text);
+	if (guest.json?.System?.webStaticPath !== '/' + staticPrefix
+		|| guest.json?.StaticLibsJs !== '/' + staticPrefix + 'js/min/libs.min.js') {
+		throw new Error('Guest AppData does not use the product-versioned static tree.');
+	}
 	const guestToken = guest.json?.System?.token;
 	if ('string' !== typeof guestToken || !guestToken.startsWith('0-')) {
 		throw new Error('Guest AppData did not return the expected local login token.');
@@ -445,7 +453,8 @@ async function startDemo() {
 				'-d', 'display_errors=0',
 				'-d', 'auto_prepend_file=' + bootstrapPath,
 				'-S', httpHost + ':' + httpPort,
-				'-t', repositoryRoot
+				'-t', repositoryRoot,
+				path.join(repositoryRoot, 'scripts/dev-demo-router.php')
 			], {
 				cwd: repositoryRoot,
 				env: process.env,

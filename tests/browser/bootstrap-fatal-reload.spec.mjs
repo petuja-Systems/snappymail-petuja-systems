@@ -1,11 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { indexFixture } from './login-fixture.mjs';
+import { fixtureStaticFile, indexFixture } from './login-fixture.mjs';
 
-const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../snappymail/v/0.0.0'),
-	origin = 'http://127.0.0.1:8789';
+const origin = 'http://127.0.0.1:8789';
 
 test('bootstrap failure exposes one localized keyboard and touch accessible safe GET retry', async ({ page }) => {
 	const html = await indexFixture('de', false, '/mail/'),
@@ -26,14 +22,9 @@ test('bootstrap failure exposes one localized keyboard and touch accessible safe
 			appDataRequests.push(request);
 			return route.fulfill({ status: 503, contentType: 'text/html', body: '<img src=x onerror="window.__serverBodyExecuted=true">/private/test/path' });
 		}
-		if (url.pathname === '/fixture-manifest.json') {
-			return route.fulfill({ json: { name: 'petuja.email fatal fixture', start_url: '/mail/', display: 'standalone' } });
-		}
-		if (url.pathname.startsWith('/static/')) {
-			const file = path.resolve(appRoot, '.' + decodeURIComponent(url.pathname));
-			if (file.startsWith(path.join(appRoot, 'static') + path.sep)) {
-				try { return await route.fulfill({ path: file }); } catch {}
-			}
+		const file = fixtureStaticFile(url.pathname);
+		if (file) {
+			try { return await route.fulfill({ path: file }); } catch {}
 		}
 		return route.abort();
 	});

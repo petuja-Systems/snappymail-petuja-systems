@@ -1,11 +1,7 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { test as playwrightTest } from '@playwright/test';
 import { expect, test as authenticatedTest } from './authenticated-ui-fixture.mjs';
-import { indexFixture } from './login-fixture.mjs';
+import { fixtureStaticBase, fixtureStaticFile, indexFixture } from './login-fixture.mjs';
 
-const repository = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const appRoot = path.join(repository, 'snappymail/v/0.0.0');
 const adminOrigin = 'http://127.0.0.1:8793';
 
 const userEntries = [
@@ -136,9 +132,6 @@ playwrightTest('Admin Settings icons preserve labels, order, active state, keybo
 		if ('/' === url.pathname && !url.search) {
 			return route.fulfill({ contentType: 'text/html', body: adminHtml });
 		}
-		if ('/fixture-manifest.json' === url.pathname) {
-			return route.fulfill({ json: { name: 'petuja.email synthetic Admin settings fixture', start_url: '/', display: 'standalone' } });
-		}
 		if ('/' === url.pathname && /^\?\/AdminAppData\//.test(url.search)) {
 			return route.fulfill({ json: {
 				Auth: true,
@@ -147,10 +140,10 @@ playwrightTest('Admin Settings icons preserve labels, order, active state, keybo
 				clientLanguage: 'en',
 				hourCycle: 'h23',
 				loadingDescription: 'petuja.email',
-				StaticLibsJs: '/static/js/min/libs.min.js',
+				StaticLibsJs: fixtureStaticBase + 'js/min/libs.min.js',
 				Admin: { allowed: true, host: true, path: '', language: 'en', languages: ['en'], clientLanguage: 'en' },
 				System: {
-					languages: ['en'], version: '0.0.0', webVersionPath: '/', token: 'synthetic-admin-settings-token',
+					languages: ['en'], version: '0.0.0', webVersionPath: '/', webStaticPath: fixtureStaticBase, token: 'synthetic-admin-settings-token',
 					folderSpecLimit: 50, allowAppendMessage: false, attachmentsActions: []
 				}
 			} });
@@ -159,11 +152,9 @@ playwrightTest('Admin Settings icons preserve labels, order, active state, keybo
 			const { Action } = request.postDataJSON();
 			return route.fulfill({ json: { Action, Result: true } });
 		}
-		if (url.pathname.startsWith('/static/')) {
-			const file = path.resolve(appRoot, '.' + decodeURIComponent(url.pathname));
-			if (file.startsWith(path.join(appRoot, 'static') + path.sep)) {
-				try { return await route.fulfill({ path: file }); } catch {}
-			}
+		const file = fixtureStaticFile(url.pathname);
+		if (file) {
+			try { return await route.fulfill({ path: file }); } catch {}
 		}
 		unexpectedRequests.push(url.pathname + url.search);
 		return route.fulfill({ status: 404, body: 'Synthetic Admin fixture resource missing' });

@@ -1,6 +1,6 @@
 {
   "product": "petuja.email",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "snappymailVersion": "2.38.2",
   "minimumPhpVersion": "8.2.35"
 }

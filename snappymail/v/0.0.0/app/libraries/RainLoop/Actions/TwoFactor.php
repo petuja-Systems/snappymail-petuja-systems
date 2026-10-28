@@ -130,6 +130,7 @@ trait TwoFactor
 			'languages',
 			'webPath',
 			'webVersionPath',
+			'webStaticPath',
 			'petujaEmailVersion',
 			'petujaEmailSnappyMailVersion',
 			'customLogoutLink'

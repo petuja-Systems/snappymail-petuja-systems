@@ -1,0 +1,12 @@
+{
+  "name": "petuja-openpgp-historical-build-inputs",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@openpgp/web-stream-tools": "0.0.10",
+    "bn.js": "4.12.0",
+    "hash.js": "1.1.7",
+    "inherits": "2.0.4",
+    "rollup": "2.79.1"
+  }
+}

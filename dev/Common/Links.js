@@ -69,7 +69,7 @@ export const
 	 * @param {string} path
 	 * @returns {string}
 	 */
-	staticLink = path => Settings.app('webVersionPath') + 'static/' + path,
+	staticLink = path => Settings.app('webStaticPath') + path,
 
 	/**
 	 * @param {string} inboxFolderName = 'INBOX'

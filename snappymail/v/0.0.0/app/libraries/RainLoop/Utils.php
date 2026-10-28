@@ -137,9 +137,25 @@ class Utils
 //		return self::WebPath() . \str_replace(APP_INDEX_ROOT_PATH, '', APP_VERSION_ROOT_PATH);
 	}
 
+	public static function ProductStaticNamespace() : string
+	{
+		$metadata = \json_decode((string) @\file_get_contents(APP_VERSION_ROOT_PATH . 'app/petuja-product.json'), true);
+		$version = \is_array($metadata) ? ($metadata['version'] ?? null) : null;
+		if (($metadata['product'] ?? null) !== 'petuja.email' || !\is_string($version)
+			|| !\preg_match('/\A[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?\z/', $version)) {
+			throw new \RuntimeException('Invalid petuja.email product metadata');
+		}
+		return 'petuja-email-' . $version;
+	}
+
 	public static function WebStaticPath(string $path = '') : string
 	{
-		return self::WebVersionPath() . 'static/' . $path;
+		return self::WebVersionPath() . 'static/' . self::ProductStaticNamespace() . '/' . $path;
+	}
+
+	public static function StaticFilePath(string $path = '') : string
+	{
+		return APP_VERSION_ROOT_PATH . 'static/' . self::ProductStaticNamespace() . '/' . $path;
 	}
 
 	public static function inOpenBasedir(string $name) : string

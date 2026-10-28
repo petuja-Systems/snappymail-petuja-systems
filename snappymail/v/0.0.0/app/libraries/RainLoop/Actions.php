@@ -589,7 +589,8 @@ class Actions
 				'token' => Utils::GetCsrfToken(),
 				'languages' => \SnappyMail\L10n::getLanguages(false),
 				'webPath' => \RainLoop\Utils::WebPath(),
-				'webVersionPath' => \RainLoop\Utils::WebVersionPath()
+				'webVersionPath' => \RainLoop\Utils::WebVersionPath(),
+				'webStaticPath' => \RainLoop\Utils::WebStaticPath()
 			),
 			'allowLanguagesOnLogin' => (bool) $oConfig->Get('login', 'allow_languages_on_login', true)
 		);
@@ -755,7 +756,7 @@ class Actions
 				}
 
 				$aResult['newMailSounds'] = [];
-				foreach (\glob(APP_VERSION_ROOT_PATH.'static/sounds/*.mp3') as $file) {
+				foreach (\glob(Utils::StaticFilePath('sounds/*.mp3')) as $file) {
 					$aResult['newMailSounds'][] = \basename($file, '.mp3');
 				}
 //				foreach (\glob(APP_INDEX_ROOT_PATH.'notifications/*.mp3') as $file) {

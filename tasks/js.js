@@ -17,7 +17,7 @@ const { del } = require('./common');
 
 const { rollupJS } = require('./rollup');
 
-const jsClean = () => del(config.paths.staticJS + '/**/*.{js,map}');
+const jsClean = () => del(config.paths.staticJS + '/**/*.{js,map,gz,br}');
 
 const prepend = () => gap.prependText(config.head.agpl + '\n');
 

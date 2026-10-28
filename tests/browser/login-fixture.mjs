@@ -1,4 +1,5 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test as base, expect } from '@playwright/test';
@@ -7,6 +8,14 @@ const repository = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 const appRoot = path.join(repository, 'snappymail/v/0.0.0');
 const origin = 'http://127.0.0.1:8789';
 const read = relative => readFile(path.join(appRoot, relative), 'utf8');
+const productVersion = JSON.parse(readFileSync(path.join(appRoot, 'app/petuja-product.json'), 'utf8')).version;
+export const fixtureStaticBase = '/snappymail/v/0.0.0/static/petuja-email-' + productVersion + '/';
+export function fixtureStaticFile(pathname) {
+	if (!pathname.startsWith(fixtureStaticBase)) return null;
+	const root = path.join(appRoot, 'static', 'petuja-email-' + productVersion);
+	const file = path.resolve(root, decodeURIComponent(pathname.slice(fixtureStaticBase.length)));
+	return file.startsWith(root + path.sep) ? file : null;
+}
 
 async function indexFixture(language, admin, reloadHref = admin ? '/?admin' : '/') {
 	const catalog = {
@@ -25,9 +34,9 @@ async function indexFixture(language, admin, reloadHref = admin ? '/?admin' : '/
 	}
 	const replacements = {
 		BaseAppBootCss: await read('static/css/boot.min.css'),
-		BaseAppMainCssLink: '/static/css/' + (admin ? 'admin' : 'app') + '.min.css',
-		BaseAppManifestLink: '/fixture-manifest.json',
-		BaseFavIconSvg: '/static/images/petuja-systems-logo.svg',
+		BaseAppMainCssLink: fixtureStaticBase + 'css/' + (admin ? 'admin' : 'app') + '.min.css',
+		BaseAppManifestLink: fixtureStaticBase + 'manifest.json',
+		BaseFavIconSvg: fixtureStaticBase + 'images/petuja-systems-logo.svg',
 		BaseTemplates: templates,
 		BaseAppBootScript: await read('static/js/boot.js'),
 		BaseLanguage: 'rl.I18N=' + JSON.stringify(catalog) + ';',
@@ -75,18 +84,15 @@ export const test = base.extend({
 					if (url.pathname === '/' && !url.search) {
 						return route.fulfill({ contentType: 'text/html', body: html });
 					}
-					if (url.pathname === '/fixture-manifest.json') {
-						return route.fulfill({ json: { name: 'petuja.email local fixture', start_url: '/', display: 'standalone' } });
-					}
 					if (url.pathname === '/' && /^\?\/(Admin)?AppData\//.test(url.search)) {
 						return route.fulfill({ json: {
 							Auth: false, title: 'petuja.email', language, clientLanguage: language,
 							hourCycle: 'h23', allowLanguagesOnLogin: true, signMe: 1,
 							loadingDescription: 'petuja.email', DevEmail: '', DevPassword: '',
-							StaticLibsJs: '/static/js/min/libs.min.js',
+							StaticLibsJs: fixtureStaticBase + 'js/min/libs.min.js',
 							Admin: { allowed: true, host: true, path: '' },
 							System: {
-								languages: ['en', 'de', 'ar'], version: '0.0.0', webVersionPath: '/',
+								languages: ['en', 'de', 'ar'], version: '0.0.0', webVersionPath: '/', webStaticPath: fixtureStaticBase,
 								petujaEmailVersion: 'fixture', petujaEmailSnappyMailVersion: '2.38.2',
 								petujaEmailSourceUrl: 'https://example.test/source',
 								token: 'synthetic-layout-fixture'
@@ -113,11 +119,9 @@ export const test = base.extend({
 						return route.fulfill({ status: 400, body: 'Unexpected fixture action' });
 					}
 					// Only production-built static assets from the development tree.
-					if (url.pathname.startsWith('/static/')) {
-						const file = path.resolve(appRoot, '.' + decodeURIComponent(url.pathname));
-						if (file.startsWith(path.join(appRoot, 'static') + path.sep)) {
-							try { return await route.fulfill({ path: file }); } catch {}
-						}
+					const file = fixtureStaticFile(url.pathname);
+					if (file) {
+						try { return await route.fulfill({ path: file }); } catch {}
 					}
 					unexpectedRequests.push(url.pathname + url.search);
 					return route.fulfill({ status: 404, body: 'Fixture resource missing' });

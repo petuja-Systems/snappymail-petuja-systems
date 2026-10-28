@@ -6,9 +6,18 @@ own product versioning independently from the underlying SnappyMail engine.
 The historical SnappyMail changelog is retained below for upstream provenance
 and technical context.
 
-## petuja.email 1.1.0 — 2026-10-28
+## petuja.email 1.1.1 — 2026-10-28
 
 Based on SnappyMail 2.38.2.
+
+- Isolated static assets by petuja.email product version to prevent stale
+  long-lived caches from mixing release files.
+- Restricted corresponding-source publication to a reviewed, fail-closed set
+  of source and release inputs.
+
+## petuja.email 1.1.0 — 2026-10-28
+
+Based on SnappyMail 2.38.2. The 1.1.0 release failed and is superseded by 1.1.1.
 
 ### Added
 

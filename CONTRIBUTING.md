@@ -5,11 +5,8 @@ that upstream baseline and avoid combining unrelated work.
 
 ## Before starting
 
-Read the public project guidance:
-
-- [Development](docs/DEVELOPMENT.md)
-- [Upstream relationship](docs/UPSTREAM.md)
-- [Product identity](docs/BRANDING.md)
+Read the public [README](README.md) for the build, product identity, and
+upstream lineage.
 
 Base changes on the intended petuja.email source revision and state the user
 impact, scope, and relevant upstream behavior in the change description. For
@@ -34,8 +31,8 @@ corepack yarn gulp
 ```
 
 The repository keeps the SnappyMail source and build layout. Edit source files
-rather than generated CSS or JavaScript. See [Development](docs/DEVELOPMENT.md)
-for local runtime, demo, and test instructions. Never copy production
+rather than generated CSS or JavaScript. See the [README](README.md) for build
+instructions. Never copy production
 credentials, mail, contacts, private keys, certificates, logs, or runtime data
 into a development checkout.
 

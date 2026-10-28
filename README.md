@@ -1,105 +1,60 @@
-<div align="center">
-  <img src="snappymail/v/0.0.0/static/images/petuja-systems-logo.svg" alt="petuja Systems" width="96">
+# petuja.email
 
-  # petuja.email
+petuja.email is a webmail product from petuja Systems. This source targets
+**petuja.email 1.1.1**, based on **SnappyMail 2.38.2**, which is derived from
+RainLoop Webmail Community Edition. Product and engine versions are maintained
+separately in `snappymail/v/0.0.0/app/petuja-product.json` and `package.json`.
 
-  A petuja Systems webmail platform based on SnappyMail.
+## Build and package
 
-  **[petuja.email](https://petuja.email/)**
-</div>
+Use PHP 8.2.35 or newer with the ZIP, Phar and mbstring extensions, Node.js with
+Corepack and Yarn, Python 3, and the pinned dependencies in `yarn.lock`. `gzip`
+and `brotli` are used when available to produce precompressed assets.
 
-## About
-
-**petuja.email** is the webmail product developed and operated by **petuja Systems**.
-It is based on [SnappyMail](https://github.com/the-djmaze/snappymail) and keeps
-the upstream project structure so changes remain reviewable and future upstream
-work can be evaluated deliberately.
-
-petuja.email has its own product versioning. The SnappyMail version identifies
-the upstream engine baseline and is maintained separately.
-
-## Current version
-
-| Component | Version |
-| --- | --- |
-| petuja.email | **1.1.0** |
-| SnappyMail baseline | **2.38.2** |
-| Upstream baseline commit | `e345550c7fddfffdda9095deba64e98dc1c59815` |
-
-This repository contains the finalized petuja.email **1.1.0** release source.
-Corresponding-source publication and Production deployment are separate steps;
-this table identifies the release source and does not identify the version
-currently deployed in Production.
-
-The machine-readable product metadata lives in
-`snappymail/v/0.0.0/app/petuja-product.json`.
-
-## petuja.email-specific work
-
-The current petuja.email source builds on the fixed SnappyMail 2.38.2 baseline
-with reviewed product-specific changes, including:
-
-- petuja.email product identity and independent product-version metadata;
-- a redesigned, responsive public login using local petuja Systems branding;
-- local Rubik typography and associated font licensing;
-- login legal navigation and product/upstream version attribution;
-- native TOTP two-factor authentication with recovery codes and forced
-  enrollment;
-- native Light/Dark/System appearance with a quick appearance switch;
-- selected localization, domain-definition, message-view, keyboard, and mobile
-  improvements, plus a local synthetic demo environment.
-
-This list describes petuja.email-specific work only. Features available in
-upstream SnappyMail are not necessarily enabled in a particular deployment.
-
-## Development
-
-Install the pinned JavaScript dependencies and build the development assets:
-
-```bash
+```sh
 corepack yarn install --frozen-lockfile
 corepack yarn gulp
+PATH="$PWD/node_modules/.bin:$PATH" SOURCE_DATE_EPOCH=1793145600 php release.php
 ```
 
-The existing PHP release tooling can produce a release-style SnappyMail package:
+The ZIP and tar.gz packages are written under
+`build/dist/releases/webmail/2.38.2/`. Set `SOURCE_DATE_EPOCH` to the same Unix
+timestamp for reproducible ZIP and TAR timestamps; a Git checkout can omit it
+and use the latest commit timestamp. The release command also runs the Gulp build, and
+`php release.php --skip-gulp` packages an existing build using the same PATH
+and timestamp settings. Gulp retains the normal development outputs and creates
+the product-versioned static tree used by the application.
 
-```bash
-php release.php
-```
+The included Squire editor sources correspond to upstream fork commit
+`66d9fa9825017e44dc387dbb005d1e55d51a2da8`. To rebuild its bundled input,
+run `npm ci` and then `node build.js` in `vendors/squire2/`.
+The included OpenPGP.js fork sources correspond to commit
+`b2f9e6ca3d07333e7e53fe416c096075ff137b03`. To reproduce the shipped browser
+bundle with the pinned historical build inputs, run
+`node vendors/openpgp-5/rebuild.cjs /tmp/openpgp-rebuilt.js` and compare that
+file with `vendors/openpgp-5/dist/openpgp.js`. This needs npm registry access
+and writes only to a temporary directory and the new output file.
 
-On environments where the Gulp build has already been run, packaging can use:
+Extract a package into the web server's application directory and provide a
+writable, protected data directory. The supplied Apache configuration allows
+the Service Worker to use the root scope; other web servers must likewise send
+`Service-Worker-Allowed: /` for its script. The supplied container configuration
+is in `.docker/release/`.
+Its Dockerfile defaults to the ZIP epoch when Git history is unavailable;
+pass `--build-arg SOURCE_DATE_EPOCH=<timestamp>` to select another timestamp.
+Existing account storage may require the offline procedure described in
+[Account storage and offline recovery](docs/account-storage.md).
 
-```bash
-php release.php --skip-gulp
-```
+## Source and license
 
-Do not commit installation-specific or runtime data such as credentials,
-private keys, certificates, mail, contacts, logs, caches, production
-configuration, `include.php`, `.env*`, `data/`, `node_modules/`, or generated
-release archives.
-
-## Source and lineage
-
-petuja.email is based on **SnappyMail 2.38.2**, which itself is derived from
-**RainLoop Webmail Community Edition**.
-
-- SnappyMail upstream: <https://github.com/the-djmaze/snappymail>
-- petuja Systems public source repository:
-  <https://github.com/petuja-Systems/snappymail-petuja-systems>
-
-The public repository's default branch should not be assumed to match a running
-petuja.email deployment. Corresponding source for a released petuja.email
-version is identified by the release-specific public ref or tag associated with
-that release.
-
-## License
+The [public source repository](https://github.com/petuja-Systems/snappymail-petuja-systems)
+contains release-specific corresponding-source refs. Its default branch does
+not necessarily match a running deployment. The upstream project is
+[SnappyMail](https://github.com/the-djmaze/snappymail).
 
 petuja.email modifications are distributed under the
-[GNU Affero General Public License v3.0](LICENSE), preserving the applicable
-upstream and third-party license and attribution notices.
-
-petuja Systems identifies and maintains its own modifications and product
-branding; upstream SnappyMail and RainLoop code remains attributed to its
+[GNU Affero General Public License v3.0](LICENSE), with applicable upstream and
+third-party notices retained. SnappyMail and RainLoop remain attributed to their
 respective authors.
 
 Copyright (c) 2020–2024 SnappyMail  

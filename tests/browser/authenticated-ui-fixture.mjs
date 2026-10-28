@@ -1,11 +1,8 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { test as base, expect } from '@playwright/test';
-import { indexFixture } from './login-fixture.mjs';
+import { fixtureStaticBase, fixtureStaticFile, indexFixture } from './login-fixture.mjs';
 
-const repository = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const appRoot = path.join(repository, 'snappymail/v/0.0.0');
 const origin = 'http://127.0.0.1:8791';
 
 const emptyFolders = {
@@ -25,7 +22,7 @@ const defaultAppData = ({ forcedTwoFactor = false, language = 'en', checkMailInt
 	clientLanguage: language,
 	hourCycle: 'h23',
 	loadingDescription: 'petuja.email',
-	StaticLibsJs: '/static/js/min/libs.min.js',
+	StaticLibsJs: fixtureStaticBase + 'js/min/libs.min.js',
 	Email: 'demo@example.test',
 	mainEmail: 'demo@example.test',
 	accountHash: 'synthetic-account-hash',
@@ -47,7 +44,7 @@ const defaultAppData = ({ forcedTwoFactor = false, language = 'en', checkMailInt
 	SetupTwoFactor: forcedTwoFactor,
 	Capa: capabilities,
 	System: {
-		languages: ['en'], version: '0.0.0', webVersionPath: '/', token: 'synthetic-ui-token',
+		languages: ['en'], version: '0.0.0', webVersionPath: '/', webStaticPath: fixtureStaticBase, token: 'synthetic-ui-token',
 		folderSpecLimit: 50, allowAppendMessage: false, attachmentsActions: []
 	}
 });
@@ -93,9 +90,6 @@ export const test = base.extend({
 					}
 					if ('/' === url.pathname && !url.search) {
 						return route.fulfill({ contentType: 'text/html', body: await indexFixture(language, false) });
-					}
-					if ('/fixture-manifest.json' === url.pathname) {
-						return route.fulfill({ json: { name: 'petuja.email authenticated UI fixture', start_url: '/', display: 'standalone' } });
 					}
 					if ('/' === url.pathname && /^\?\/AppData\//.test(url.search)) {
 						return route.fulfill({ json: appData });
@@ -169,11 +163,9 @@ export const test = base.extend({
 						}
 						return route.fulfill({ json: { Action: action, Result: result } });
 					}
-					if (url.pathname.startsWith('/static/')) {
-						const file = path.resolve(appRoot, '.' + decodeURIComponent(url.pathname));
-						if (file.startsWith(path.join(appRoot, 'static') + path.sep)) {
-							try { return await route.fulfill({ path: file }); } catch {}
-						}
+					const file = fixtureStaticFile(url.pathname);
+					if (file) {
+						try { return await route.fulfill({ path: file }); } catch {}
 					}
 					unexpectedRequests.push(url.pathname);
 					return route.fulfill({ status: 404, body: 'Fixture resource missing' });

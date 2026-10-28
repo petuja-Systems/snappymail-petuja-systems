@@ -3,6 +3,9 @@ import { spawn } from 'node:child_process';
 import { lstat, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { readDemoFile, writeDemoFile } from './dev-demo-runtime.mjs';
+import productStatic from '../tasks/product-static.js';
+
+const { prepareProductStatic } = productStatic;
 
 const requiredAssets = [
 	'snappymail/v/0.0.0/static/css/app.min.css',
@@ -28,6 +31,7 @@ const fingerprintFiles = [
 	'gulpfile.js',
 	'package.json',
 	'yarn.lock',
+	'snappymail/v/0.0.0/app/petuja-product.json',
 	'vendors/normalize.css/normalize.css'
 ];
 const buildStampPath = '.demo-assets.json';
@@ -138,6 +142,7 @@ export async function prepareDemoBuild({
 		try {
 			const saved = JSON.parse((await readDemoFile(workspace, buildStampPath, { maxBytes: 4096 })).toString('utf8'));
 			if (saved?.sourceHash === inputHash && JSON.stringify(saved?.assets) === JSON.stringify(existingAssets)) {
+				await prepareProductStatic(repositoryRoot);
 				stdout.write('Reusing verified local demo assets.\n');
 				return { rebuilt: false, assets: existingAssets };
 			}
@@ -171,6 +176,7 @@ export async function prepareDemoBuild({
 	}
 
 	await assertDemoAssets(repositoryRoot);
+	await prepareProductStatic(repositoryRoot);
 	const assets = await assetDigests(repositoryRoot);
 	if (workspace) {
 		await writeDemoFile(workspace, buildStampPath, JSON.stringify({ sourceHash: inputHash, assets }) + '\n');

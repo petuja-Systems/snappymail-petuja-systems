@@ -45,23 +45,23 @@ function isUnavailableCommand(error, platform, output = '', errorOutput = '') {
 		);
 }
 
-function createPythonError(candidate, error, { platform, candidates, output, errorOutput }) {
+function createPythonError(candidate, error, { platform, candidates, output, errorOutput, operation }) {
 	const detail = executionDetail(error);
 	if (candidate.fromOverride) {
 		return new Error(
-			'Python 3 localization validation could not run using PYTHON (' + candidate.command + '): '
+			'Python 3 ' + operation + ' could not run using PYTHON (' + candidate.command + '): '
 			+ detail + '. Set PYTHON to the Python 3 executable path.'
 		);
 	}
 	if (isUnavailableCommand(error, platform, output, errorOutput)) {
 		return new Error(
-			'Python 3 is required for localization validation; none of '
+			'Python 3 is required for ' + operation + '; none of '
 			+ candidates.map(({ command, args }) => [command, ...args].join(' ')).join(', ')
 			+ ' could provide a usable interpreter. Install Python 3 or set PYTHON to its executable path.'
 		);
 	}
 	return new Error(
-		'Python 3 localization validation failed using '
+		'Python 3 ' + operation + ' failed using '
 		+ [candidate.command, ...candidate.args].join(' ') + ' (' + detail
 		+ '). Install Python 3 or set PYTHON to its executable path.'
 	);
@@ -71,6 +71,7 @@ function runPythonScript(scriptPath, {
 	cwd,
 	env = process.env,
 	platform = process.platform,
+	operation = 'localization validation',
 	execFileImpl = execFile,
 	stdout = process.stdout,
 	stderr = process.stderr
@@ -110,7 +111,7 @@ function runPythonScript(scriptPath, {
 				if (errorOutput) {
 					stderr.write(errorOutput);
 				}
-				reject(createPythonError(candidate, error, { platform, candidates, output, errorOutput }));
+				reject(createPythonError(candidate, error, { platform, candidates, output, errorOutput, operation }));
 			};
 
 			try {

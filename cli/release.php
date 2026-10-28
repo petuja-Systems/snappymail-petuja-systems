@@ -164,6 +164,14 @@ if (!is_object($package) || !isset($package->version) || !is_string($package->ve
 	|| !preg_match('/\A[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?\z/', $package->version)) {
 	releaseArchiveFailure('package.json must provide a valid SnappyMail version');
 }
+$product = json_decode((string) file_get_contents(releaseArchiveSourcePath('snappymail/v/0.0.0/app/petuja-product.json')));
+if (!is_object($product) || ($product->product ?? null) !== 'petuja.email'
+	|| !is_string($product->version ?? null)
+	|| !preg_match('/\A[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?\z/', $product->version)
+	|| ($product->snappymailVersion ?? null) !== $package->version) {
+	releaseArchiveFailure('invalid petuja.email product metadata');
+}
+$staticNamespace = 'petuja-email-' . $product->version;
 
 /**
  * Update files that contain version
@@ -225,12 +233,25 @@ if (!isset($options['skip-gulp'])) {
 
 	if ($brotli = trim(`which brotli`)) {
 		echo "\x1b[33;1m === Brotli *.js and *.css === \x1b[0m\n";
-		passthru("{$brotli} -k --best {$cmddir}/js/*.js");
-		passthru("{$brotli} -k --best {$cmddir}/js/min/*.js");
-		passthru("{$brotli} -k --best {$cmddir}/css/admin*.css");
-		passthru("{$brotli} -k --best {$cmddir}/css/app*.css");
+		foreach (['js/*.js', 'js/min/*.js', 'css/admin*.css', 'css/app*.css'] as $pattern) {
+			passthru("{$brotli} -f -k --best {$cmddir}/{$pattern}", $return_var);
+			if ($return_var) releaseArchiveFailure("brotli failed with error code {$return_var}");
+		}
 		unlink(ROOT_DIR . '/snappymail/v/0.0.0/static/js/boot.js.br');
 		unlink(ROOT_DIR . '/snappymail/v/0.0.0/static/js/min/boot.min.js.br');
+	}
+}
+
+// Compression happens after Gulp, so refresh the complete namespaced tree,
+// including all compressed variants, before producing either archive.
+passthru(escapeshellarg($gulp) . ' prepareProductStatic', $return_var);
+if ($return_var) releaseArchiveFailure("static namespace preparation failed with error code {$return_var}");
+releaseArchiveSourcePath('snappymail/v/0.0.0/static/' . $staticNamespace);
+foreach (['css/app.min.css', 'css/admin.min.css', 'css/boot.min.css',
+	'js/min/boot.min.js', 'js/min/libs.min.js', 'js/min/app.min.js', 'js/min/admin.min.js',
+	'js/serviceworker.js', 'manifest.json', 'images/petuja-systems-logo.svg'] as $asset) {
+	if (!is_file(releaseArchiveSourcePath('snappymail/v/0.0.0/static/' . $staticNamespace . '/' . $asset))) {
+		releaseArchiveFailure("missing required static asset: {$asset}");
 	}
 }
 
@@ -256,13 +277,23 @@ if (!$zip->open($zip_destination, ZIPARCHIVE::CREATE)) {
 }
 
 $tar = new PharData($tar_destination);
+$tar->startBuffering();
 
 $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('snappymail/v'), RecursiveIteratorIterator::SELF_FIRST);
 $archiveEntries = [];
 foreach ($files as $file) {
 	if ('.' !== $file->getFilename() && '..' !== $file->getFilename()) {
+		$name = str_replace('\\', '/', $file->getPathname());
+		$staticPrefix = 'snappymail/v/' . $package->version . '/static/';
+		if (str_starts_with($name, $staticPrefix)) {
+			$relative = substr($name, strlen($staticPrefix));
+			$top = explode('/', $relative, 2)[0];
+			if ($top !== $staticNamespace) {
+				continue;
+			}
+		}
 		$archiveEntries[] = [
-			'name' => str_replace('\\', '/', $file->getPathname()),
+			'name' => $name,
 			'path' => $file->getPathname(),
 			'is_directory' => $file->isDir(),
 			'is_file' => $file->isFile(),
@@ -272,19 +303,16 @@ foreach ($files as $file) {
 usort($archiveEntries, static fn (array $left, array $right): int => strcmp($left['name'], $right['name']));
 
 foreach ($archiveEntries as $entry) {
+	$tarName = $options['docker'] ? substr($entry['name'], strlen('snappymail/')) : $entry['name'];
 	if ($entry['is_directory']) {
 		releaseZipAddDirectory($zip, $entry['path'], $entry['name'], $zipTimestamp);
+		$tar->addEmptyDir($tarName);
 	} elseif ($entry['is_file']) {
 		releaseZipAddFile($zip, $entry['path'], $entry['name'], $zipTimestamp);
+		$tar->addFile($entry['path'], $tarName);
 	} else {
 		releaseArchiveFailure("unsupported release source type: {$entry['name']}");
 	}
-}
-
-if ($options['docker']) {
-	$tar->buildFromDirectory('./snappymail/', "@v/{$package->version}@");
-} else {
-	$tar->buildFromDirectory('./', "@snappymail/v/{$package->version}@");
 }
 
 //$zip->addFile('cli/upgrade.sh');
@@ -332,12 +360,26 @@ releaseZipAddFile($zip, 'LICENSE', 'LICENSE', $zipTimestamp);
 $tar->addFile('LICENSE');
 releaseZipAddFile($zip, 'vendors/lucide/LICENSE', 'LICENSES/lucide.txt', $zipTimestamp);
 $tar->addFile('vendors/lucide/LICENSE', 'LICENSES/lucide.txt');
+releaseZipAddFile($zip, 'vendors/squire2/LICENSE', 'LICENSES/squire.txt', $zipTimestamp);
+$tar->addFile('vendors/squire2/LICENSE', 'LICENSES/squire.txt');
+releaseZipAddFile($zip, 'vendors/openpgp-5/LICENSE', 'LICENSES/openpgp.txt', $zipTimestamp);
+$tar->addFile('vendors/openpgp-5/LICENSE', 'LICENSES/openpgp.txt');
+releaseZipAddFile($zip, 'vendors/THIRD_PARTY_NOTICES.txt', 'LICENSES/third-party.txt', $zipTimestamp);
+$tar->addFile('vendors/THIRD_PARTY_NOTICES.txt', 'LICENSES/third-party.txt');
 
 if (!$zip->close()) {
 	releaseArchiveFailure("unable to finish ZIP archive: {$zip_destination}");
 }
 
-$tar->compress(Phar::GZ);
+$tar->stopBuffering();
+unset($tar);
+releaseArchiveSourcePath('scripts/normalize-release-tar.py');
+putenv('PETUJA_RELEASE_TAR=' . $tar_destination);
+putenv('PETUJA_RELEASE_EPOCH=' . $zipTimestamp);
+passthru(escapeshellarg($gulp) . ' normalizeReleaseTar', $return_var);
+if ($return_var || !is_file($tar_destination . '.gz')) {
+	releaseArchiveFailure('unable to create reproducible TAR.GZ archive');
+}
 unlink($tar_destination);
 $tar_destination .= '.gz';
 
